@@ -895,3 +895,17 @@ body.mobile .seg.sm button { padding: 6px 11px; font-size: 13px; }
 body.mobile .srow .sc { max-width: 70%; }
 [data-style=nothing] .badge { background: var(--surface-2) !important; color: var(--ink) !important; }
 .wiz-lang { display: flex; justify-content: flex-end; margin-top: 10px; }
+
+.banner.upd { border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+.banner .bbtns { display: flex; gap: 6px; flex: none; }
+
+/* personal details (e-mail): blurred until tapped */
+.priv { filter: blur(5px); cursor: pointer; user-select: none; -webkit-user-select: none; border-radius: 4px; transition: filter .15s ease; }
+.priv.shown { filter: none; user-select: text; -webkit-user-select: text; }
+@media (prefers-reduced-motion: reduce) { .priv { transition: none; } }
+@media print { .priv { filter: none; } }
+
+/* long lists: cards below the visible area are only laid out when scrolled to */
+.gmod { content-visibility: auto; contain-intrinsic-size: auto 92px; }
+.mrow { content-visibility: auto; contain-intrinsic-size: auto 32px; }
+.xrow { content-visibility: auto; contain-intrinsic-size: auto 64px; }

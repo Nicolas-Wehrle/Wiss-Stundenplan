@@ -29,12 +29,19 @@ function readStore() {
   try { mem = JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { mem = {}; }
   return mem;
 }
-function writeStore() {
+// writes are batched: several changes in a row → one write a moment later (and right away when leaving)
+let writeT = 0;
+function writeNow() {
+  clearTimeout(writeT); writeT = 0;
+  if (!mem) return;
   try { localStorage.setItem(STORE_KEY, JSON.stringify(mem)); }
   catch (e) {                                   // quota: drop the room cache first, it is only a cache
     if (mem.roomCache) { delete mem.roomCache; try { localStorage.setItem(STORE_KEY, JSON.stringify(mem)); } catch (e2) {} }
   }
 }
+function writeStore() { if (!writeT) writeT = setTimeout(writeNow, 250); }
+window.addEventListener('pagehide', writeNow);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') writeNow(); });
 const fireChanged = (changes) => setTimeout(() => L.changed.forEach((fn) => { try { fn(changes, 'local'); } catch (e) { console.error(e); } }), 0);
 const storage = {
   local: {
@@ -54,7 +61,7 @@ const storage = {
     clear: async () => {
       const s = readStore(), ch = {};
       for (const k of Object.keys(s)) ch[k] = { oldValue: s[k] };
-      mem = {}; writeStore(); fireChanged(ch);
+      mem = {}; writeNow(); fireChanged(ch);
     }
   },
   onChanged: { addListener: (fn) => L.changed.push(fn) }
@@ -64,6 +71,7 @@ const storage = {
 const frames = new Map();   // id → { iframe, url, status }
 let nextTab = 1;
 function goLogin(url) {
+  writeNow();
   try { sessionStorage.setItem(RETURN_KEY, '1'); sessionStorage.setItem(LOGIN_AT_KEY, String(Date.now())); } catch (e) {}
   location.href = url;
 }

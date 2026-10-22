@@ -8,14 +8,20 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Key/value storage on the phone (same semantics as chrome.storage.local):
  * one JSON file in the app's private folder. Only this app can read it.
+ * Changes are kept in memory right away and written to disk on a background thread,
+ * so the page never waits for the disk.
  */
 class Store {
     private final File file, tmp;
     private JSONObject data;
+    private final ExecutorService io = Executors.newSingleThreadExecutor();
+    private boolean queued;
 
     Store(File dir) {
         file = new File(dir, "store.json");
@@ -63,14 +69,31 @@ class Store {
         save();
     }
 
+    /** Writes on the background thread. Several quick changes end up in one write. */
     private void save() {
-        try (FileOutputStream out = new FileOutputStream(tmp)) {
-            out.write(data.toString().getBytes(StandardCharsets.UTF_8));
-            out.getFD().sync();
-        } catch (Exception e) {
-            return;
+        if (queued) return;
+        queued = true;
+        io.execute(this::writeNow);
+    }
+
+    /** Called when the app goes to the background: write anything pending now. */
+    void flush() { io.execute(this::writeNow); }
+
+    private void writeNow() {
+        String json;
+        synchronized (this) {
+            queued = false;
+            json = data.toString();
         }
-        //noinspection ResultOfMethodCallIgnored
-        tmp.renameTo(file);
+        synchronized (file) {
+            try (FileOutputStream out = new FileOutputStream(tmp)) {
+                out.write(json.getBytes(StandardCharsets.UTF_8));
+                out.getFD().sync();
+            } catch (Exception e) {
+                return;
+            }
+            //noinspection ResultOfMethodCallIgnored
+            tmp.renameTo(file);
+        }
     }
 }
