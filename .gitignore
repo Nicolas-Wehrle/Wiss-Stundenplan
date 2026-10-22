@@ -1,0 +1,22 @@
+# Signing key for the Android app: never upload these
+*.jks
+*.keystore
+keystore.properties
+
+# Build output (put these on the GitHub Releases page instead)
+*.apk
+*.zip
+*.xpi
+/WISS-Stundenplan.user.js
+android app/build/
+android app/app/build/
+android app/.gradle/
+android app/local.properties
+android app/build.log
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+release/

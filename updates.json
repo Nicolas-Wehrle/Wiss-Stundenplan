@@ -1,0 +1,12 @@
+{
+  "addons": {
+    "wiss-stundenplan@wiss-tools": {
+      "updates": [
+        {
+          "version": "1.9.4",
+          "update_link": "https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/download/v1.9.4/WISS-Stundenplan-Firefox.xpi"
+        }
+      ]
+    }
+  }
+}

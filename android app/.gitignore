@@ -1,0 +1,7 @@
+build/
+.gradle/
+local.properties
+*.apk
+# signing key – never publish:
+keystore.properties
+*.jks
