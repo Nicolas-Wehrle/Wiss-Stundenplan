@@ -1344,7 +1344,7 @@ function renderSetup() {
   const tCount = new Set(Object.keys(S.teachers || {}).filter((k) => k.startsWith('l:'))).size;
   if (setupState.permOk === false) acc = `<p class="muted">Braucht Zugriff auf <b>wiss.tocco.ch</b> und <b>modulbaukasten.ch</b>.</p>
     <div class="row"><button class="btn" data-act="grant">Zugriff erlauben</button></div>`;
-  else if (user) acc = `<p><b>${esc(user)}</b><br><span class="muted">${S.lessons.length} Lektionen · ${(S.grades || []).length} Noten · ${tCount ? tCount + ' Lehrpersonen' : 'Lehrpersonen laden…'}</span></p>
+  else if (user) acc = `<p><b class="priv" data-act="reveal" data-raw tabindex="0" role="button" title="${tr('Antippen zum Anzeigen')}">${esc(user)}</b><br><span class="muted">${S.lessons.length} Lektionen · ${(S.grades || []).length} Noten · ${tCount ? tCount + ' Lehrpersonen' : 'Lehrpersonen laden…'}</span></p>
     ${!first ? '<div class="row"><button class="btn ghost" data-act="teachers">Lehrpersonen aktualisieren</button></div>' : ''}`;
   else acc = `${syncing ? '<p><span class="spin" style="display:inline-block;vertical-align:-1px"></span> Prüfe Anmeldung…</p>' : ''}<p class="muted">Einmal mit deinem WISS-Konto (<b>@wiss-edu.ch</b>) anmelden.</p>
     <div class="row"><button class="btn" data-act="login">Anmelden</button><button class="btn ghost" data-act="setup-check">Schon angemeldet</button></div>
@@ -1420,6 +1420,7 @@ document.addEventListener('click', (ev) => {
   const a = ev.target.closest('[data-act]');
   if (a) {
     const act = a.dataset.act;
+    if (act === 'reveal') { const on = a.classList.toggle('shown'); a.title = on ? '' : tr('Antippen zum Anzeigen'); return; }
     if (act === 'prev') { weekOffset--; render(); }
     else if (act === 'next') { weekOffset++; render(); }
     else if (act === 'today') { weekOffset = 0; showPast = !P('foldPast'); render(); }

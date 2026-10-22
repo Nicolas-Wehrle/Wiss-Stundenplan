@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WISS Stundenplan",
   "short_name": "Stundenplan",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "description": "Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.",
   "permissions": [
     "storage",

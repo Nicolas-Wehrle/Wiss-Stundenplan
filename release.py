@@ -27,15 +27,23 @@ done = ['WISS-Stundenplan-Chrome.zip', 'WISS-Stundenplan-Firefox.zip']
 missing = []
 
 apk = ROOT / 'android app' / 'app' / 'build' / 'outputs' / 'apk' / 'release' / 'app-release.apk'
+if not apk.exists(): apk = ROOT / 'WISS-Stundenplan.apk'   # built elsewhere and put in the main folder
 if apk.exists(): shutil.copy2(apk, out / 'WISS-Stundenplan.apk'); done.append('WISS-Stundenplan.apk')
-else: missing.append('WISS-Stundenplan.apk  (build it: cd "android app" && ./gradlew assembleRelease)')
+else: missing.append('WISS-Stundenplan.apk  (build it: cd "android app" && ./gradlew assembleRelease, or put the APK in this folder)')
 
 ios = ROOT / 'iphone' / 'WISS-Stundenplan.user.js'
 if ios.exists(): shutil.copy2(ios, out / 'WISS-Stundenplan.user.js'); done.append('WISS-Stundenplan.user.js')
 else: missing.append('WISS-Stundenplan.user.js  (build it: python3 iphone/build-ios.py "chrome addon" iphone)')
 
 xpi = ROOT / 'WISS-Stundenplan-Firefox.xpi'
-if xpi.exists(): shutil.copy2(xpi, out / 'WISS-Stundenplan-Firefox.xpi'); done.append('WISS-Stundenplan-Firefox.xpi')
+def xpi_version(f):
+    try:
+        with zipfile.ZipFile(f) as z: return json.loads(z.read('manifest.json').decode('utf-8-sig')).get('version')
+    except Exception: return None
+xv = xpi_version(xpi) if xpi.exists() else None
+if xpi.exists() and xv != version:
+    missing.append(f'WISS-Stundenplan-Firefox.xpi  (the one in this folder is version {xv}, not {version}. Sign the new Firefox zip and replace it)')
+elif xpi.exists(): shutil.copy2(xpi, out / 'WISS-Stundenplan-Firefox.xpi'); done.append('WISS-Stundenplan-Firefox.xpi')
 else: missing.append('WISS-Stundenplan-Firefox.xpi  (upload the Firefox zip on addons.mozilla.org, download the signed .xpi into this folder, run again)')
 
 # Firefox reads this file from the repo to find new versions
@@ -43,7 +51,11 @@ updates = {'addons': {'wiss-stundenplan@wiss-tools': {'updates': [{
     'version': version,
     'update_link': f'https://github.com/{REPO}/releases/download/v{version}/WISS-Stundenplan-Firefox.xpi'
 }]}}}
-(ROOT / 'updates.json').write_text(json.dumps(updates, indent=2) + '\n', encoding='utf-8')
+# only point Firefox at the new version once its signed file is part of the release
+if 'WISS-Stundenplan-Firefox.xpi' in done:
+    (ROOT / 'updates.json').write_text(json.dumps(updates, indent=2) + '\n', encoding='utf-8')
+else:
+    print('updates.json not changed yet (signed .xpi missing), so Firefox keeps the old version for now.\n')
 
 print(f'Release v{version} in {out}:')
 for f in done: print('  ok   ', f)

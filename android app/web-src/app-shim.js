@@ -37,14 +37,46 @@
     for (const k of Object.keys(obj)) changes[k] = { newValue: obj[k] };
     setTimeout(() => L.changed.forEach((fn) => { try { fn(changes, 'local'); } catch (e) { console.error(e); } }), 0);
   };
+  // All data is read from the phone once and then kept in memory. Reads never cross the bridge,
+  // writes are batched and handed to the phone a moment later (it saves them in the background).
+  let mem = null, dirty = null, flushT = 0;
+  const clone = (v) => (v === undefined ? undefined : typeof structuredClone === 'function' ? structuredClone(v) : JSON.parse(JSON.stringify(v)));
+  const memory = () => {
+    if (!mem) { try { mem = JSON.parse(ST.get('null') || '{}') || {}; } catch (e) { mem = {}; } }
+    return mem;
+  };
+  const flush = () => {
+    clearTimeout(flushT); flushT = 0;
+    if (!dirty) return;
+    const patch = {}; for (const k of dirty) if (k in mem) patch[k] = mem[k];
+    dirty = null;
+    try { ST.set(JSON.stringify(patch)); } catch (e) { console.error('store', e); }
+  };
+  window.__appFlush = flush;
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+  window.addEventListener('pagehide', flush);
   const storage = {
     local: {
       get: async (keys) => {
-        const list = keys == null ? null : typeof keys === 'string' ? [keys] : Array.isArray(keys) ? keys : Object.keys(keys);
-        return JSON.parse(ST.get(list ? JSON.stringify(list) : 'null') || '{}');
+        const s = memory();
+        const list = keys == null ? Object.keys(s) : typeof keys === 'string' ? [keys] : Array.isArray(keys) ? keys : Object.keys(keys);
+        const o = {};
+        for (const k of list) if (k in s) o[k] = clone(s[k]);
+        return o;
       },
-      set: async (obj) => { ST.set(JSON.stringify(obj)); fireChanged(obj); },
-      clear: async () => { const all = JSON.parse(ST.get('null') || '{}'); ST.clear(); const ch = {}; for (const k in all) ch[k] = undefined; fireChanged(ch); }
+      set: async (obj) => {
+        const s = memory();
+        dirty = dirty || new Set();
+        for (const k of Object.keys(obj)) { s[k] = clone(obj[k]); dirty.add(k); }
+        if (!flushT) flushT = setTimeout(flush, 250);
+        fireChanged(obj);
+      },
+      clear: async () => {
+        const s = memory(); const ch = {};
+        for (const k in s) ch[k] = undefined;
+        mem = {}; dirty = null; clearTimeout(flushT); flushT = 0;
+        ST.clear(); fireChanged(ch);
+      }
     },
     onChanged: { addListener: (fn) => L.changed.push(fn) }
   };

@@ -110,6 +110,7 @@ public class MainActivity extends Activity {
     private long updateDownload = -1;
     private android.content.BroadcastReceiver updateReceiver;
 
+    @android.annotation.SuppressLint("UnspecifiedRegisterReceiverFlag")   // flag is set on Android 13+, older versions have none
     private void downloadAndInstall(String url) {
         android.app.DownloadManager dm = getSystemService(android.app.DownloadManager.class);
         java.io.File old = new java.io.File(getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS), "update.apk");
@@ -166,6 +167,8 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
+        if (main != null) main.evaluateJavascript("window.__appFlush && window.__appFlush()", null);   // hand over pending changes
+        if (store != null) store.flush();
         saveSessionCookies();
         CookieManager.getInstance().flush();
     }
