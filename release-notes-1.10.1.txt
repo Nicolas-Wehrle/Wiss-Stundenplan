@@ -1,0 +1,30 @@
+WISS Stundenplan 1.10.1
+What's new since 1.9.5
+
+NEW STYLES
+- Six new styles: Apple, Samsung, Pastell, Neon, Papier and Terminal (nine in total), each in light and dark.
+- Each style has its own layout, not just its own colours:
+  - Apple: large title, iOS tab bar at the bottom with icons, each day as one grouped list.
+  - Samsung: tall One UI header, tabs as one pill-shaped bar, large rounded cards.
+  - GitHub: each day as a box with a grey header row, monospace times.
+  - Pastell: floating tab bar at the bottom, cards in the module colour, soft colour blobs.
+  - Neon: glowing grid in the background, gradient borders and title.
+  - Papier: lined notebook paper with a margin line, folder tabs, serif headings.
+  - Terminal: shell prompt with a blinking cursor, numbered tabs, scanlines in dark mode.
+- The style picker is now a sideways strip with a preview card for each style.
+
+WIDGET (ANDROID)
+- Every style has its own widget layout.
+- The widget adapts to its size: a flat widget shows status, title and room/teacher, a taller one also shows the next lesson.
+- The preview in the widget settings has the same height as the widget on the home screen.
+- Fixed: the Terminal widget was filled with solid green.
+
+SIGN-IN
+- After a break you no longer have to tap "Anmelden". The app presses the "WISS Office 365" button on the school's sign-in page for you (never a password) and signs you in behind the timetable.
+- The sign-in screen only appears if Microsoft really needs you, for example after a password change.
+- Works in the Android app, Chrome, Firefox and on iPhone.
+
+OTHER
+- On phones all five tabs fit on one line, no more swiping the tab bar.
+- Everything that scrolls sideways can be dragged with the mouse.
+- When the WISS server doesn't answer, the error appears sooner.
