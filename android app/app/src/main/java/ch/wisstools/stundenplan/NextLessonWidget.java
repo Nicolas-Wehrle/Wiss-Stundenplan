@@ -99,7 +99,12 @@ public class NextLessonWidget extends AppWidgetProvider {
 
     static void render(Context c, AppWidgetManager m, int[] ids) {
         Content k = content(c);
-        for (int id : ids) m.updateAppWidget(id, build(c, Cfg.load(c, id), k));
+        for (int id : ids) {
+            // phones in portrait use the max height; 0 = unknown (older launchers)
+            int h = 0;
+            try { h = m.getAppWidgetOptions(id).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0); } catch (Exception ignored) { }
+            m.updateAppWidget(id, build(c, Cfg.load(c, id), k, h));
+        }
         Intent tick = new Intent(c, NextLessonWidget.class).setAction("ch.wisstools.stundenplan.WIDGET_TICK");
         PendingIntent pi = PendingIntent.getBroadcast(c, 4711, tick, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         long now = System.currentTimeMillis();
@@ -157,6 +162,8 @@ public class NextLessonWidget extends AppWidgetProvider {
 
     // ---------- look ----------
     /** surface, ink, muted, faint, accent, border */
+    static final String[] STYLES = {"standard", "apple", "samsung", "nothing", "github", "pastel", "neon", "paper", "terminal"};
+
     static int[] palette(String style, boolean dark) {
         switch (style) {
             case "nothing": return dark
@@ -165,6 +172,24 @@ public class NextLessonWidget extends AppWidgetProvider {
             case "github": return dark
                     ? new int[]{0xFF0D1117, 0xFFF0F6FC, 0xFF9198A1, 0xFF656C76, 0xFF4493F8, 0xFF3D444D}
                     : new int[]{0xFFFFFFFF, 0xFF1F2328, 0xFF59636E, 0xFF818B98, 0xFF0969DA, 0xFFD1D9E0};
+            case "apple": return dark
+                    ? new int[]{0xFF1C1C1E, 0xFFFFFFFF, 0xFF8D8D93, 0xFF48484A, 0xFF0A84FF, 0xFF38383A}
+                    : new int[]{0xFFFFFFFF, 0xFF000000, 0xFF8A8A8E, 0xFFC4C4C6, 0xFF007AFF, 0xFFE2E2E6};
+            case "samsung": return dark
+                    ? new int[]{0xFF171717, 0xFFFAFAFA, 0xFF9A9A9F, 0xFF5A5A5F, 0xFF6E9CFF, 0xFF2A2A2A}
+                    : new int[]{0xFFFCFCFC, 0xFF010101, 0xFF6F6F74, 0xFFA9A9AE, 0xFF3E7BFA, 0xFFE4E4E7};
+            case "pastel": return dark
+                    ? new int[]{0xFF201C2C, 0xFFF1EDFB, 0xFFA49CBA, 0xFF5F5876, 0xFFB49CFF, 0xFF332D47}
+                    : new int[]{0xFFFFFFFF, 0xFF2F2A40, 0xFF7C7590, 0xFFB3ABC6, 0xFF8A6CF0, 0xFFEBE4F7};
+            case "neon": return dark
+                    ? new int[]{0xFF141027, 0xFFF3EEFF, 0xFF9A8FBF, 0xFF4F4672, 0xFFFF3CAC, 0xFF2A2348}
+                    : new int[]{0xFFFFFFFF, 0xFF1D1530, 0xFF6F6488, 0xFFAB9FC4, 0xFFE0218A, 0xFFEEDFF8};
+            case "paper": return dark
+                    ? new int[]{0xFF23201B, 0xFFECE4D4, 0xFFA39887, 0xFF6B6255, 0xFFE08C72, 0xFF3A342B}
+                    : new int[]{0xFFFBF8F1, 0xFF2B2620, 0xFF7B7164, 0xFFAAA091, 0xFF8E3523, 0xFFE0D7C6};
+            case "terminal": return dark
+                    ? new int[]{0xFF0B120B, 0xFFB9F6B2, 0xFF5F9A5F, 0xFF2F5530, 0xFF39FF6A, 0xFF1C321D}
+                    : new int[]{0xFFF8F6EC, 0xFF1D3A1F, 0xFF5D7A5E, 0xFF9BB09B, 0xFF1F7A2E, 0xFFC9CFB8};
             default: return dark
                     ? new int[]{0xFF1C1C20, 0xFFECECEF, 0xFF9A9AA3, 0xFF6E6E78, 0xFFE5545D, 0xFF2D2D33}
                     : new int[]{0xFFFFFFFF, 0xFF17171A, 0xFF6B6B73, 0xFF9B9BA3, 0xFFB52A33, 0xFFE7E5E1};
@@ -177,14 +202,30 @@ public class NextLessonWidget extends AppWidgetProvider {
         return (c.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
-    static RemoteViews build(Context c, Cfg f, Content k) {
+    static RemoteViews build(Context c, Cfg f, Content k) { return build(c, f, k, 0); }
+
+    /** hDp: the widget's height in dp (0 = unknown). Flat widgets (4×1) get fewer lines, so nothing is cut off. */
+    static RemoteViews build(Context c, Cfg f, Content k, int hDp) {
+        boolean compact = hDp > 0 && hDp < 110;              // about one row high
+        boolean tall = hDp == 0 || hDp >= 165;               // room for everything
         String style = "app".equals(f.style) ? k.appStyle : f.style;
-        if (!"nothing".equals(style) && !"github".equals(style)) style = "standard";
+        if (!java.util.Arrays.asList(STYLES).contains(style)) style = "standard";   // new styles from a newer web part
         boolean dark = isDark(c, f);
         int[] p = palette(style, dark);
         int surface = p[0], ink = p[1], muted = p[2], faint = p[3], accent = p[4], border = p[5];
         if ("app".equals(f.style) && k.appAccent.matches("#[0-9a-fA-F]{6}")) accent = Color.parseColor(k.appAccent);
-        int layout = "nothing".equals(style) ? R.layout.widget_nothing : "github".equals(style) ? R.layout.widget_github : R.layout.widget_next;
+        int layout;
+        switch (style) {
+            case "nothing": layout = compact ? R.layout.widget_nothing_s : R.layout.widget_nothing; break;
+            case "github": layout = R.layout.widget_github; break;
+            case "apple": layout = R.layout.widget_apple; break;
+            case "samsung": layout = R.layout.widget_samsung; break;
+            case "pastel": layout = R.layout.widget_pastel; break;
+            case "neon": layout = R.layout.widget_neon; break;
+            case "paper": layout = R.layout.widget_paper; break;
+            case "terminal": layout = R.layout.widget_terminal; break;
+            default: layout = R.layout.widget_next;
+        }
         RemoteViews v = new RemoteViews(c.getPackageName(), layout);
 
         Intent open = new Intent(c, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -192,27 +233,91 @@ public class NextLessonWidget extends AppWidgetProvider {
 
         // background: colour + transparency, or none at all
         int alpha = Math.round(255 * (100 - Math.max(0, Math.min(100, f.transparency))) / 100f);
+        // styles with a drawn background (gradient, border, paper lines) keep their own colours
+        int drawn = 0;
+        if ("pastel".equals(style)) drawn = dark ? R.drawable.wbg_pastel_dark : R.drawable.wbg_pastel_light;
+        else if ("neon".equals(style)) drawn = dark ? R.drawable.wbg_neon_dark : R.drawable.wbg_neon_light;
+        else if ("paper".equals(style)) drawn = dark ? R.drawable.wbg_paper_dark : R.drawable.wbg_paper_light;
         if (f.bg) {
             v.setViewVisibility(R.id.w_bg, View.VISIBLE);
-            v.setInt(R.id.w_bg, "setColorFilter", surface);
+            if (drawn != 0) v.setImageViewResource(R.id.w_bg, drawn);
+            else v.setInt(R.id.w_bg, "setColorFilter", surface);
             v.setInt(R.id.w_bg, "setImageAlpha", alpha);
         } else v.setViewVisibility(R.id.w_bg, View.GONE);
+        if ("terminal".equals(style)) {
+            v.setViewVisibility(R.id.w_border, f.bg ? View.VISIBLE : View.GONE);
+            v.setInt(R.id.w_border, "setColorFilter", accent);
+            v.setInt(R.id.w_border, "setImageAlpha", Math.max(alpha, 90));
+        }
         if ("github".equals(style)) {
             v.setViewVisibility(R.id.w_border, f.bg ? View.VISIBLE : View.GONE);
             v.setInt(R.id.w_border, "setColorFilter", border);
             v.setInt(R.id.w_border, "setImageAlpha", Math.max(alpha, 60));
         }
 
-        v.setTextViewText(R.id.w_kicker, k.kicker);
+        // texts, slightly reworded per style
+        String kicker = k.kicker, meta = k.meta, after = k.after;
+        switch (style) {
+            case "apple":
+                if (k.empty) kicker = k.kicker;
+                else if (compact) kicker = (k.running ? (k.en ? "NOW" : "JETZT") : k.kicker.split(" · ")[0]) + " · " + k.time;
+                else kicker = k.running ? (k.en ? "NOW" : "JETZT") : k.kicker.split(" · ")[0];
+                break;
+            case "samsung": case "paper": kicker = sentence(k.kicker); break;   // only the status line: German nouns stay capitalised
+            case "terminal":
+                kicker = "$ " + k.kicker.toLowerCase(Locale.ROOT);
+                if (!meta.isEmpty()) meta = "@ " + meta;
+                if (!after.isEmpty()) after = "# " + after;
+                break;
+        }
+        v.setTextViewText(R.id.w_kicker, kicker);
         v.setTextViewText(R.id.w_title, k.title);
-        v.setTextViewText(R.id.w_meta, k.meta);
-        v.setTextViewText(R.id.w_after, k.after);
-        v.setTextColor(R.id.w_kicker, "nothing".equals(style) ? muted : accent);
+        v.setTextViewText(R.id.w_meta, meta);
+        v.setTextViewText(R.id.w_after, after);
+        int kickColor = "nothing".equals(style) ? muted : accent;
+        if ("apple".equals(style) && k.running) kickColor = dark ? 0xFFFF453A : 0xFFFF3B30;
+        v.setTextColor(R.id.w_kicker, kickColor);
         v.setTextColor(R.id.w_title, ink);
         v.setTextColor(R.id.w_meta, muted);
         v.setTextColor(R.id.w_after, faint);
         v.setViewVisibility(R.id.w_meta, k.meta.isEmpty() ? View.GONE : View.VISIBLE);
-        v.setViewVisibility(R.id.w_after, k.after.isEmpty() ? View.GONE : View.VISIBLE);
+
+        // style extras: big time, calendar bar, status pill, time bubble, neon colours
+        boolean hasTime = !k.empty && !k.time.isEmpty();
+        switch (style) {
+            case "apple":
+                v.setViewVisibility(R.id.w_time, hasTime && !compact ? View.VISIBLE : View.GONE);
+                v.setTextViewText(R.id.w_time, k.time);
+                v.setTextColor(R.id.w_time, ink);
+                v.setInt(R.id.w_bar, "setColorFilter", accent);
+                break;
+            case "samsung":
+                v.setInt(R.id.w_chipbg, "setColorFilter", accent);
+                v.setInt(R.id.w_chipbg, "setImageAlpha", dark ? 70 : 38);
+                break;
+            case "pastel":
+                v.setViewVisibility(R.id.w_time, hasTime ? View.VISIBLE : View.GONE);
+                v.setViewVisibility(R.id.w_chipbg, hasTime ? View.VISIBLE : View.GONE);
+                v.setTextViewText(R.id.w_time, k.time.replace("–", "\n"));
+                v.setTextColor(R.id.w_time, accent);
+                v.setInt(R.id.w_chipbg, "setColorFilter", surface);
+                break;
+            case "neon":
+                v.setTextColor(R.id.w_meta, dark ? 0xFF2DE2E6 : 0xFF00A6B8);
+                break;
+        }
+
+        // ---- fit to the height: fewer lines and less padding on flat widgets
+        boolean bigTop = "apple".equals(style) || "samsung".equals(style) || "nothing".equals(style);   // these have an extra line on top
+        boolean showAfter = !after.isEmpty() && (hDp == 0 || hDp >= (bigTop ? 165 : 135));
+        v.setViewVisibility(R.id.w_after, showAfter ? View.VISIBLE : View.GONE);
+        v.setInt(R.id.w_title, "setMaxLines", tall ? 2 : 1);
+        if (compact && "nothing".equals(style)) v.setViewVisibility(R.id.w_meta, View.GONE);
+        if (compact && "samsung".equals(style)) v.setTextViewTextSize(R.id.w_title, android.util.TypedValue.COMPLEX_UNIT_SP, 16);
+        int[] pad = padding(style);                           // left, top, right, bottom in dp
+        if (compact) { pad[1] = Math.min(pad[1], 8); pad[3] = Math.min(pad[3], 8); }
+        float d = c.getResources().getDisplayMetrics().density;
+        v.setViewPadding(R.id.w_box, Math.round(pad[0] * d), Math.round(pad[1] * d), Math.round(pad[2] * d), Math.round(pad[3] * d));
 
         if ("nothing".equals(style)) {
             v.setInt(R.id.w_dot, "setColorFilter", k.running ? accent : ink);
@@ -220,7 +325,7 @@ public class NextLessonWidget extends AppWidgetProvider {
                 v.setViewVisibility(R.id.w_time, View.VISIBLE);
                 v.setImageViewBitmap(R.id.w_time, dotText(c, k.time, ink));
             } else v.setViewVisibility(R.id.w_time, View.GONE);
-        } else {
+        } else if ("standard".equals(style) || "github".equals(style)) {
             v.setInt(R.id.w_bar, "setBackgroundColor", accent);
         }
         return v;
@@ -250,6 +355,24 @@ public class NextLessonWidget extends AppWidgetProvider {
         if (d.equals(today.plusDays(1))) return en ? "TOMORROW" : "MORGEN";
         String[] de = {"MO", "DI", "MI", "DO", "FR", "SA", "SO"}, enD = {"MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"};
         return (en ? enD : de)[z.getDayOfWeek().getValue() - 1] + " " + d.getDayOfMonth() + "." + d.getMonthValue() + ".";
+    }
+
+    /** inner padding of each layout (dp): left, top, right, bottom */
+    private static int[] padding(String style) {
+        switch (style) {
+            case "apple": case "neon": return new int[]{16, 16, 16, 16};
+            case "samsung": return new int[]{20, 14, 20, 14};
+            case "nothing": return new int[]{18, 12, 18, 12};
+            case "paper": return new int[]{38, 12, 14, 12};
+            default: return new int[]{14, 14, 14, 14};
+        }
+    }
+
+    /** "HEUTE · 13:00" → "Heute · 13:00" (for the styles that don't shout) */
+    private static String sentence(String s) {
+        if (s == null || s.isEmpty()) return "";
+        String low = s.toLowerCase(Locale.ROOT);
+        return Character.toUpperCase(low.charAt(0)) + low.substring(1);
     }
 
     private static String join(String a, String b) {

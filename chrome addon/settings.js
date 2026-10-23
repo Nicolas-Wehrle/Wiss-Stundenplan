@@ -51,6 +51,12 @@ const seg = (k, opts, cur = P(k)) => `<div class="seg sm" role="radiogroup">${op
 const sw = (k, on = !!P(k)) => `<button class="sw ${on ? 'on' : ''}" role="switch" aria-checked="${on}" data-act="pref-toggle" data-k="${k}"><i></i></button>`;
 const sec = (id, title, body) => `<section class="set-sec" id="set-${id}" data-sec="${id}"><div class="set-h">${tr(title)}</div><div class="card set-card">${body}</div></section>`;
 
+// id, name, short description (all names are German source strings, translated with tr())
+const STYLES = [
+  ['standard', 'Standard', 'WISS-Rot'], ['apple', 'Apple', 'Wie iOS'], ['samsung', 'Samsung', 'Wie One UI'],
+  ['nothing', 'Nothing', 'Schwarz-weiss'], ['github', 'GitHub', 'GitHub-Farben'], ['pastel', 'Pastell', 'Sanfte Farben'],
+  ['neon', 'Neon', 'Leuchtend'], ['paper', 'Papier', 'Warm, mit Serifen'], ['terminal', 'Terminal', 'Grün auf Schwarz']
+];
 function stylePreview(id, name, desc) {
   const on = P('style') === id;
   return `<button class="stile ${on ? 'on' : ''}" data-act="pref" data-k="style" data-v="${id}" aria-pressed="${on}">
@@ -64,8 +70,8 @@ function renderSettings({ acc, ab, zp, user }) {
 
   const look = [
     row(tr('Sprache'), '', seg('lang', [['de', 'Deutsch'], ['en', 'English']])),
-    `<div class="srow col"><div class="sl"><b>${tr('Stil')}</b><small>${''}</small></div><div class="stiles">
-      ${stylePreview('standard', 'Standard', tr('WISS-Rot'))}${stylePreview('nothing', 'Nothing', tr('Schwarz-weiss'))}${stylePreview('github', 'GitHub', tr('GitHub-Farben'))}</div></div>`,
+    `<div class="srow col"><div class="sl"><b>${tr('Stil')}</b><small>${''}</small></div><div class="stiles-wrap"><div class="stiles" id="stiles">
+      ${STYLES.map(([id, name, desc]) => stylePreview(id, tr(name), tr(desc))).join('')}</div></div></div>`,
     row(tr('Modus'), '', seg('theme', [['system', tr('System')], ['light', tr('Hell')], ['dark', tr('Dunkel')]])),
     `<div class="srow col"><div class="sl"><b>${tr('Akzentfarbe')}</b><small>${''}</small></div><div class="swatches">
       <button class="swatch auto ${!P('accent') ? 'on' : ''}" data-act="pref" data-k="accent" data-v="" title="${esc(tr('Vom Stil'))}"><span>${tr('Auto')}</span></button>

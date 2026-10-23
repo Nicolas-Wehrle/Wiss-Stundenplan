@@ -5,6 +5,7 @@
 
 const BASE = 'https://wiss.tocco.ch';
 const EXTRANET = BASE + '/extranet/';
+const EXTRANET_LOGIN = EXTRANET + '#wiss-login';   // content.js presses "WISS Office 365" on this page
 const STUNDENPLAN = BASE + '/extranet/Meine-Bildung/Stundenplan-f%C3%BCr-Studierende';
 const KEEPALIVE_MIN = 20;          // Tocco session times out after 30 min
 const MIN_GAP_MS = 60 * 1000;      // don't refetch more than once a minute
@@ -288,27 +289,40 @@ async function openHidden(url) {
 
 // ---------- silent login in a minimized window ----------
 
-// Android app: background WebViews don't reliably finish Microsoft's redirects on real phones,
-// so there the sign-in runs in the visible login screen instead. With a remembered Microsoft
-// login it closes by itself after a moment; if Microsoft wants input, it stays open for you.
+// The sign-in runs out of sight (a minimized window; in the Android app a page behind the app).
+// Only if Microsoft really needs you (password, new device …) does the app bring that page to the front.
 const IS_APP = typeof browser !== 'undefined' && browser.runtime && browser.runtime.id === 'wiss-stundenplan-app';
-async function openLoginScreen(url) {
-  const tab = await browser.tabs.create({ url, active: true });
-  return { tabId: tab.id, close: () => browser.tabs.remove(tab.id).catch(() => {}) };
+const APP_SHOW_AFTER_MS = 15000;   // app: still not done in the background → show it, so it can finish in front
+
+// runs inside the sign-in page (self-contained: no outside variables)
+function pressSsoInPage() {
+  const el = [...document.querySelectorAll('a, button, [role=button], input[type=submit], input[type=button]')]
+    .find((x) => /office\s*365|microsoft/i.test(x.textContent || x.value || '') && x.getClientRects().length);
+  if (!el) return false;
+  el.click();
+  return true;
 }
 
 async function silentLogin() {
-  const hidden = IS_APP ? await openLoginScreen(EXTRANET) : await openHidden(EXTRANET);
+  const hidden = await openHidden(EXTRANET_LOGIN);
+  const t0 = Date.now();
+  let shown = false;
+  const show = async (why) => { if (!IS_APP || shown) return; shown = true; slog(why); try { await browser.tabs.update(hidden.tabId, { active: true }); } catch (e) {} };
   let keepOpen = false;
   let beat = Date.now();
   const tabId = hidden.tabId;
   const end = Date.now() + LOGIN_TIMEOUT_MS;
-  let foreignSince = 0, lastSeen = '';
+  let foreignSince = 0, lastSeen = '', baseSince = 0, reloads = 0, pressed = false;
   try {
     while (Date.now() < end) {
       await sleep(800);
       let tab;
-      try { tab = await browser.tabs.get(tabId); } catch (e) { slog('Anmeldefenster weg'); return null; }
+      try { tab = await browser.tabs.get(tabId); } catch (e) {
+        slog('Anmeldefenster weg');
+        try { const me = await toccoWhoAmI(); if (me) { slog('Doch angemeldet'); return { me, tabId: null, close: async () => {} }; } } catch (e2) {}
+        return null;
+      }
+      if (IS_APP && !shown && Date.now() - t0 > APP_SHOW_AFTER_MS) await show('Anmeldung im Hintergrund dauert, zeige Fenster');
       const host = (() => { try { return new URL(tab.url).host; } catch (e) { return '?'; } })();
       const seen = host + ' ' + tab.status;
       if (seen !== lastSeen) { slog('Anmeldung: ' + seen); lastSeen = seen; beat = Date.now(); }
@@ -321,13 +335,31 @@ async function silentLogin() {
         try { me = await toccoWhoAmI(); } catch (e) { slog('Sitzung direkt: ' + (e && e.message)); }
         if (!me) { try { me = await runInTab(tabId, toccoWhoAmI, [], 10000); } catch (e) { slog('Sitzung im Fenster: ' + (e && e.message)); } }
         if (me) return { me, tabId, close: hidden.close };
+        // Back on the extranet but not signed in: the extranet shows its own page with a
+        // "WISS Office 365" button. content.js presses it; this is the fallback from here.
+        if (!baseSince) baseSince = Date.now();
+        if (!pressed && Date.now() - baseSince > 1500) {
+          pressed = true;
+          try { const r = await runInTab(tabId, pressSsoInPage, [], 5000); if (r) { slog('Knopf "WISS Office 365" gedrückt'); baseSince = Date.now(); } } catch (e) {}
+        }
+        // still nothing: load the page again (an expired session cookie can also block the way)
+        else if (pressed && Date.now() - baseSince > 4000 && reloads < 2) {
+          reloads++; baseSince = 0; pressed = false;
+          slog('Extranet ohne Anmeldung, lade neu');
+          // a fresh address, so it really loads again (only changing the #part would not)
+          try { await browser.tabs.update(tabId, { url: EXTRANET + '?wl=' + Date.now() + '#wiss-login' }); } catch (e) {}
+        }
       } else if (tab.url && !tab.url.startsWith(BASE) && tab.status === 'complete') {
         // e.g. Microsoft's sign-in page asking for a password / account choice → needs the user
+        baseSince = 0;
         if (!foreignSince) foreignSince = Date.now();
-        else if (Date.now() - foreignSince > NEEDS_USER_MS) { slog('Microsoft wartet auf Eingabe'); keepOpen = IS_APP; break; }
+        else if (Date.now() - foreignSince > NEEDS_USER_MS) { slog('Microsoft wartet auf Eingabe'); if (IS_APP) { await show('Anmeldefenster wird angezeigt'); keepOpen = true; } break; }
       }
     }
     if (Date.now() >= end) slog('Anmeldung: Zeit abgelaufen');
+    // last check before asking you: maybe the sign-in went through after all
+    try { const me = await toccoWhoAmI(); if (me) { slog('Doch angemeldet'); return { me, tabId, close: hidden.close }; } } catch (e) {}
+    if (shown) keepOpen = true;   // you can see it (and may be typing in it) → never pull it away
     if (keepOpen) slog('Anmeldefenster bleibt offen, bitte dort anmelden');
     else await hidden.close();
     return null;
@@ -407,14 +439,18 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
     try {
       // session cookie is now set → load directly; through the login window only as a fallback
       let data = null;
-      try { data = await toccoFetchAll(login.me.userPk, from, to); } catch (e) { slog('Direkt laden: ' + (e && e.message)); }
-      if (!data || !Array.isArray(data.lessons)) data = await runInTab(login.tabId, toccoFetchAll, [login.me.userPk, from, to], 45000);
+      try { data = await toccoFetchAll(login.me.userPk, from, to); } catch (e) {
+        slog('Direkt laden: ' + (e && e.message));
+        // the server isn't answering at all → trying again through the window only doubles the wait
+        if (e && (e.name === 'TimeoutError' || /timed out|aborted/i.test(e.message || ''))) throw e;
+      }
+      if ((!data || !Array.isArray(data.lessons)) && login.tabId != null) data = await runInTab(login.tabId, toccoFetchAll, [login.me.userPk, from, to], 45000);
       if (!data || !Array.isArray(data.lessons)) throw new Error('Keine Daten erhalten');
       slog(`Daten: ${data.lessons.length} Lektionen`);
       await save(data, login.me);
       slog('Fertig');
 
-      if (await teachersNeeded()) await learnTeachers(login.tabId);   // reuse the login window
+      if (await teachersNeeded()) await learnTeachers(login.tabId != null ? login.tabId : null);   // reuse the login window
     } finally {
       await login.close();
     }
@@ -763,5 +799,5 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }
     });
   }
-  if (msg.type === 'openLogin') browser.tabs.create({ url: EXTRANET });
+  if (msg.type === 'openLogin') browser.tabs.create({ url: EXTRANET_LOGIN });
 });

@@ -25,7 +25,7 @@
   const EN = {
     'Installieren': 'Install', 'Herunterladen': 'Download', 'Update laden': 'Get update', 'Version {V} ist da.': 'Version {V} is out.',
     'ZIP entpacken, alten Ordner ersetzen, dann in chrome://extensions neu laden.': 'Unzip it, replace the old folder, then reload it in chrome://extensions.',
-    'Lädt…': 'Downloading…', 'Du hast die neuste Version.': 'You have the latest version.', 'Updates': 'Updates', 'Antippen zum Anzeigen': 'Tap to show', 'Prüfen': 'Check',
+    'Lädt…': 'Downloading…', 'Du hast die neuste Version.': 'You have the latest version.', 'Updates': 'Updates', 'Antippen zum Anzeigen': 'Tap to show', 'Wie iOS': 'Like iOS', 'Wie One UI': 'Like One UI', 'Pastell': 'Pastel', 'Sanfte Farben': 'Soft colours', 'Leuchtend': 'Glowing', 'Papier': 'Paper', 'Warm, mit Serifen': 'Warm, with serifs', 'Grün auf Schwarz': 'Green on black', 'Prüfen': 'Check',
     'Prüfe…': 'Checking…', 'GitHub nicht erreichbar.': 'Can\'t reach GitHub.', 'Öffnen': 'Open',
     // header / tabs / status
     'Stundenplan': 'Timetable', 'Woche': 'Week', 'Prüfungen': 'Exams', 'Noten': 'Grades', 'Absenzen': 'Absences', 'Räume': 'Rooms',

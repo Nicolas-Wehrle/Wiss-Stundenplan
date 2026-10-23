@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/w_root" android:layout_width="match_parent" android:layout_height="match_parent">
+    <ImageView android:id="@+id/w_bg" android:layout_width="match_parent" android:layout_height="match_parent"
+        android:scaleType="fitXY" android:src="@drawable/wbg_4" android:importantForAccessibility="no" />
+    <ImageView android:id="@+id/w_border" android:layout_width="match_parent" android:layout_height="match_parent" android:layout_margin="4dp" android:scaleType="fitXY" android:src="@drawable/wborder_dash" android:importantForAccessibility="no" />
+    <LinearLayout
+        android:id="@+id/w_box" android:layout_width="match_parent" android:layout_height="match_parent"
+        android:orientation="vertical" android:gravity="center_vertical" android:padding="14dp">
+        <TextView android:id="@+id/w_kicker" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:maxLines="1" android:ellipsize="end" android:textSize="11.5sp" android:fontFamily="monospace" android:textStyle="bold" />
+        <TextView android:id="@+id/w_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp"
+            android:maxLines="2" android:ellipsize="end" android:textSize="14sp" android:fontFamily="monospace" android:textStyle="bold" />
+        <TextView android:id="@+id/w_meta" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+            android:maxLines="1" android:ellipsize="end" android:textSize="12sp" android:fontFamily="monospace" />
+        <TextView android:id="@+id/w_after" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="6dp"
+            android:maxLines="1" android:ellipsize="end" android:textSize="11sp" android:fontFamily="monospace" />
+    </LinearLayout>
+</FrameLayout>

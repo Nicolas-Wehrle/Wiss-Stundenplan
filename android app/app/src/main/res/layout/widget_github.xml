@@ -20,6 +20,7 @@
         android:src="@drawable/wborder_8"
         android:importantForAccessibility="no" />
     <LinearLayout
+        android:id="@+id/w_box"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"

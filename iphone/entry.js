@@ -5,6 +5,32 @@
 const APP_PATH = '/extranet/?stundenplan';
 const isApp = /[?&]stundenplan\b/.test(location.search) || location.hash === '#stundenplan';
 
+// Sign-in started by the app/add-on: the extranet shows its own page with a red "WISS Office 365"
+// button instead of going to Microsoft. Press it for the user (only that button, never any password).
+// At most twice in 2 minutes, so a failing sign-in can't loop.
+function wissPressSso(maxWait) {
+  const KEY = 'wiss:ssoClicks';
+  let clicks = [];
+  try { clicks = JSON.parse(sessionStorage.getItem(KEY) || '[]').filter((t) => Date.now() - t < 120000); } catch (e) {}
+  if (clicks.length >= 2) return;
+  const find = () => [...document.querySelectorAll('a, button, [role=button], input[type=submit], input[type=button]')]
+    .find((el) => /office\s*365|microsoft/i.test(el.textContent || el.value || '') && el.getClientRects().length);
+  let done = false, mo = null;
+  const tryClick = () => {
+    if (done) return true;
+    const el = find();
+    if (!el) return false;
+    done = true; if (mo) mo.disconnect();
+    try { clicks.push(Date.now()); sessionStorage.setItem(KEY, JSON.stringify(clicks)); } catch (e) {}
+    el.click();
+    return true;
+  };
+  if (tryClick()) return;
+  mo = new MutationObserver(tryClick);
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(() => { if (mo) mo.disconnect(); }, maxWait || 20000);
+}
+
 if (!isApp) {
   let back = false;
   try { back = sessionStorage.getItem('wiss:return') === '1'; } catch (e) {}
@@ -18,6 +44,7 @@ if (!isApp) {
     document.body.appendChild(b);
   });
   if (back) {
+    onReady(() => wissPressSso());
     // signed in? → back to the app (checks the session every 1.5 s for up to 3 min)
     const t0 = Date.now();
     const check = async () => {

@@ -92,7 +92,7 @@
       if (!s) throw new Error('No tab with id ' + id);
       return JSON.parse(s);
     },
-    update: async (id, { url }) => { H.tabUpdate(id, url); return { id, url }; },
+    update: async (id, { url, active }) => { if (url) H.tabUpdate(id, url); if (active && H.tabShow) H.tabShow(id); return { id, url }; },
     remove: async (id) => { H.tabRemove(id); }
   };
 
