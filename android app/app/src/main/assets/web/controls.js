@@ -301,3 +301,48 @@
   const start = () => { scan(document.body); mo.observe(document.body, { childList: true, subtree: true }); };
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();
+
+// Drag to scroll with the mouse: any area that scrolls sideways (style picker, absence grid,
+// settings categories, …) can be grabbed and pulled left/right. Touch already does this natively.
+(() => {
+  'use strict';
+  let d = null;
+  const sideways = (el) => {
+    for (; el && el !== document.body && el.nodeType === 1; el = el.parentElement) {
+      if (el.scrollWidth > el.clientWidth + 2) {
+        const ox = getComputedStyle(el).overflowX;
+        if (ox === 'auto' || ox === 'scroll') return el;
+      }
+    }
+    return null;
+  };
+  document.addEventListener('pointerdown', (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return;
+    if (e.target.closest && e.target.closest('input, textarea, select, [contenteditable], .no-drag')) return;
+    const s = sideways(e.target);
+    if (s) d = { s, x: e.clientX, left: s.scrollLeft, moved: false, id: e.pointerId };
+  });
+  document.addEventListener('pointermove', (e) => {
+    if (!d || e.pointerId !== d.id) return;
+    const dx = e.clientX - d.x;
+    if (!d.moved) {
+      if (Math.abs(dx) < 6) return;
+      d.moved = true; d.s.classList.add('dragging');
+    }
+    d.s.scrollLeft = d.left - dx;
+    e.preventDefault();
+  });
+  const end = (e) => {
+    if (!d || (e && e.pointerId !== d.id)) return;
+    const { s, moved } = d; d = null;
+    if (!moved) return;
+    s.classList.remove('dragging');
+    // the button under the mouse must not count the end of a drag as a click
+    const kill = (ev) => { ev.stopPropagation(); ev.preventDefault(); };
+    window.addEventListener('click', kill, { capture: true, once: true });
+    setTimeout(() => window.removeEventListener('click', kill, true), 0);
+  };
+  document.addEventListener('pointerup', end);
+  document.addEventListener('pointercancel', end);
+  document.addEventListener('dragstart', (e) => { if (d) e.preventDefault(); });
+})();

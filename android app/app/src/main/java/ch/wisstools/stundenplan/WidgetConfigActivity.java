@@ -66,13 +66,13 @@ public class WidgetConfigActivity extends Activity {
         stage.setBackground(wall);
         stage.setPadding(dp(16), dp(26), dp(16), dp(26));
         preview = new FrameLayout(this);
-        stage.addView(preview, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(124)));
+        stage.addView(preview, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, dp(previewHeight())));
         col.addView(stage, lp(dp(16), dp(18)));
 
         // style
         col.addView(label(t("Stil", "Style")));
-        RadioGroup styles = group(new String[]{"app", "standard", "nothing", "github"},
-                new String[]{t("Wie in der App", "Same as the app"), "Standard", "Nothing", "GitHub"}, cfg.style,
+        RadioGroup styles = group(new String[]{"app", "standard", "apple", "samsung", "nothing", "github", "pastel", "neon", "paper", "terminal"},
+                new String[]{t("Wie in der App", "Same as the app"), "Standard", "Apple", "Samsung", "Nothing", "GitHub", t("Pastell", "Pastel"), "Neon", t("Papier", "Paper"), "Terminal"}, cfg.style,
                 (v) -> { cfg.style = v; refresh(); });
         col.addView(card(styles), lp(0, 0));
 
@@ -155,11 +155,17 @@ public class WidgetConfigActivity extends Activity {
     private void refresh() {
         preview.removeAllViews();
         try {
-            View v = NextLessonWidget.build(this, cfg, NextLessonWidget.content(this)).apply(this, preview);
+            View v = NextLessonWidget.build(this, cfg, NextLessonWidget.content(this), previewHeight()).apply(this, preview);
             preview.addView(v, new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         } catch (Exception e) {
             preview.addView(text(e.getMessage() == null ? "Preview" : e.getMessage(), 13, Color.WHITE, false));
         }
+    }
+
+    /** the preview has the same height as the widget on the home screen */
+    private int previewHeight() {
+        try { int h = AppWidgetManager.getInstance(this).getAppWidgetOptions(widgetId).getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT, 0); if (h > 0) return h; } catch (Exception ignored) { }
+        return 124;
     }
 
     // ---------- small UI helpers ----------

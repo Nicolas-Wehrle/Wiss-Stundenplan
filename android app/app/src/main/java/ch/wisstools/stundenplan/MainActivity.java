@@ -185,7 +185,8 @@ public class MainActivity extends Activity {
     private void restoreSessionCookies() {
         android.content.SharedPreferences sp = getSharedPreferences("session", MODE_PRIVATE);
         String saved = sp.getString("tocco", null);
-        if (saved == null || System.currentTimeMillis() - sp.getLong("at", 0) > 12L * 3600 * 1000) return;
+        // the school server ends a session after 30 min without use; an older cookie only gets in the way
+        if (saved == null || System.currentTimeMillis() - sp.getLong("at", 0) > 25L * 60 * 1000) return;
         CookieManager cm = CookieManager.getInstance();
         String now = cm.getCookie(ORIGIN);
         for (String part : saved.split(";")) {
@@ -194,7 +195,7 @@ public class MainActivity extends Activity {
             if (eq <= 0) continue;
             String name = kv.substring(0, eq);
             if (now != null && (("; " + now).contains("; " + name + "="))) continue;   // still there
-            cm.setCookie(ORIGIN, kv + "; Path=/; Secure; HttpOnly; Max-Age=43200");
+            cm.setCookie(ORIGIN, kv + "; Path=/; Secure; HttpOnly; Max-Age=1800");
         }
         cm.flush();
     }
@@ -311,34 +312,42 @@ public class MainActivity extends Activity {
         t.visible = visible;
         w.addJavascriptInterface(new TabBridge(t), "AndroidTab");
         w.setWebViewClient(new TabClient(t));
-        if (visible) {
-            LinearLayout box = new LinearLayout(this);
-            box.setOrientation(LinearLayout.VERTICAL);
-            box.setBackgroundColor(getColor(R.color.surface));
-            LinearLayout bar = new LinearLayout(this);
-            bar.setGravity(Gravity.CENTER_VERTICAL);
-            int pad = dp(12);
-            bar.setPadding(pad, dp(6), dp(6), dp(6));
-            TextView title = new TextView(this);
-            title.setText("Mit WISS-Konto anmelden");
-            title.setTextColor(getColor(R.color.ink));
-            title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
-            bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
-            Button done = new Button(this);
-            done.setText("Fertig");
-            done.setTextColor(Color.WHITE);
-            done.setBackgroundColor(getColor(R.color.accent));
-            done.setOnClickListener(v -> closeTab(t.id));
-            bar.addView(done);
-            box.addView(bar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            box.addView(w, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
-            t.container = box;
-            root.addView(box, match());                                   // on top
-        } else {
+        if (visible) showOnTop(t);
+        else {
             t.container = w;
-            root.addView(w, 0, match());                                  // behind the app – rendered, but not visible
+            root.addView(w, 0, match());                                  // behind the app – running, but not visible
         }
         w.loadUrl(url);
+    }
+
+    /** Puts a tab's page on top of the app with a small bar ("Fertig"). Works for a running hidden tab too:
+     *  the page keeps its state, e.g. Microsoft's sign-in that now needs the user. */
+    private void showOnTop(Tab t) {
+        if (t.view == null || (t.visible && t.container != t.view)) return;
+        if (t.container != null) root.removeView(t.container);
+        t.visible = true;
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+        box.setBackgroundColor(getColor(R.color.surface));
+        LinearLayout bar = new LinearLayout(this);
+        bar.setGravity(Gravity.CENTER_VERTICAL);
+        int pad = dp(12);
+        bar.setPadding(pad, dp(6), dp(6), dp(6));
+        TextView title = new TextView(this);
+        title.setText("Mit WISS-Konto anmelden");
+        title.setTextColor(getColor(R.color.ink));
+        title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+        bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
+        Button done = new Button(this);
+        done.setText("Fertig");
+        done.setTextColor(Color.WHITE);
+        done.setBackgroundColor(getColor(R.color.accent));
+        done.setOnClickListener(v -> closeTab(t.id));
+        bar.addView(done);
+        box.addView(bar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        box.addView(t.view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
+        t.container = box;
+        root.addView(box, match());                                       // on top
     }
 
     private void closeTab(int id) {
@@ -380,6 +389,9 @@ public class MainActivity extends Activity {
 
         @JavascriptInterface
         public void tabRemove(int id) { ui.post(() -> closeTab(id)); }
+
+        @JavascriptInterface
+        public void tabShow(int id) { ui.post(() -> { Tab x = tabs.get(id); if (x != null) showOnTop(x); }); }
 
         @JavascriptInterface
         public String tabInfo(int id) {

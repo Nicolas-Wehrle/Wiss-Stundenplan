@@ -3,8 +3,8 @@
     "wiss-stundenplan@wiss-tools": {
       "updates": [
         {
-          "version": "1.9.5",
-          "update_link": "https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/download/v1.9.5/WISS-Stundenplan-Firefox.xpi"
+          "version": "1.10.1",
+          "update_link": "https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/download/v1.10.1/WISS-Stundenplan-Firefox.xpi"
         }
       ]
     }

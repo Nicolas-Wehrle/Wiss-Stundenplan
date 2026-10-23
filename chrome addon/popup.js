@@ -1393,11 +1393,18 @@ function render() {
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === S.tab);
   const v = $('view');
   const scroll = v.scrollTop;
+  const keepX = {}; for (const id of ['stiles']) { const el = $(id); if (el) keepX[id] = el.scrollLeft; }
   const setup = hasChrome && (!S.setupDone || S.showSetup);
   $('tabs').hidden = setup;
   if (setup) setHTML($('banner'), '');
   setHTML(v, setup ? renderSetup() : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms());
   v.scrollTop = scroll;
+  // horizontal strips keep their position; the first time, the selected item is brought into view
+  for (const id of ['stiles']) {
+    const el = $(id); if (!el) continue;
+    if (keepX[id] != null) el.scrollLeft = keepX[id];
+    else { const on = el.querySelector('.on'); if (on) el.scrollLeft = Math.max(0, on.offsetLeft - el.offsetLeft - 8); }
+  }
   const hs = $('heatScroll');
   if (hs) {
     // squares grow to fill the card (min 12 px → scrolls on small screens, max 22 px)

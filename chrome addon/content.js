@@ -6,6 +6,44 @@
 
 chrome.runtime.sendMessage({ type: 'extranetLoaded' }).catch?.(() => {});
 
+// Sign-in started by the app/add-on: the extranet shows its own page with a red "WISS Office 365"
+// button instead of going to Microsoft. Press it for the user (only that button, never any password).
+// At most twice in 2 minutes, so a failing sign-in can't loop.
+function wissPressSso(maxWait) {
+  const KEY = 'wiss:ssoClicks';
+  let clicks = [];
+  try { clicks = JSON.parse(sessionStorage.getItem(KEY) || '[]').filter((t) => Date.now() - t < 120000); } catch (e) {}
+  if (clicks.length >= 2) return;
+  const find = () => [...document.querySelectorAll('a, button, [role=button], input[type=submit], input[type=button]')]
+    .find((el) => /office\s*365|microsoft/i.test(el.textContent || el.value || '') && el.getClientRects().length);
+  let done = false, mo = null;
+  const tryClick = () => {
+    if (done) return true;
+    const el = find();
+    if (!el) return false;
+    done = true; if (mo) mo.disconnect();
+    try { clicks.push(Date.now()); sessionStorage.setItem(KEY, JSON.stringify(clicks)); } catch (e) {}
+    el.click();
+    return true;
+  };
+  if (tryClick()) return;
+  mo = new MutationObserver(tryClick);
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+  setTimeout(() => { if (mo) mo.disconnect(); }, maxWait || 20000);
+}
+
+(function autoSignIn() {
+  let started = location.hash.includes('wiss-login');
+  try {
+    if (started) sessionStorage.setItem('wiss:login', String(Date.now()));
+    else started = Date.now() - (+sessionStorage.getItem('wiss:login') || 0) < 120000;
+  } catch (e) {}
+  if (!started) return;
+  fetch('/nice2/username?_dc=' + Date.now(), { credentials: 'include', cache: 'no-store' })
+    .then((r) => r.json()).then((j) => { if (!j || !j.username || j.username === 'anonymous') wissPressSso(); }).catch(() => wissPressSso());
+})();
+
+
 (function learnTeachers() {
   if (!/Stundenplan/i.test(decodeURIComponent(location.pathname))) return;
   const AUTO = location.hash.includes('wiss-auto');
