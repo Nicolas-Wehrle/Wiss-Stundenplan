@@ -23,3 +23,11 @@ release/
 
 # local tests with real personal data, never publish
 /tests-private/
+
+# Synthetic browser-test screenshots and local dependency archives
+/tests/browser/artifacts/
+/*.tgz
+.env
+.env.*
+!.env.example
+/.build-tools/

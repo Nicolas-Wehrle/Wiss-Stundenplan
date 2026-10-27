@@ -31,7 +31,7 @@ const PREF_DEFAULTS = {
 const P = (k) => (S.prefs && S.prefs[k] !== undefined ? S.prefs[k] : PREF_DEFAULTS[k]);
 function setPref(k, v) {
   S.prefs = { ...(S.prefs || {}), [k]: v };
-  persist({ prefs: S.prefs });
+  persist({ prefs: { [k]: v } });
 }
 let D = null;            // derived data (modules, exams, vacations…)
 let weekOffset = null;   // set after first load
@@ -1181,15 +1181,11 @@ function openSheet(lid) {
   $('sheet').setAttribute('style', sv(l.label));
   $('sheetWrap').hidden = false;
   const box = $('noteBox');
-  let t0;
-  box.addEventListener('input', () => {
-    clearTimeout(t0);
-    t0 = setTimeout(() => {
-      const v = box.value.trim();
-      if (v) S.notes[l.id] = v; else delete S.notes[l.id];
-      persist({ notes: S.notes });
-      $('savedMsg').textContent = 'Gespeichert ✓';
-    }, 400);
+  box.addEventListener('input', async () => {
+    const v = box.value.trim();
+    if (v) S.notes[l.id] = v; else delete S.notes[l.id];
+    const saved = await persist({ notes: { [l.id]: v || null } });
+    if ($('savedMsg')) $('savedMsg').textContent = tr(saved ? 'Gespeichert ✓' : 'Speichern fehlgeschlagen');
   });
 }
 function closeSheet() { $('sheetWrap').hidden = true; render(); }
@@ -1302,7 +1298,11 @@ async function loadCatalog() {
 }
 async function loadModulesFor(id) {
   if (!id || !hasChrome) return;
+  const selected = (setupState.catalog || window.MBK_CATALOG || []).find((x) => x.id === id);
+  const choice = { id, name: selected ? selected.name : '', ts: Date.now() };
+  S.abschluss = choice;
   setupState.loading = true; setupState.msg = ''; render();
+  if (!await persist({ abschluss: choice, modules: {} })) { setupState.loading = false; render(); return; }
   const r = await chrome.runtime.sendMessage({ type: 'mbkLoad', id, extraNums: myModuleNums() }).catch((e) => ({ error: String(e) }));
   setupState.loading = false;
   if (r && r.count) setupState.msg = tr('✓ {N} Module geladen', { N: r.count });
@@ -1312,11 +1312,11 @@ async function loadModulesFor(id) {
     const abschluss = { id, name: a ? a.name : '', ts: Date.now(), offline: true };
     S.abschluss = abschluss;
     if (id === BUNDLED_ABSCHLUSS) {
-      await chrome.storage.local.set({ abschluss, modules: {} });
+      await persist({ abschluss, modules: {} });
       MODS = window.MODULES || {};
       setupState.msg = tr('✓ {N} Module (eingebaut, modulbaukasten.ch ist gerade offline)', { N: Object.keys(MODS).length });
     } else {
-      await chrome.storage.local.set({ abschluss });
+      await persist({ abschluss });
       setupState.msg = tr('modulbaukasten.ch ist gerade offline. Die Beschreibungen kannst du später mit "Laden" holen.');
     }
   }
@@ -1421,7 +1421,13 @@ function render() {
   hideTip();
 }
 
-function persist(obj) { if (hasChrome) chrome.storage.local.set(obj); }
+function persist(obj) {
+  if (!hasChrome) return Promise.resolve();
+  return chrome.runtime.sendMessage({ type: 'deviceSyncWrite', patch: obj }).then((r) => {
+    if (!r || r.error) throw new Error(r?.error || 'save-failed');
+    return true;
+  }).catch(() => { const el = $('savedMsg'); if (el) el.textContent = tr('Speichern fehlgeschlagen'); return false; });
+}
 
 document.addEventListener('click', (ev) => {
   const a = ev.target.closest('[data-act]');
@@ -1449,7 +1455,7 @@ document.addEventListener('click', (ev) => {
     else if (act === 'reset') { setupState.resetArm = true; render(); }
     else if (act === 'reset-confirm') {
       try { localStorage.removeItem('wissLook'); } catch (e) {}
-      chrome.runtime.sendMessage({ type: 'resetAll' }).then(() => location.reload());
+      chrome.runtime.sendMessage({ type: 'deviceSyncReset' }).then((r) => { if (r?.ok) location.reload(); });
     }
     else if (act === 'close') closeSheet();
     else if (act === 'openl') openSheet(a.dataset.lid);
@@ -1470,7 +1476,7 @@ document.addEventListener('click', (ev) => {
         const cur = S.examOverrides[lid] || examsOf(D.lessons.find((l) => l.id === lid)).map((x) => x.label);
         S.examOverrides[lid] = !lab ? [] : cur.includes(lab) ? cur.filter((x) => x !== lab) : [...cur, lab];
       }
-      persist({ examOverrides: S.examOverrides });
+      persist({ examOverrides: { [lid]: S.examOverrides[lid] ?? null } });
       derive(); openSheet(lid);
     } else if (act === 'toroom') {
       roomState.date = a.dataset.day; roomState.minute = Math.round(+a.dataset.min / 15) * 15; roomState.sel = a.dataset.room;
@@ -1529,7 +1535,7 @@ function initWeekOffset() {
 let loadedOnce = false;
 async function load() {
   const s = await chrome.storage.local.get(['lessons', 'teachers', 'grades', 'rooms', 'notes', 'examOverrides', 'status', 'lastSync', 'error', 'uiTab', 'roomCache',
-    'user', 'setupDone', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo']);
+    'user', 'setupDone', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts']);
   const keep = { tab: S.tab, showSetup: S.showSetup };
   S = { ...S, ...s, lessons: s.lessons || [], teachers: s.teachers || {}, grades: s.grades || [], rooms: s.rooms || [], notes: s.notes || {}, examOverrides: s.examOverrides || {}, absences: s.absences || [], attendance: s.attendance || null,
     user: s.user || null, setupDone: !!s.setupDone, abschluss: s.abschluss || null, prefs: s.prefs || {} };
@@ -1555,7 +1561,7 @@ if (hasChrome) {
     if (area !== 'local') return;
     if (changes.lastAttempt) S.lastAttempt = changes.lastAttempt.newValue;
     if (changes.syncLog) { S.syncLog = changes.syncLog.newValue; if (S.showSetup && Object.keys(changes).length === 1) { render(); return; } }
-    if (Object.keys(changes).every((k) => ['notes', 'examOverrides', 'roomCache', 'uiTab', 'lastAttempt', 'syncLog'].includes(k))) { if (changes.status) renderStatus(); return; }
+    if (Object.keys(changes).every((k) => ['syncSecret', 'syncMeta', 'roomCache', 'uiTab', 'lastAttempt', 'syncLog'].includes(k))) return;
     load();
   });
   load().then(() => chrome.runtime.sendMessage({ type: 'refresh', force: false }).catch(() => {}));

@@ -46,6 +46,9 @@ header = f"""// ==UserScript==
 // @noframes
 // @grant        GM.xmlHttpRequest
 // @grant        GM_xmlhttpRequest
+// @grant        GM.getValue
+// @grant        GM.setValue
+// @grant        GM.deleteValue
 // @connect      www.modulbaukasten.ch
 // @connect      ictbb.crm17.dynamics.com
 // ==/UserScript==
@@ -65,6 +68,10 @@ parts = [
     '// wait one tick after window.stop() so the (empty) document is settled, then build the app',
     'const __wissStart = () => {', 'takeOver();',
     '// ---------- adapter ----------', shim,
+    '// ---------- sync core ----------', read('sync-core.js'),
+    '// ---------- QR encoder ----------', read('vendor/qrcode.js'),
+    '// ---------- sync engine ----------', read('sync-engine.js'),
+    '// ---------- sync background ----------', read('sync-background.js'),
     '// ---------- i18n.js ----------', read('i18n.js'),
     '// ---------- modules.js ----------', read('modules.js'),
     '// ---------- catalog.js ----------', read('catalog.js'),
@@ -72,6 +79,7 @@ parts = [
     '// ---------- background.js ----------', '(() => {\n' + read('background.js') + '\n})();',
     '// ---------- popup.js ----------', read('popup.js'),
     '// ---------- settings.js ----------', read('settings.js'),
+    '// ---------- sync-ui.js ----------', read('sync-ui.js'),
     '// ---------- controls.js ----------', read('controls.js'),
     '// ---------- start ----------', 'startApp();',
     '};',
@@ -80,5 +88,7 @@ parts = [
 ]
 out = '\n'.join(parts) + '\n'
 (dst / 'WISS-Stundenplan.user.js').write_text(out, encoding='utf-8')
-import shutil; shutil.copy2(here / 'README.md', dst / 'README.md')
+import shutil
+if (here / 'README.md').resolve() != (dst / 'README.md').resolve():
+    shutil.copy2(here / 'README.md', dst / 'README.md')
 print(f'iPhone userscript {version}: {dst / "WISS-Stundenplan.user.js"} ({len(out) // 1024} KB)')

@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: wiss-encrypted-sync
+    runtime: node
+    region: frankfurt
+    plan: free
+    numInstances: 1
+    rootDir: sync-server
+    buildCommand: node --check server.mjs
+    startCommand: node server.mjs
+    healthCheckPath: /health
+    maxShutdownDelaySeconds: 120
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: SYNC_DATA_REPO
+        sync: false
+      - key: SYNC_DATA_BRANCH
+        value: main
+      - key: GITHUB_TOKEN
+        sync: false

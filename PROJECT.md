@@ -2,7 +2,7 @@
 
 Everything about this project in one place: what it is, how it's built, how releases work, what's tricky, and what's planned next. Written so a new chat (or a new person) can pick it up without the old conversation.
 
-Current version: **1.10.1** (latest public GitHub release at the time of writing: v1.9.5; 1.10.1 is committed and ready to release).
+Current source version: **1.11.0**, unreleased encrypted-sync pilot. The Firefox update manifest remains on signed 1.10.1. Server deployment and real-device pilot checks are required before release.
 
 ---
 
@@ -12,7 +12,7 @@ An unofficial app for WISS students that shows the timetable, exams, grades, abs
 
 How it works in one sentence: it shows the last saved data immediately and fetches fresh data in the background, using the student's own login (Microsoft school account via the extranet), and keeps everything on the device.
 
-- **Author:** Severin Wehrle (student, class IFZK-2524-017).
+- **Author:** Nicolas Wehrle (student, class IFZK-2524-017).
 - **Repo:** https://github.com/Nicolas-Wehrle/Wiss-Stundenplan (public, MIT license).
 - **Local folder:** `C:\Users\sever\Documents\Wiss-Stundenplan` (git repo). The older folder `C:\Users\sever\Documents\tocco chrome addon` is outdated.
 - **Not affiliated with WISS or Tocco.** It only uses each user's own login, the same way the extranet website does.
@@ -194,16 +194,16 @@ Users on versions before 1.9.3 don't have auto-update and need one manual instal
 
 ## 11. Testing
 
-The tests are Playwright scripts (Chromium) that simulate the school server, Microsoft and the platform. They're in the `tests/` folder next to this file. **They contain a real snapshot of Severin's timetable, grades and absences (`fixture.js`): never put them in the public repo.** Paths inside are absolute from the old workspace (`/home/claude/...`) and need adjusting.
+The legacy regression tests are Playwright scripts (Chromium) that simulate the school server, Microsoft and the platform. They're in the `tests-private/` folder next to this file (listed in `.gitignore`, so git never pushes it). **They contain a real snapshot of the user's timetable, grades and absences (`fixture.js`): never put them in the public repo.** The main Android/iPhone runners now use project-relative paths; some older performance scripts still need path adjustments. Public tests under `tests/` contain synthetic data only.
 
 | Suite | What it covers | Last result |
 |---|---|---|
-| `tests/android/run.mjs` + `bridge-mock.js` | The whole Android app web layer with a fake native bridge: first sign-in, modules, teachers, panels, back button, rooms, session expiry, slow network, "WISS Office 365" page, Microsoft needing input, server never answering, widget data, settings, styles, new-grade notification, update banner, reset. Checks that no sign-in screen pops up after a break. | 24/24 |
-| `tests/iphone/run.mjs` | The userscript in Chromium posing as an iPhone: takeover, sign-in by navigation, return to the app, update banner, helper button. | 14/14 |
-| `tests/chrome/ext.mjs` | Loads the real Chrome extension. | OK |
-| `tests/chrome/en.mjs` | Looks for leftover German text in English mode. | Clean (only proper nouns) |
-| `tests/perf/*` | Render timing, CPU profiles, storage bridge traffic, mouse drag test. | |
-| `tests/widget-mockups/*` | HTML recreations of the 9 widget layouts at 150 dp and 80 dp (no Android emulator was available). | |
+| `tests-private/android/run.mjs` + `bridge-mock.js` | The whole Android app web layer with a fake native bridge: first sign-in, modules, teachers, panels, back button, rooms, session expiry, slow network, "WISS Office 365" page, Microsoft needing input, server never answering, widget data, settings, styles, new-grade notification, update banner, reset. Checks that no sign-in screen pops up after a break. | 24/24 |
+| `tests-private/iphone/run.mjs` | The userscript in Chromium posing as an iPhone: takeover, sign-in by navigation, return to the app, update banner, helper button. | 14/14 |
+| `tests-private/chrome/ext.mjs` | Loads the real Chrome extension. | OK |
+| `tests-private/chrome/en.mjs` | Looks for leftover German text in English mode. | Clean (only proper nouns) |
+| `tests-private/perf/*` | Render timing, CPU profiles, storage bridge traffic, mouse drag test. | |
+| `tests-private/widget-mockups/*` | HTML recreations of the 9 widget layouts at 150 dp and 80 dp (no Android emulator was available). | |
 
 Run Android tests on their own: when run right after a Gradle build, the "server never answers" test can time out from CPU load.
 
@@ -223,7 +223,25 @@ Run Android tests on their own: when run right after a Gradle build, the "server
 
 ## 13. Future plans
 
-### Next: end-to-end encrypted sync (decided design, not built yet)
+### End-to-end encrypted sync: implemented in 1.11.0, deployment pending
+
+Implementation is in `chrome addon/sync-core.js`, `sync-engine.js`, `sync-background.js` and `sync-ui.js`, shared by all platforms. `sync-server/README.md` has the exact Render setup, protocol and pilot checklist. Service name: `wiss-stundenplan-sync`; source repo: `Nicolas-Wehrle/Wiss-Stundenplan`; private data repo: `Nicolas-Wehrle/Wiss-Stundenplan-Data`, branch `main`.
+
+Implemented scope: notes, existing per-lesson exam corrections, ZP rule, target grade, rounding and selected apprenticeship. Appearance, language, notifications, widgets, school data and refresh intervals stay local. There is no new manual grade-value editor. Keys use trusted extension storage, Android app-private storage (backup disabled), and Userscripts private GM storage on iPhone. QR codes are generated locally with vendored MIT-licensed qrcode-generator 2.0.4.
+
+The original design discussion below is retained for context, with these implemented adjustments:
+
+- Account files also contain `seen` and the hashed authentication verifier: `{v, updated, seen, auth, blob}`.
+- Batch after 15 seconds of inactivity, at most 20 seconds, leaving time for GitHub before Chrome's 30-second fetch limit. Requests abort after 24 seconds and retry. Success is shown only after durable GitHub confirmation.
+- Per-item timestamps, deterministic device tie-breaks, persistent deletion markers and up to 50 local recoverable notes handle merging. Existing data uses baseline timestamps. Local notes save on input; uploads debounce for two seconds.
+- Routine commits never force-push. A separate private-repo monthly maintenance workflow publishes a lock, then replaces history with one current snapshot. This is the only force-update exception. GitHub may retain objects/backups: there is no guaranteed 30-day physical-erasure claim, and keys can still exist on another device.
+- Missing accounts are never recreated automatically. An ambiguous initial creation is recovered with GET; if still absent, disconnect and enable again. Local data is retained.
+- Background browser alarms check every 15 minutes; mobile checks run while the app/page is active. No separate keep-alive pinger.
+- Public tests in `tests/sync/` use synthetic data and cover encryption, migration, merging, durability, version conflicts, expiry, limits and GitHub persistence. `tests/browser/sync-ui.mjs` tests Android/iPhone adapters, private key storage, linking, QR, English, appearance and deletion. Private Android/iPhone regression suites passed. The private runners now resolve the current workspace.
+
+Before release: deploy Render, install/run the private-repo maintenance workflow, verify real GitHub writes, test real Android/Safari devices, build/sign Android and Firefox. The Android build currently stops because no SDK location is configured; dependencies resolved successfully. The existing Firefox update manifest must remain unchanged until the matching signed XPI exists.
+
+**Original design notes (the adjustments above take precedence):**
 
 **Scope:** only notes, exam/grade corrections and settings. Strictly opt-in: before opt-in the client never contacts the server (in Chrome/Firefox the server domain is an *optional* host permission, requested only on opt-in). A button deletes everything on the server immediately.
 
@@ -238,7 +256,7 @@ Run Android tests on their own: when run right after a Gradle build, the "server
 
 **Syncing:** download, decrypt, merge per note by timestamp, encrypt, upload with a version number. The server rejects stale versions (compare-and-swap), the client merges again. Decide: which settings sync (theme probably per device), and auto-sync after changes vs. a "Sync now" button.
 
-**Server (Severin's preferred pattern):** Render web service with a private GitHub repo as the database. Agreed adjustments:
+**Server (the user's preferred pattern):** Render web service with a private GitHub repo as the database. Agreed adjustments:
 - One file per user: `data/<syncId>.json` = `{ v, updated, blob }`, not one big SQLite file.
 - Commit ~30 s after the last change, nothing when idle, and **always on shutdown** (Render sends SIGTERM; its disk is wiped on restart). Pull the latest state on startup.
 - Normal commits, no force pushes (so a bug can't destroy the backup).
@@ -291,7 +309,9 @@ Full details per version: `CHANGELOG.md`.
 
 ## 15. Notes for working on this project
 
-- Severin prefers plain, natural wording in all texts (no "AI-sounding" phrasing, no long dashes) in the app, READMEs and release notes.
+- Use **Nicolas Wehrle** as the project author and copyright name. Use "user" for general references.
+
+- The user prefers plain, natural wording in all texts (no "AI-sounding" phrasing, no long dashes) in the app, READMEs and release notes.
 - App texts are German first; English comes from `i18n.js`. New German strings need an English entry.
 - After changing `chrome addon/`, rebuild all four platforms and run the Android + iPhone tests.
 - Deliver changes into `C:\Users\sever\Documents\Wiss-Stundenplan` and verify with checksums.

@@ -2,6 +2,18 @@
 
 All versions of WISS Stundenplan. Newest first.
 
+## 1.11.0 (unreleased pilot)
+
+- Optional end-to-end encrypted sync for notes, exam corrections, the ZP rule, target grade, rounding and apprenticeship. Appearance, notifications and school data stay on each device.
+- Link devices with a recovery code or locally generated QR code. iPhone keys use Userscripts private storage.
+- Automatic sync after edits, manual sync, per-item merging, deletion markers and local recovery of replaced notes.
+- Public Render server source with private GitHub storage, durable versioned writes, account expiry and a monthly history-compaction template.
+- German and English settings, separate school-refresh and device-sync status, disconnect and durable server deletion.
+- Local note saves no longer wait for a typing debounce. Incoming sync updates appear without replacing an active note editor.
+- Synthetic encryption/server/browser tests. Existing personal test fixtures remain private and ignored.
+
+Deployment and real-device pilot checks are still required. No signed Firefox 1.11.0 update or Android APK is included in this source change.
+
 ## 1.10.1
 
 **Widget**

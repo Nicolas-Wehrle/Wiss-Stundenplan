@@ -108,6 +108,7 @@ function renderSettings({ acc, ab, zp, user }) {
   ].join('');
 
   const sync = [
+    `<div class="set-h">${tr('Schuldaten aktualisieren')}</div>`,
     row(tr('Im Hintergrund'), tr('Lädt regelmässig neue Daten'), seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
     row(tr('Jetzt'), S.lastSync ? tr('Zuletzt: {T}', { T: ago(S.lastSync) }) : '', `<button class="btn ghost" data-act="sync-now">${tr('Aktualisieren')}</button>`),
     S.syncLog && S.syncLog.lines && S.syncLog.lines.length ? `<details class="diag"><summary><b>${tr('Diagnose')}</b> <small class="muted">${tr('letzte Aktualisierung, {T}', { T: esc(ago(S.syncLog.at)) })}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>` : ''
@@ -115,7 +116,7 @@ function renderSettings({ acc, ab, zp, user }) {
 
   const data = [
     row(tr('Notizen'), tr('{N} gespeichert', { N: Object.keys(S.notes || {}).length }), `<button class="btn ghost" data-act="export-notes">${IS_APP_PAGE ? tr('Kopieren') : tr('Exportieren')}</button>`),
-    row(tr('Lokale Daten'), tr('Löscht Stundenplan, Noten, Notizen und Einstellungen auf diesem Gerät.'),
+    row(tr('Lokale Daten'), tr('Löscht Stundenplan, Noten, Notizen und Einstellungen auf diesem Gerät. Synchronisierte Daten bleiben auf dem Server.'),
       `<button class="btn ${setupState.resetArm ? '' : 'ghost'} danger" data-act="${setupState.resetArm ? 'reset-confirm' : 'reset'}">${setupState.resetArm ? tr('Wirklich löschen?') : tr('Alles löschen')}</button>`)
   ].join('');
 
@@ -137,7 +138,7 @@ function renderSettings({ acc, ab, zp, user }) {
       ${sec('notify', 'Benachrichtigungen', notifyBox)}
       ${sec('grades', 'Noten', grades)}
       ${sec('job', 'Lehrberuf', ab)}
-      ${sec('sync', 'Synchronisation', sync)}
+      ${sec('sync', 'Synchronisation', sync + `<div class="set-h">${tr('Geräte-Synchronisation')}</div>` + (typeof renderDeviceSync === 'function' ? renderDeviceSync() : ''))}
       ${sec('data', 'Daten', data)}
       ${sec('about', 'Über', about)}
     </div></div>`;
