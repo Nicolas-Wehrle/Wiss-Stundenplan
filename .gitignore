@@ -20,3 +20,6 @@ Thumbs.db
 .idea/
 .vscode/
 release/
+
+# local tests with real personal data, never publish
+/tests-private/
