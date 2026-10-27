@@ -30,7 +30,17 @@ Get the latest version from the **[Releases](../../releases/latest)** page. Unde
 **Firefox users:** take the `.xpi`, not `WISS-Stundenplan-Firefox.zip`. The `.xpi` is the version signed by Mozilla. Firefox refuses to install the unsigned `.zip`; that file is only there so it can be uploaded to Mozilla for signing.
 
 ## Privacy
-Everything is loaded with your own login and stored only on your device. There is no server and nothing is sent anywhere else.
+School data is loaded with your own login and stays on your device. Optional end-to-end encrypted sync can transfer notes, exam corrections and selected settings between your devices. The sync server is never contacted before you enable it. It receives encrypted packages and a random ID, never the encryption key or your school login.
+
+Keep your recovery code safe: losing it and every linked device means the synced data cannot be recovered. Deletion removes the active server file after durable confirmation; encrypted copies can remain in GitHub backups. See [sync-server/README.md](sync-server/README.md) for the full setup and retention details.
+
+Version 1.11.0 is an unreleased sync pilot. Deploy the server and complete the real-device checks before publishing a release. Existing public download links and Firefox update metadata remain on the last signed release.
+
+## Sync server
+The source in `sync-server/` runs on Render and stores encrypted packages in a separate private GitHub repository. [Exact Render settings and deployment steps](sync-server/README.md).
+
+## Sync tests
+Run `node --test tests/sync/*.test.mjs` with Node 22 or later. All public tests use synthetic data. The optional browser test, `tests/browser/sync-ui.mjs`, requires Playwright and rebuilt Android/iPhone web assets. Set `PLAYWRIGHT_MODULE` to its installed package directory if it is not on the normal module path. Private regression fixtures live in the ignored `tests-private/` folder.
 
 ## Project layout
 - `chrome addon/`: the main code. All other versions are built from it.

@@ -1,0 +1,22 @@
+# Install as .github/workflows/monthly-compaction.yml in the PRIVATE data repository.
+name: Compact encrypted sync history
+on:
+  schedule:
+    - cron: '17 3 1 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync-history-maintenance
+  cancel-in-progress: false
+jobs:
+  compact:
+    if: github.repository == 'Nicolas-Wehrle/Wiss-Stundenplan-Data'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - run: node maintenance/compact.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SYNC_DATA_BRANCH: main

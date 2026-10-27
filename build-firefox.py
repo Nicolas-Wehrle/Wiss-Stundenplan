@@ -13,7 +13,7 @@ src = Path(sys.argv[1] if len(sys.argv) > 1 else 'chrome addon')
 dst = Path(sys.argv[2] if len(sys.argv) > 2 else 'firefox addon')
 dst.mkdir(parents=True, exist_ok=True)
 
-FILES = ['background.js', 'content.js', 'popup.html', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js']
+FILES = ['background.js', 'content.js', 'popup.html', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js']
 
 def to_browser_ns(js: str) -> str:
     # Firefox: the promise-based API lives in `browser.*`
@@ -46,14 +46,15 @@ for name in FILES:
 
 shutil.copytree(src / 'icons', dst / 'icons', dirs_exist_ok=True)
 shutil.copytree(src / 'fonts', dst / 'fonts', dirs_exist_ok=True)
+shutil.copytree(src / 'vendor', dst / 'vendor', dirs_exist_ok=True)
 
 m = json.loads((src / 'manifest.json').read_text(encoding='utf-8'))
 m.pop('key', None)                                   # Chrome-only
-m['background'] = {'scripts': ['background.js']}     # Firefox MV3 uses an event page, not a service worker
+m['background'] = {'scripts': ['sync-core.js', 'sync-engine.js', 'sync-background.js', 'background.js']}
 m['browser_specific_settings'] = {'gecko': {
     'id': 'wiss-stundenplan@wiss-tools',
     'strict_min_version': '140.0',                  # 140+ understands data_collection_permissions (required by AMO)
-    'data_collection_permissions': {'required': ['none']},
+    'data_collection_permissions': {'required': ['none'], 'optional': ['personalCommunications']},
     # self-hosted updates: Firefox checks this file in the GitHub repo (see release.py)
     'update_url': 'https://raw.githubusercontent.com/Nicolas-Wehrle/Wiss-Stundenplan/main/updates.json'
 }, 'gecko_android': {

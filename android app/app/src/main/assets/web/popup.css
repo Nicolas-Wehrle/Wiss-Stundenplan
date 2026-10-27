@@ -1280,3 +1280,14 @@ body.mobile .tabs button .count { position: absolute; top: 1px; right: 0; min-wi
 [data-style=terminal][data-mode=dark] body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 200;
   background: repeating-linear-gradient(0deg, rgba(0,0,0,.22) 0 1px, transparent 1px 3px); }
 @media (prefers-reduced-motion: reduce) { [data-style=terminal] h1::after { animation: none; } }
+/* Optional encrypted device sync */
+.sync-label { display: flex; flex-direction: column; gap: 6px; margin: 12px 0; font-weight: 600; }
+.sync-label input, .sync-label textarea, .sync-recovery textarea { width: 100%; box-sizing: border-box; padding: 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); font: inherit; }
+.sync-recovery textarea { margin: 12px 0; font-family: monospace; font-size: 12px; overflow-wrap: anywhere; }
+.sync-recovery, .sync-conflict { margin: 14px 0; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+.sync-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.sync-actions .btn { white-space: normal; max-width: 100%; text-align: left; }
+.sync-error { color: var(--accent); overflow-wrap: anywhere; }
+.sync-conflict pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 180px; overflow: auto; }
+#syncQR { width: min(100%, 280px); padding: 8px; background: white; margin: 8px auto; }
+#syncQR svg { display: block; width: 100%; height: auto; }

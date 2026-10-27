@@ -4,6 +4,8 @@
 // If the session has expired it re-logs in silently via Microsoft SSO in a
 // minimized window, fetches, and closes the window again.
 
+if (typeof importScripts === 'function') importScripts('sync-core.js', 'sync-engine.js', 'sync-background.js');
+
 const BASE = 'https://wiss.tocco.ch';
 const EXTRANET = BASE + '/extranet/';
 const EXTRANET_LOGIN = EXTRANET + '#wiss-login';   // content.js presses "WISS Office 365" on this page
@@ -565,7 +567,9 @@ async function mbkLoad(id, extraNums = []) {
   for (let i = 0; i < jobs.length; i += 8) await Promise.all(jobs.slice(i, i + 8).map((j) => j().catch(() => {})));
   const cat = await mbkCatalog().catch(() => null);
   const name = cat ? (cat.list.find((x) => x.id === id) || {}).name : '';
-  await chrome.storage.local.set({ modules: out, abschluss: { id, name, ts: Date.now() } });
+  // Selection is a user edit owned by sync. Slow cache loads must not restore an old choice.
+  const { abschluss: selected } = await chrome.storage.local.get('abschluss');
+  if (selected && selected.id === id) await chrome.storage.local.set({ modules: out });
   return { count: Object.keys(out).length, name };
 }
 

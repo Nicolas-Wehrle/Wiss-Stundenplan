@@ -15,10 +15,11 @@ web.mkdir(parents=True, exist_ok=True)
 
 version = json.loads((src / 'manifest.json').read_text(encoding='utf-8'))['version']
 
-for name in ['popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js', 'content.js']:
+for name in ['popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js', 'content.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js']:
     shutil.copy2(src / name, web / name)
 
 shutil.copytree(src / 'fonts', web / 'fonts', dirs_exist_ok=True)
+shutil.copytree(src / 'vendor', web / 'vendor', dirs_exist_ok=True)
 shutil.copy2(src / 'icons/128.png', web / 'icon128.png')
 
 # background.js shares the page with popup.js here → own scope to avoid name clashes
@@ -30,7 +31,8 @@ shim = (app / 'web-src/app-shim.js').read_text(encoding='utf-8').replace('__APP_
 
 html = (src / 'popup.html').read_text(encoding='utf-8')
 html = html.replace('<script src="modules.js"></script>',
-                    '<script src="app-shim.js"></script>\n  <script src="background.js"></script>\n  <script src="modules.js"></script>')
+                    '<script src="app-shim.js"></script>\n  <script src="sync-core.js"></script>\n  <script src="sync-engine.js"></script>\n  <script src="sync-background.js"></script>\n  <script src="background.js"></script>\n  <script src="modules.js"></script>')
+html = html.replace('  <script src="sync-core.js"></script>\n  <script src="vendor/qrcode.js"></script>', '  <script src="vendor/qrcode.js"></script>')
 assert 'app-shim.js' in html
 (web / 'popup.html').write_text(html, encoding='utf-8')
 

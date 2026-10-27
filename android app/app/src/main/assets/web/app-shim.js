@@ -4,7 +4,7 @@
 (() => {
   'use strict';
   const H = window.AndroidHost, ST = window.AndroidStore;
-  const VERSION = '1.10.1';
+  const VERSION = '1.11.0';
   const L = { msg: [], changed: [], installed: [], startup: [], alarm: [] };
 
   // ---------- messaging (popup ⇄ background run in the same page here) ----------
@@ -110,10 +110,12 @@
 
   const timers = {};
   const alarms = {
-    create: (name, { periodInMinutes }) => {
+    create: (name, { periodInMinutes, delayInMinutes }) => {
       clearInterval(timers[name]);
-      timers[name] = setInterval(() => L.alarm.forEach((fn) => fn({ name })), periodInMinutes * 60000);
+      const fire = () => L.alarm.forEach((fn) => fn({ name }));
+      timers[name] = periodInMinutes ? setInterval(fire, periodInMinutes * 60000) : setTimeout(fire, (delayInMinutes || 0.5) * 60000);
     },
+    clear: async (name) => { clearInterval(timers[name]); delete timers[name]; return true; },
     onAlarm: { addListener: (fn) => L.alarm.push(fn) }
   };
 

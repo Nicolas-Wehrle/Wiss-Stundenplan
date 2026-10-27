@@ -121,9 +121,10 @@ const scripting = {
 
 const timers = {};
 const alarms = {
-  create: (name, { periodInMinutes }) => {
+  create: (name, { periodInMinutes, delayInMinutes }) => {
     clearInterval(timers[name]);
-    if (periodInMinutes) timers[name] = setInterval(() => L.alarm.forEach((fn) => fn({ name })), periodInMinutes * 60000);
+    const fire = () => L.alarm.forEach((fn) => fn({ name }));
+    timers[name] = periodInMinutes ? setInterval(fire, periodInMinutes * 60000) : setTimeout(fire, (delayInMinutes || 0.5) * 60000);
   },
   clear: async (name) => { clearInterval(timers[name]); delete timers[name]; return true; },
   onAlarm: { addListener: (fn) => L.alarm.push(fn) }
@@ -144,6 +145,18 @@ const chrome = {
 };
 window.chrome = chrome;
 window.__wissIOS = true;
+
+// The master key belongs to Userscripts private storage, never the school's localStorage.
+globalThis.__wissSyncVault = {
+  get: async () => {
+    if (typeof GM === 'undefined' || !GM.getValue) return null;
+    return GM.getValue('wiss:sync-key', null);
+  },
+  set: async (value) => {
+    if (typeof GM === 'undefined' || !GM.setValue || !GM.deleteValue) { if (value == null) return; throw new Error('secure-storage-unavailable'); }
+    return value == null ? GM.deleteValue('wiss:sync-key') : GM.setValue('wiss:sync-key', value);
+  }
+};
 
 // ---------- cross-site requests (module catalog) via the userscript manager ----------
 const pageFetch = window.fetch.bind(window);

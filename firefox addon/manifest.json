@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WISS Stundenplan",
   "short_name": "Stundenplan",
-  "version": "1.10.1",
+  "version": "1.11.0",
   "description": "Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.",
   "permissions": [
     "storage",
@@ -15,8 +15,14 @@
     "https://www.modulbaukasten.ch/*",
     "https://ictbb.crm17.dynamics.com/*"
   ],
+  "optional_host_permissions": [
+    "https://*.onrender.com/*"
+  ],
   "background": {
     "scripts": [
+      "sync-core.js",
+      "sync-engine.js",
+      "sync-background.js",
       "background.js"
     ]
   },
@@ -54,6 +60,9 @@
       "data_collection_permissions": {
         "required": [
           "none"
+        ],
+        "optional": [
+          "personalCommunications"
         ]
       },
       "update_url": "https://raw.githubusercontent.com/Nicolas-Wehrle/Wiss-Stundenplan/main/updates.json"
