@@ -92,5 +92,11 @@ All account endpoints require `Authorization: Bearer <derivedAuthSecret>`. Crede
 | GET | `/v1/accounts/<id>` | `{v, updated, blob}`; 404 if deleted/expired |
 | PUT | `/v1/accounts/<id>` | `{v, blob}`; 409 if the expected version is stale |
 | DELETE | `/v1/accounts/<id>` | 204 after durable removal |
+| POST | `/v1/accounts/<id>/pairing` | `{pair, blob}` leaves a sealed linking package for 10 minutes (authenticated, max 3 per account) |
+| GET | `/v1/pairing/<pair>` | `{blob}` once, then deleted; 404 if expired or already picked up |
+
+**Linking with a short code.** "Gerät hinzufügen" makes an 8-character code. PBKDF2-SHA-256 (310,000 rounds, salt `wiss-pair-v1`) turns it into the pair ID and an AES-256-GCM key. The package holds the server address and the master key, sealed with that key. It lives only in the server's memory, is never written to GitHub, and disappears after one pickup or 10 minutes.
+
+**Abuse protection.** The server keeps an in-memory list of known IDs and their hashed auth values, so unknown IDs and wrong tokens are rejected without a GitHub call. GitHub calls are capped at 4,000 per hour (fails closed with 503). New accounts: 5 per IP and 20 in total per minute. Responses carry HSTS and `Referrer-Policy: no-referrer`.
 
 Client format 1 uses HKDF-SHA-256, salt `wiss-sync-v1`, separate labels `id`, `auth`, `encryption`, AES-256-GCM, 12-byte random IVs and authenticated data `wiss-sync:1:<id>`. Recovery codes include the endpoint, random 32-byte master key and a checksum. QR generation is local. Per-record timestamps and device IDs determine merges; deletion markers are retained and losing non-empty notes have up to 50 local recoverable copies. There is no collaborative text editor or per-device key revocation: disconnect a device locally; migrate to a new account if a recovery code is exposed.

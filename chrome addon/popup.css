@@ -1277,16 +1277,13 @@ h1, .avg .v, .nowcard .title, .xcount b, .gh-main .v, .rh-top .v, .ring b, .wday
 :root[data-style=standard], :root:not([data-style]) { --display: "Bricolage Grotesque", "Geist", "Segoe UI", system-ui, sans-serif; }
 
 /* logo: the same mark in every style */
-.logo { background: linear-gradient(165deg, #ff6478, #d81f3c) !important; border: 0 !important; border-radius: 9px !important; box-shadow: inset 0 1px 0 rgba(255,255,255,.3), 0 3px 8px -3px rgba(216,31,60,.6); padding: 0; overflow: hidden; }
-.logo svg { width: 19px; height: 19px; display: block; }
+.logo { background: none !important; border: 0 !important; border-radius: 9px !important; box-shadow: 0 3px 8px -4px rgba(0,0,0,.45); padding: 0; overflow: hidden; }
+.logo svg { width: 100%; height: 100%; display: block; }
 
 /* small icon buttons */
 .icon.xs { width: 26px; height: 26px; border-radius: 8px; flex: none; }
 .icon.xs svg { width: 15px; height: 15px; }
 .ico { width: 18px; height: 18px; }
-.dayhead .dshare { margin-left: auto; align-self: center; opacity: .55; }
-.dayhead .dshare:hover { opacity: 1; }
-.shbtns { display: flex; gap: 2px; flex: none; }
 
 /* toast */
 #toast { position: fixed; left: 50%; bottom: 22px; transform: translate(-50%, 16px); opacity: 0; pointer-events: none; z-index: 300;
@@ -1405,8 +1402,8 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
   background: var(--bg); color: var(--ink); font-family: var(--font); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent); }
 .sprev i { display: block; }
 .pv-top { display: flex; align-items: center; gap: 5px; height: 13px; flex: none; }
-.pv-logo { width: 12px; height: 12px; border-radius: 3.5px; background: linear-gradient(165deg, #ff6478, #d81f3c); position: relative; }
-.pv-logo::after { content: ''; position: absolute; left: 5px; top: 5px; width: 2.5px; height: 2.5px; border-radius: .8px; background: #fff; box-shadow: 2.6px -2.6px 0 #ffc857; }
+.pv-logo { width: 12px; height: 12px; position: relative; }
+.pv-logo svg { width: 12px; height: 12px; display: block; }
 .pv-h { height: 5px; width: 44%; border-radius: 3px; background: var(--ink); }
 .pv-card { position: relative; display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 5px; row-gap: 3px; align-items: center; padding: 4px 6px 4px 7px; border-radius: 6px; background: var(--surface); box-shadow: var(--shadow); flex: none; overflow: hidden; }
 .pv-card::before { content: ''; position: absolute; left: 0; top: 3px; bottom: 3px; width: 2.5px; border-radius: 2px; background: var(--accent); }
@@ -1438,7 +1435,7 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
 .sprev[data-s=paper] .pv-card { box-shadow: none; border: 1px solid var(--line); }
 .sprev[data-s=terminal] .pv-card { border-radius: 0; box-shadow: none; border: 1px dashed var(--accent); background: transparent; }
 .sprev[data-s=terminal] .pv-card em { color: var(--accent); }
-.sprev[data-s=terminal] .pv-tabs, .sprev[data-s=terminal] .pv-logo { border-radius: 0; }
+.sprev[data-s=terminal] .pv-tabs { border-radius: 0; }
 .stile.on .sprev { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent); }
 .stiles .stile { flex-basis: 124px; }
 
@@ -1639,3 +1636,23 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
 #set-sync .sync-more:first-of-type { margin-top: 16px; }
 #set-sync .sync-actions { margin: 0 0 14px; }
 #set-sync .sync-recovery .sync-actions { margin: 6px 0 0; }
+
+/* privacy page */
+.privacy .pcard { padding: 16px 14px 4px; margin-top: 12px; }
+.privacy .sync-facts { gap: 15px; }
+.privacy .pnote { font-size: 11.5px; text-align: center; margin: 12px 0 0; }
+.privacy .row .btn.wide { width: 100%; }
+
+/* small popup: the tab row must always fit (GitHub has icons, Terminal has numbers) */
+body:not(.full):not(.mobile) .tabs { min-width: 0; }
+[data-style=github] body:not(.full):not(.mobile) .tabs { padding: 0 6px; gap: 0; }
+[data-style=github] body:not(.full):not(.mobile) .tabs button { padding-left: 7px; padding-right: 7px; gap: 4px; }
+[data-style=github] body:not(.full):not(.mobile) .tabs .ti svg { width: 14px; height: 14px; }
+[data-style=terminal] body:not(.full):not(.mobile) .tabs { padding: 0 6px; gap: 0; }
+[data-style=terminal] body:not(.full):not(.mobile) .tabs button { padding-left: 5px; padding-right: 5px; letter-spacing: 0; }
+body:not(.full):not(.mobile) .tabs { overflow-x: auto; scrollbar-width: none; }
+body:not(.full):not(.mobile) .tabs::-webkit-scrollbar { display: none; }
+body:not(.full):not(.mobile) .tabs button { flex: none; white-space: nowrap; }
+[data-style=github] body:not(.full):not(.mobile) .tabs .ti { display: none !important; }
+:is([data-style=nothing], [data-style=neon]) body:not(.full):not(.mobile) .tabs { padding: 0 4px; gap: 0; }
+:is([data-style=nothing], [data-style=neon]) body:not(.full):not(.mobile) .tabs button { padding-left: 6px; padding-right: 6px; letter-spacing: .02em; }

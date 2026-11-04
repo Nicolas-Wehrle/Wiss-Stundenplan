@@ -2,7 +2,7 @@
 
 Everything about this project in one place: what it is, how it's built, how releases work, what's tricky, and what's planned next. Written so a new chat (or a new person) can pick it up without the old conversation.
 
-Current source version: **1.11.0**, unreleased encrypted-sync pilot. The Firefox update manifest remains on signed 1.10.1. Server deployment and real-device pilot checks are required before release.
+Current source version: **1.12.0** (new look, tab overviews, privacy page, optional encrypted device sync). Last published release before it: 1.10.1. 1.11.0 was never released; its sync work ships in 1.12.0.
 
 ---
 
@@ -223,7 +223,7 @@ Run Android tests on their own: when run right after a Gradle build, the "server
 
 ## 13. Future plans
 
-### End-to-end encrypted sync: implemented in 1.11.0, deployment pending
+### End-to-end encrypted sync: shipped in 1.12.0
 
 Implementation is in `chrome addon/sync-core.js`, `sync-engine.js`, `sync-background.js` and `sync-ui.js`, shared by all platforms. `sync-server/README.md` has the exact Render setup, protocol and pilot checklist. Service name: `wiss-stundenplan-sync`; source repo: `Nicolas-Wehrle/Wiss-Stundenplan`; private data repo: `Nicolas-Wehrle/Wiss-Stundenplan-Data`, branch `main`.
 
@@ -239,7 +239,13 @@ The original design discussion below is retained for context, with these impleme
 - Background browser alarms check every 15 minutes; mobile checks run while the app/page is active. No separate keep-alive pinger.
 - Public tests in `tests/sync/` use synthetic data and cover encryption, migration, merging, durability, version conflicts, expiry, limits and GitHub persistence. `tests/browser/sync-ui.mjs` tests Android/iPhone adapters, private key storage, linking, QR, English, appearance and deletion. Private Android/iPhone regression suites passed. The private runners now resolve the current workspace.
 
-Before release: deploy Render, install/run the private-repo maintenance workflow, verify real GitHub writes, test real Android/Safari devices, build/sign Android and Firefox. The Android build currently stops because no SDK location is configured; dependencies resolved successfully. The existing Firefox update manifest must remain unchanged until the matching signed XPI exists.
+The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys from `main`. 1.12.0 needs the new server (pairing endpoints, hardening), so push `main` before handing out the release.
+
+**Added in 1.12.0:**
+- Short-code pairing: "Gerät hinzufügen" shows an 8-character Crockford code (`XXXX-XXXX`, 40 bits). PBKDF2-SHA256 (310,000 rounds, salt `wiss-pair-v1`) turns it into a pair ID and an AES key. The server keeps the sealed package in memory only: 10 minutes, one pickup, at most 3 per account and 500 in total. Never written to GitHub.
+- Server hardening: an in-memory index of known IDs and auth hashes rejects unknown IDs and wrong tokens without any GitHub call (re-listed at most once a minute); a budget of 4,000 GitHub calls per hour fails closed; account creation is limited to 5 per IP and 20 in total per minute; HSTS and `Referrer-Policy: no-referrer`.
+- Chrome closes the popup while it asks for the sync permission. The popup saves what was pressed in `chrome.storage.session` (`syncIntent`), `permissions.onAdded` in the background finishes it, and the reopened popup shows the result (`syncDone`).
+- Tests: `tests/sync/security.test.mjs`, `tests/sync/pairing.test.mjs` (31 sync tests in total).
 
 **Original design notes (the adjustments above take precedence):**
 
@@ -292,6 +298,7 @@ Before release: deploy Render, install/run the private-repo maintenance workflow
 
 ## 14. Version history (short)
 
+- **1.12.0** New logo and brand (Bricolage Grotesque + Geist, red/ink/gold), Apple glass look, overview card at the top of every tab, absence budget, free rooms first, hideable next exam, much less text, privacy page on first start, encrypted device sync with short-code pairing, hardened sync server.
 - **1.10.1** Widget adapts to its height; fixed green Terminal widget fill.
 - **1.10.0** Every style has its own app layout and widget layout; tab icons.
 - **1.9.9** Sign-in runs behind the app; only shown when Microsoft needs input.
@@ -316,3 +323,16 @@ Full details per version: `CHANGELOG.md`.
 - After changing `chrome addon/`, rebuild all four platforms and run the Android + iPhone tests.
 - Deliver changes into `C:\Users\sever\Documents\Wiss-Stundenplan` and verify with checksums.
 - Keep the signing key out of everything: commits, zips, chats.
+
+
+---
+
+## 15. Design notes (1.12.0)
+
+- **Brand:** each style has its own logo colours (`LOGOS` in `popup.js`, `logoSVG()`, painted into every `.logo`; `TOOLBAR_LOGOS` in `background.js` draws the toolbar icon with OffscreenCanvas when the style changes). The Android launcher icon and the static PNGs stay Standard. Standard logo = red tile (#ff6478 → #d81f3c) with a 3×3 grid; the centre square is white ("today"), the top-right one gold (#ffc857). Files: `chrome addon/icons/logo.svg`, `mark.svg` (grid only, used inline in the header and settings), PNGs 16/32/48/128 and the Android mipmaps.
+- **Fonts:** Bricolage Grotesque (titles, big numbers) and Geist (text), both SIL OFL, in `chrome addon/fonts/` with their licences in `LICENSE-fonts.txt`. The iPhone build inlines them.
+- **Standard palette:** light bg #f5f2ed, ink #16141d, accent #e8344e, gold #ffc857; dark bg #0f0e13, accent #ff4d63. The top card of each tab has the class `hero`: light with a tint of the module colour in light mode, ink in dark mode. There are no dark bars in light mode on purpose.
+- **Style previews:** each style's token block also applies to `.sprev[data-s=<style>]`, and the dark block to `[data-mode=dark] .sprev[...]`, so the previews follow the current mode.
+- **Apple glass:** translucent cards, a wallpaper gradient and a floating tab bar (`position: absolute`, content scrolls under it). `backdrop-filter` only on the tab bar, sheet and hero cards, for speed.
+- **Less text:** the user wants short, clear screens. Each tab has one big thing on top, the rest quieter or folded away. Keep new texts short and in plain German, with English in `i18n.js`.
+- **Removed on purpose:** the share buttons (felt useless) and tapping the week card to open the module.

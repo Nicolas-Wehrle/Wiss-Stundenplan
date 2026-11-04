@@ -259,33 +259,41 @@ const vacationOf = (k) => (D ? D.vacations.find((v) => k >= v.start && k <= keyA
 // =====================================================================
 // Small renderers
 // =====================================================================
-// ---- sharing: the phone's share menu where it exists, otherwise copy to the clipboard ----
-function shareText(text, title) {
-  if (globalThis.__wissApp && globalThis.__wissApp.share) { globalThis.__wissApp.share(text, title || ''); return; }
-  if (navigator.share) { navigator.share({ title, text }).catch(() => {}); return; }
-  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast(tr('Kopiert, du kannst es jetzt einfügen'))).catch(() => toast(tr('Teilen geht hier leider nicht')));
+// One logo per style: the same 3×3 grid, in the colours of the style
+const LOGOS = {
+  standard: { bg: ['#ff6478', '#d81f3c'], c: '#ffffff', o: 0.3, t: '#ffffff', g: '#ffc857', r: 4.5, R: 27 },
+  apple: { bg: ['#5ab0ff', '#0a6cff'], c: '#ffffff', o: 0.32, t: '#ffffff', g: '#ffd60a', r: 4.5, R: 27 },
+  samsung: { bg: ['#2c2c31', '#0d0d0f'], c: '#6e9cff', o: 0.35, t: '#6e9cff', g: '#ffffff', r: 7.5, R: 34 },
+  nothing: { bg: ['#1c1c1c', '#000000'], c: '#ffffff', o: 0.3, t: '#e8222b', g: '#ffffff', r: 7.5, R: 27, edge: '#3a3a3a' },
+  github: { bg: ['#1b222c', '#0d1117'], cs: ['#0e4429', '#006d32', '#39d353', '#006d32', '#39d353', '#26a641', '#26a641', '#0e4429', '#006d32'], r: 3, R: 22, edge: '#30363d' },
+  pastel: { bg: ['#a78bfa', '#f490b5'], c: '#ffffff', o: 0.4, t: '#ffffff', g: '#ffe08a', r: 6, R: 32 },
+  neon: { bg: ['#22174a', '#0b0918'], c: '#ff3cac', o: 0.4, t: '#2de2e6', g: '#ff3cac', r: 4.5, R: 27, edge: '#ff3cac' },
+  paper: { bg: ['#f8f3e8', '#e9e1cf'], c: '#2b2620', o: 0.16, t: '#8e3523', g: '#c9a227', r: 3, R: 24, edge: '#cdbfa3' },
+  terminal: { bg: ['#0b140b', '#030603'], c: '#39ff6a', o: 0.22, t: '#39ff6a', g: '#b6ffc8', r: 0, R: 14, edge: '#1d4d27' }
+};
+let logoN = 0;
+function logoSVG(style) {
+  const L = LOGOS[style] || LOGOS.standard, id = 'lg' + (++logoN);
+  let cells = '';
+  for (let i = 0; i < 9; i++) {
+    const x = 23 + (i % 3) * 19, y = 23 + Math.floor(i / 3) * 19;
+    const fill = L.cs ? L.cs[i] : i === 4 ? L.t : i === 2 ? L.g : L.c;
+    const op = L.cs || i === 4 || i === 2 ? 1 : L.o;
+    cells += `<rect x="${x}" y="${y}" width="15" height="15" rx="${L.r}" fill="${fill}" fill-opacity="${op}"/>`;
+  }
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${L.bg[0]}"/><stop offset="1" stop-color="${L.bg[1]}"/></linearGradient></defs>`
+    + `<rect width="100" height="100" rx="${L.R}" fill="url(#${id})"/>${L.edge ? `<rect x="1" y="1" width="98" height="98" rx="${L.R - 1}" fill="none" stroke="${L.edge}" stroke-width="2"/>` : ''}${cells}</svg>`;
 }
+function paintLogos() { for (const el of document.querySelectorAll('.logo')) el.innerHTML = logoSVG(document.documentElement.dataset.style || 'standard'); }
+
+// ---- small status message at the bottom ----
 let toastT = 0;
 function toast(msg) {
   let el = document.getElementById('toast');
   if (!el) { el = document.createElement('div'); el.id = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
   el.textContent = msg; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2200);
 }
-const lessonLine = (l) => { const { num, name } = splitLabel(l.label); return `${hm(new Date(l.start))}–${hm(new Date(l.end))} ${num ? num + ' ' : ''}${name}${l.room ? ' · ' + l.room : ''}`; };
-function shareLesson(l) {
-  const xs = examsOf(l), t = teacherFor(l);
-  shareText(`${fmtDay(l._day, true)}\n${lessonLine(l)}${t ? '\n' + t : ''}${xs.length ? '\n' + xs.map((x) => x.label + (x.est ? ' (' + tr('geschätzt') + ')' : '')).join(', ') : ''}`, tr('Lektion'));
-}
-function shareDay(k) {
-  const ls = D.lessons.filter((l) => l._day === k);
-  shareText(`${fmtDay(k, true)}\n` + (ls.length ? ls.map(lessonLine).join('\n') : tr('Kein Unterricht')), tr('Stundenplan'));
-}
-function shareExam(x) {
-  const { num, name } = splitLabel(x.module.label);
-  shareText(`${x.label}${x.est ? ' (' + tr('geschätzt') + ')' : ''}: ${num ? num + ' ' : ''}${name}\n${fmtDay(x.day, true)}, ${hm(new Date(x.lesson.start))}${x.lesson.room ? ' · ' + x.lesson.room : ''}`, tr('Prüfung'));
-}
 const ICON = {
-  share: '<svg class="ico" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   x: '<svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
   room: '<svg class="ico" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>',
   user: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
@@ -392,7 +400,7 @@ function nowCard() {
   }
   const nextExam = P('showNextExam') ? D.examList.find((x) => new Date(x.lesson.end) > now) : null;
   const foot = nextExam ? `<div class="foot"><span>${xtag(nextExam)} <b>${esc(splitLabel(nextExam.module.label).name)}</b> · ${inDays(nextExam.day)}</span><button class="icon xs" data-act="hide-nextexam" title="${esc(tr('Nicht mehr anzeigen'))}" aria-label="${esc(tr('Nicht mehr anzeigen'))}">${ICON.x}</button></div>` : '';
-  return `<div class="card nowcard hero" style="${sv(l.label)}" data-lid="${l.id}">${kicker}
+  return `<div class="card nowcard hero" style="${sv(l.label)}">${kicker}
     <div class="hrow"><div class="hmain"><div class="title">${esc(name)} ${examsOf(l).map((x) => xtag(x)).join(' ')}</div>
     <div class="meta">${hm(s)}–${hm(e)}${t ? ' · ' + esc(t) : ''}</div></div>${l.room ? roomBig(l.room) : ''}</div>${strip || bar}${foot}</div>`;
 }
@@ -465,7 +473,7 @@ function renderWeekList(days) {
     const isToday = d.key === tk;
     const vac = vacationOf(d.key);
     if (vac && !d.lessons.length && !d.hol) return '';
-    const head = `<div class="dayhead">${WD[dow(d.key)]} <span style="font-weight:500">${fmtShort(d.key)}</span>${isToday ? '<span class="pill">HEUTE</span>' : ''}${d.hol ? `<span class="hpill">${esc(d.hol)}</span>` : ''}${d.lessons.length ? `<button class="icon xs dshare" data-act="share-day" data-k="${d.key}" title="${esc(tr('Tag teilen'))}" aria-label="${esc(tr('Tag teilen'))}">${ICON.share}</button>` : ''}</div>`;
+    const head = `<div class="dayhead">${WD[dow(d.key)]} <span style="font-weight:500">${fmtShort(d.key)}</span>${isToday ? '<span class="pill">HEUTE</span>' : ''}${d.hol ? `<span class="hpill">${esc(d.hol)}</span>` : ''}</div>`;
     const body = d.lessons.length ? d.lessons.map(lessonCard).join('') : `<div class="free">${d.hol ? 'Feiertag' : d.doneCount ? 'Für heute fertig' : 'Kein Unterricht'}</div>`;
     return `<section class="day ${isToday ? 'today' : ''}" id="day-${d.key}">${head}${body}</section>`;
   }).join('');
@@ -563,8 +571,7 @@ function renderExams() {
     h += `<div class="card xhero hero" data-lid="${nx.lesson.id}" style="${sv(nx.module.label)}">
       <div class="xcount"><b>${n}</b><small>${n === 1 ? tr('Tag') : tr('Tage')}</small></div>
       <div class="xhm"><div class="kicker">${tr('Nächste Prüfung')} ${xtag(nx)}</div><div class="title">${esc(name)}</div>
-        <div class="meta">${fmtDay(nx.day)} · ${hm(new Date(nx.lesson.start))}${nx.lesson.room ? ' · ' + esc(nx.lesson.room) : ''}</div></div>
-      <button class="icon xs" data-act="share-exam" data-lid="${nx.lesson.id}" data-lab="${esc(nx.label)}" title="${esc(tr('Teilen'))}" aria-label="${esc(tr('Teilen'))}">${ICON.share}</button></div>`;
+        <div class="meta">${fmtDay(nx.day)} · ${hm(new Date(nx.lesson.start))}${nx.lesson.room ? ' · ' + esc(nx.lesson.room) : ''}</div></div></div>`;
   }
   const in7 = up.filter((x) => daysBetween(tk, x.day) <= 7).length, in30 = up.filter((x) => daysBetween(tk, x.day) <= 30).length, est = up.filter((x) => x.est).length;
   h += `<div class="avg"><div class="card"><div class="k">${tr('7 Tage')}</div><div class="v ${in7 ? 'gval warn' : ''}">${in7}</div></div>
@@ -1213,7 +1220,7 @@ function renderRooms() {
   if (roomState.sel) {
     const r = (S.rooms || []).find((x) => x.label === roomState.sel);
     const st = roomStatus(roomState.sel, bookings, atMs);
-    h += `<div class="card rdetail"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:14px">${esc(roomState.sel)} <button class="icon xs" data-act="share-room" data-room="${esc(roomState.sel)}" title="${esc(tr('Teilen'))}" aria-label="${esc(tr('Teilen'))}">${ICON.share}</button></b><span class="muted">${r && r.seats ? r.seats + ' Plätze' : ''}${r && r.surface ? ' · ' + r.surface + ' m²' : ''}${r && r.floor ? ' · ' + esc(r.floor) : ''}</span></div>
+    h += `<div class="card rdetail"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:14px">${esc(roomState.sel)}</b><span class="muted">${r && r.seats ? r.seats + ' Plätze' : ''}${r && r.surface ? ' · ' + r.surface + ' m²' : ''}${r && r.floor ? ' · ' + esc(r.floor) : ''}</span></div>
       ${r && r.comment ? `<div class="muted" style="margin-top:4px;white-space:pre-line;font-size:12px">${esc(r.comment.replace(/Weitere Informationen.*$/s, '').trim())}</div>` : ''}
       ${timeline(st.bs, st.mineIds, from, to, atMs)}
       <div class="tlaxis">${[8, 10, 12, 14, 16].map((hh) => `<span style="left:${((hh - 7) / 11) * 100}%">${hh}:00</span>`).join('')}</div>
@@ -1270,7 +1277,7 @@ function openSheet(lid) {
 
   setHTML($('sheet'), `<div class="sh" style="${sv(l.label)}"><div><div class="stripe"></div>
       <h2>${esc(name)}</h2><div class="muted">${num ? 'Modul ' + esc(num) + ' · ' : ''}${esc(l.cls || '')}</div></div>
-      <div class="shbtns"><button class="icon" data-act="share-lesson" data-lid="${l.id}" aria-label="${esc(tr('Teilen'))}" title="${esc(tr('Teilen'))}">${ICON.share}</button><button class="icon" data-act="close" aria-label="Schliessen">${ICON.close}</button></div></div>
+      <button class="icon" data-act="close" aria-label="Schliessen">${ICON.close}</button></div>
     <div class="when"><b>${fmtDay(l._day, true)}, ${hm(s)}–${hm(e)}</b><span>${inDays(l._day)}</span></div>
     <div class="facts">
       <div class="fact"><span>Raum</span><b>${room}</b></div>
@@ -1446,6 +1453,23 @@ async function loadModulesFor(id) {
   render();
 }
 
+// Privacy: shown once on the first start, and later from Einstellungen → Über
+function renderPrivacy() {
+  const first = !S.setupDone;
+  const item = (icon, title, text) => `<li>${icon}<span><b>${tr(title)}</b>${tr(text)}</span></li>`;
+  return `<div class="setup privacy">
+    <div class="shero">${first && typeof seg === 'function' ? `<div class="wiz-lang">${seg('lang', [['de', 'Deutsch'], ['en', 'English']])}</div>` : ''}<h2>${tr('Deine Daten')}</h2><p>${tr('Kurz und ehrlich, was mit deinen Daten passiert.')}</p></div>
+    <div class="card pcard"><ul class="sync-facts">
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></i>', 'Bleibt auf deinem Gerät', 'Stundenplan, Noten, Absenzen, Räume und Notizen aus deinem WISS-Login werden nur hier gespeichert.')}
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></i>', 'Nur diese Seiten', 'Die App holt Daten von wiss.tocco.ch und modulbaukasten.ch und fragt GitHub nach Updates. Keine Werbung, kein Tracking.')}
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i>', 'Sync nur, wenn du willst', 'Die Geräte-Synchronisation ist aus. Schaltest du sie ein, gehen nur Notizen, Prüfungskorrekturen und ein paar Einstellungen verschlüsselt an den Sync-Server. Noten, Absenzen und dein Stundenplan nie.')}
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3"/></svg></i>', 'Dein Passwort bleibt bei dir', 'Du meldest dich selbst bei Microsoft an. Die App tippt nie ein Passwort ein und speichert keins.')}
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></i>', 'Jederzeit löschen', 'In den Einstellungen unter Daten löschst du alles auf diesem Gerät, unter Sync auch die Daten auf dem Server.')}
+    </ul></div>
+    <p class="muted pnote">${tr('Inoffizielle App, nicht von der WISS. Der Code ist offen auf GitHub.')}</p>
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn wide" data-act="privacy-ok">${tr(first ? 'Verstanden' : 'Zurück')}</button></div></div>`;
+}
+
 function renderSetup() {
   const first = !S.setupDone;
   const user = S.user && S.user.username;
@@ -1520,7 +1544,7 @@ function render() {
   const setup = hasChrome && (!S.setupDone || S.showSetup);
   $('tabs').hidden = setup;
   if (setup) setHTML($('banner'), '');
-  setHTML(v, setup ? renderSetup() : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms());
+  setHTML(v, setup ? ((!S.setupDone && !S.privacyOk) || S.showPrivacy ? renderPrivacy() : renderSetup()) : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms());
   v.scrollTop = scroll;
   // horizontal strips keep their position; the first time, the selected item is brought into view
   for (const id of ['stiles']) {
@@ -1557,13 +1581,6 @@ document.addEventListener('click', (ev) => {
   if (a) {
     const act = a.dataset.act;
     if (act === 'reveal') { const on = a.classList.toggle('shown'); a.title = on ? '' : tr('Antippen zum Anzeigen'); return; }
-    if (act === 'share-lesson') { const l = D.lessons.find((x) => x.id === a.dataset.lid); if (l) shareLesson(l); return; }
-    if (act === 'share-day') { shareDay(a.dataset.k); return; }
-    if (act === 'share-exam') { const x = D.examList.find((y) => y.lesson.id === a.dataset.lid && y.label === a.dataset.lab); if (x) shareExam(x); return; }
-    if (act === 'share-room') {
-      const st = roomStatus(a.dataset.room, (roomState.cache[roomState.date] || { bookings: [] }).bookings, Date.now());
-      shareText(`${a.dataset.room}: ${st.text}`, tr('Raum')); return;
-    }
     if (act === 'hide-nextexam') { setPref('showNextExam', false); toast(tr('Ausgeblendet. In den Einstellungen wieder einschalten.')); render(); return; }
     if (act === 'jumpday') {
       const go = () => { const el = document.getElementById('day-' + a.dataset.k); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
@@ -1586,8 +1603,10 @@ document.addEventListener('click', (ev) => {
     else if (act === 'cat-retry') { setupState.catErr = null; loadCatalog(); }
     else if (act === 'mbk-load') loadModulesFor(setupState.sel);
     else if (act === 'zp') { S.zpRule = a.dataset.val; persist({ zpRule: S.zpRule }); derive(); }
+    else if (act === 'privacy-ok') { if (S.showPrivacy) S.showPrivacy = false; else { S.privacyOk = true; persist({ privacyOk: true }); } $('view').scrollTop = 0; render(); }
+    else if (act === 'privacy-show') { S.showPrivacy = true; $('view').scrollTop = 0; render(); }
     else if (act === 'setup-done') { S.setupDone = true; S.showSetup = false; persist({ setupDone: true }); $('view').scrollTop = 0; render(); }
-    else if (act === 'setup-close') { S.showSetup = false; setupState.resetArm = false; $('view').scrollTop = 0; render(); }
+    else if (act === 'setup-close') { S.showSetup = false; S.showPrivacy = false; setupState.resetArm = false; $('view').scrollTop = 0; render(); }
     else if (act === 'reset') { setupState.resetArm = true; render(); }
     else if (act === 'reset-confirm') {
       try { localStorage.removeItem('wissLook'); } catch (e) {}
@@ -1671,11 +1690,11 @@ function initWeekOffset() {
 let loadedOnce = false;
 async function load() {
   const s = await browser.storage.local.get(['lessons', 'teachers', 'grades', 'rooms', 'notes', 'examOverrides', 'status', 'lastSync', 'error', 'uiTab', 'roomCache',
-    'user', 'setupDone', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts']);
-  const keep = { tab: S.tab, showSetup: S.showSetup };
+    'user', 'setupDone', 'privacyOk', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts']);
+  const keep = { tab: S.tab, showSetup: S.showSetup, showPrivacy: S.showPrivacy };
   S = { ...S, ...s, lessons: s.lessons || [], teachers: s.teachers || {}, grades: s.grades || [], rooms: s.rooms || [], notes: s.notes || {}, examOverrides: s.examOverrides || {}, absences: s.absences || [], attendance: s.attendance || null,
     user: s.user || null, setupDone: !!s.setupDone, abschluss: s.abschluss || null, prefs: s.prefs || {} };
-  S.tab = keep.tab; S.showSetup = keep.showSetup;
+  S.tab = keep.tab; S.showSetup = keep.showSetup; S.showPrivacy = keep.showPrivacy;
   if (typeof applyLook === 'function') applyLook();
   if (!loadedOnce) {
     loadedOnce = true;

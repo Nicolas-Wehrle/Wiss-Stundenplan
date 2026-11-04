@@ -734,6 +734,42 @@ chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === 'keepalive') refresh({ force: true, allowLogin: false });
   else if (a.name.startsWith('n:')) fireReminder(a.name);
 });
+// ---- toolbar icon in the colours of the chosen style ----
+const TOOLBAR_LOGOS = {
+  standard: { bg: ['#ff6478', '#d81f3c'], c: '#ffffff', o: 0.3, t: '#ffffff', g: '#ffc857', r: 4.5, R: 27 },
+  apple: { bg: ['#5ab0ff', '#0a6cff'], c: '#ffffff', o: 0.32, t: '#ffffff', g: '#ffd60a', r: 4.5, R: 27 },
+  samsung: { bg: ['#2c2c31', '#0d0d0f'], c: '#6e9cff', o: 0.35, t: '#6e9cff', g: '#ffffff', r: 7.5, R: 34 },
+  nothing: { bg: ['#1c1c1c', '#000000'], c: '#ffffff', o: 0.3, t: '#e8222b', g: '#ffffff', r: 7.5, R: 27, edge: '#3a3a3a' },
+  github: { bg: ['#1b222c', '#0d1117'], cs: ['#0e4429', '#006d32', '#39d353', '#006d32', '#39d353', '#26a641', '#26a641', '#0e4429', '#006d32'], r: 3, R: 22, edge: '#30363d' },
+  pastel: { bg: ['#a78bfa', '#f490b5'], c: '#ffffff', o: 0.4, t: '#ffffff', g: '#ffe08a', r: 6, R: 32 },
+  neon: { bg: ['#22174a', '#0b0918'], c: '#ff3cac', o: 0.4, t: '#2de2e6', g: '#ff3cac', r: 4.5, R: 27, edge: '#ff3cac' },
+  paper: { bg: ['#f8f3e8', '#e9e1cf'], c: '#2b2620', o: 0.16, t: '#8e3523', g: '#c9a227', r: 3, R: 24, edge: '#cdbfa3' },
+  terminal: { bg: ['#0b140b', '#030603'], c: '#39ff6a', o: 0.22, t: '#39ff6a', g: '#b6ffc8', r: 0, R: 14, edge: '#1d4d27' }
+};
+async function paintToolbarIcon() {
+  if (!chrome.action || !chrome.action.setIcon || typeof OffscreenCanvas === 'undefined') return;
+  const { prefs } = await chrome.storage.local.get('prefs');
+  const L = TOOLBAR_LOGOS[(prefs && prefs.style) || 'standard'] || TOOLBAR_LOGOS.standard;
+  const imageData = {};
+  for (const size of [16, 32, 48]) {
+    const cv = new OffscreenCanvas(size, size), g = cv.getContext('2d'), k = size / 100;
+    const grad = g.createLinearGradient(0, 0, 35 * k, 100 * k); grad.addColorStop(0, L.bg[0]); grad.addColorStop(1, L.bg[1]);
+    g.fillStyle = grad; g.beginPath(); g.roundRect(0, 0, size, size, L.R * k); g.fill();
+    if (L.edge) { g.strokeStyle = L.edge; g.lineWidth = Math.max(1, 2 * k); g.beginPath(); g.roundRect(k, k, size - 2 * k, size - 2 * k, (L.R - 1) * k); g.stroke(); }
+    for (let i = 0; i < 9; i++) {
+      const x = (23 + (i % 3) * 19) * k, y = (23 + Math.floor(i / 3) * 19) * k;
+      g.fillStyle = L.cs ? L.cs[i] : i === 4 ? L.t : i === 2 ? L.g : L.c;
+      g.globalAlpha = L.cs || i === 4 || i === 2 ? 1 : L.o;
+      g.beginPath(); g.roundRect(x, y, 15 * k, 15 * k, L.r * k); g.fill(); g.globalAlpha = 1;
+    }
+    imageData[size] = g.getImageData(0, 0, size, size);
+  }
+  try { await chrome.action.setIcon({ imageData }); } catch (e) {}
+}
+paintToolbarIcon().catch(() => {});
+chrome.storage.onChanged.addListener((ch, area) => {
+  if (area === 'local' && ch.prefs && (ch.prefs.oldValue || {}).style !== (ch.prefs.newValue || {}).style) paintToolbarIcon().catch(() => {});
+});
 // settings changed in the popup → re-plan reminders / sync interval
 chrome.storage.onChanged.addListener((ch, area) => {
   if (area !== 'local' || !(ch.prefs || ch.teachers)) return;

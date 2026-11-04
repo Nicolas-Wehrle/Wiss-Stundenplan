@@ -2,17 +2,36 @@
 
 All versions of WISS Stundenplan. Newest first.
 
-## 1.11.0 (unreleased pilot)
+## 1.12.0
 
-- Optional end-to-end encrypted sync for notes, exam corrections, the ZP rule, target grade, rounding and apprenticeship. Appearance, notifications and school data stay on each device.
-- Link devices with a recovery code or locally generated QR code. iPhone keys use Userscripts private storage.
-- Automatic sync after edits, manual sync, per-item merging, deletion markers and local recovery of replaced notes.
-- Public Render server source with private GitHub storage, durable versioned writes, account expiry and a monthly history-compaction template.
-- German and English settings, separate school-refresh and device-sync status, disconnect and durable server deletion.
-- Local note saves no longer wait for a typing debounce. Incoming sync updates appear without replacing an active note editor.
-- Synthetic encryption/server/browser tests. Existing personal test fixtures remain private and ignored.
+**New look**
+- New logo: a tile with a 3×3 grid, one "today" square and a gold one. Every style has its own version, in the app and as the add-on icon in the browser toolbar.
+- The Standard style has its own brand now: new fonts (Bricolage Grotesque for titles, Geist for text), warmer colours, softer cards and a gold "now" dot.
+- Apple style uses the new glass look: a soft colourful background, see-through cards and a floating tab bar.
+- The style previews in the settings show each style in the mode you're using, light or dark.
+- In light mode there are no more dark cards.
+- Much less text everywhere.
 
-Deployment and real-device pilot checks are still required. No signed Firefox 1.11.0 update or Android APK is included in this source change.
+**Every tab starts with an overview**
+- Week: a big card for the lesson now or next, with the room in large numbers and today's day as a strip. Below it, Monday to Friday at a glance; tap a day to jump to it.
+- The next exam in the week card can be hidden with the ×, and turned back on in the settings.
+- Exams: countdown to the next exam, numbers for the next 7 and 30 days, the rest grouped by month, past exams folded.
+- Grades: your average, how many school modules are done, finished modules as tiles, the next four running modules first.
+- Absences: what you still need to excuse comes first, then how many lessons you can still miss per module.
+- Rooms: the free rooms that stay free the longest are at the top.
+
+**Sync between your devices (new, optional)**
+- Notes, exam corrections and a few settings can be synced between your devices, end-to-end encrypted. Off until you turn it on.
+- Link a new device with an 8-character code from "Gerät hinzufügen". The code works once and only for 10 minutes.
+- Recovery code with a QR code, in case all devices are gone.
+- In Chrome you only have to press "Einschalten" once. The add-on finishes after you allow access.
+
+**Privacy**
+- On the first start the app shows in a few points what happens with your data. You can read it again under Einstellungen, Über.
+
+**Sync server**
+- Wrong or unknown requests are rejected without touching storage, so nobody can block sync for everyone.
+- Limits on how many accounts can be created, a cap on storage calls per hour, and stricter HTTPS headers.
 
 ## 1.10.1
 

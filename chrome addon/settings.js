@@ -16,6 +16,7 @@ function applyLook() {
   const r = document.documentElement;
   const style = P('style'), mode = P('theme');
   r.dataset.style = style;
+  if (typeof paintLogos === 'function') paintLogos();
   r.dataset.mode = mode === 'system' ? (systemDark() ? 'dark' : 'light') : mode;
   const acc = P('accent');
   if (acc) {
@@ -51,7 +52,6 @@ const seg = (k, opts, cur = P(k)) => `<div class="seg sm" role="radiogroup">${op
 const sw = (k, on = !!P(k)) => `<button class="sw ${on ? 'on' : ''}" role="switch" aria-checked="${on}" data-act="pref-toggle" data-k="${k}"><i></i></button>`;
 const sec = (id, title, body) => `<section class="set-sec" id="set-${id}" data-sec="${id}"><div class="set-h">${tr(title)}</div><div class="card set-card">${body}</div></section>`;
 
-const LOGO_MARK = '<svg aria-hidden="true" viewBox="18 18 64 64"><rect x="23" y="23" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="42" y="23" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="61" y="23" width="15" height="15" rx="4.5" fill="#ffc857"/><rect x="23" y="42" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="42" y="42" width="15" height="15" rx="4.5" fill="#ffffff"/><rect x="61" y="42" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="23" y="61" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="42" y="61" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="61" y="61" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/></svg>';
 
 // id, name, short description (all names are German source strings, translated with tr())
 const STYLES = [
@@ -62,7 +62,7 @@ const STYLES = [
 function stylePreview(id, name, desc) {
   const on = P('style') === id;
   return `<button class="stile ${on ? 'on' : ''}" data-act="pref" data-k="style" data-v="${id}" aria-pressed="${on}">
-    <span class="sprev" data-s="${id}" aria-hidden="true"><span class="pv-top"><i class="pv-logo"></i><i class="pv-h"></i></span>
+    <span class="sprev" data-s="${id}" aria-hidden="true"><span class="pv-top"><i class="pv-logo">${logoSVG(id)}</i><i class="pv-h"></i></span>
       <span class="pv-card"><em>10:30</em><i class="pv-t"></i><i class="pv-m"></i></span><span class="pv-card b"><em>13:15</em><i class="pv-t"></i><i class="pv-m"></i></span>
       <span class="pv-tabs"><i class="on"></i><i></i><i></i><i></i></span></span>
     <b>${name}</b></button>`;
@@ -127,8 +127,9 @@ function renderSettings({ acc, ab, zp, user }) {
   const ver = hasChrome && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '';
   const ui = S.updateInfo;
   const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr('Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
-  const about = `<div class="about"><span class="logo">${LOGO_MARK}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
+  const about = `<div class="about"><span class="logo">${logoSVG(P('style'))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
     ${row(tr('Updates'), updText, updateAvailable() ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
+    ${row(tr('Datenschutz'), '', `<button class="btn ghost" data-act="privacy-show">${tr('Lesen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}
     <p class="shint">${tr('Daten von wiss.tocco.ch und modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;
 

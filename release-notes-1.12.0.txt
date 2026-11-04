@@ -1,0 +1,24 @@
+WISS Stundenplan 1.12.0
+What's new since 1.10.1
+
+NEW LOOK
+- New logo, with its own version for every style (also the toolbar icon in the browser)
+- A proper look for the Standard style: new fonts, warmer colours, softer cards.
+- Apple style with the new glass look and a floating tab bar.
+- Style previews in the settings follow light or dark mode.
+- Much less text everywhere.
+
+OVERVIEW AT THE TOP OF EVERY TAB
+- Week: the lesson now or next with the room in big numbers, today as a strip, Monday to Friday at a glance.
+- The next exam in the week card can be hidden.
+- Exams: countdown to the next exam, grouped by month.
+- Grades: average, modules done, finished modules as tiles.
+- Absences: what to excuse first, then how many lessons you can still miss.
+- Rooms: the rooms that stay free the longest at the top.
+
+SYNC BETWEEN YOUR DEVICES (OPTIONAL)
+- Notes, exam corrections and a few settings, end-to-end encrypted. Off until you turn it on.
+- Link a device with a short code that works once for 10 minutes.
+
+PRIVACY
+- A short privacy page on the first start, also under Einstellungen, Über.

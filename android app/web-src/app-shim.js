@@ -127,7 +127,6 @@
     permission: () => H.notifPermission(),
     requestPermission: () => H.requestNotifPermission(),
     installUpdate: (url) => H.installUpdate(String(url)),
-    share: (text, title) => H.share(String(text), String(title || '')),
     openExternal: (url) => H.openExternal(String(url))
   };
 
