@@ -5435,7 +5435,7 @@ function nowCard() {
   const foot = nextExam ? `<div class="foot"><span>${xtag(nextExam)} <b>${esc(splitLabel(nextExam.module.label).name)}</b> · ${inDays(nextExam.day)}</span><button class="icon xs" data-act="hide-nextexam" title="${esc(tr('Nicht mehr anzeigen'))}" aria-label="${esc(tr('Nicht mehr anzeigen'))}">${ICON.x}</button></div>` : '';
   return `<div class="card nowcard hero" style="${sv(l.label)}" data-lid="${l.id}">${kicker}
     <div class="hrow"><div class="hmain"><div class="title">${esc(name)} ${examsOf(l).map((x) => xtag(x)).join(' ')}</div>
-    <div class="meta">${hm(s)}–${hm(e)}${t ? ' · ' + esc(t) : ''}</div></div>${l.room ? roomBig(l.room) : ''}</div>${bar}${strip}${foot}</div>`;
+    <div class="meta">${hm(s)}–${hm(e)}${t ? ' · ' + esc(t) : ''}</div></div>${l.room ? roomBig(l.room) : ''}</div>${strip || bar}${foot}</div>`;
 }
 
 // the room is what you look for most: big, with the building prefix small
