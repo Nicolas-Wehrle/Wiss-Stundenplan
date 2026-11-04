@@ -71,6 +71,12 @@
         if (!flushT) flushT = setTimeout(flush, 250);
         fireChanged(obj);
       },
+      remove: async (keys) => {
+        const s = memory(), removed = {};
+        for (const k of typeof keys === 'string' ? [keys] : keys) { delete s[k]; removed[k] = undefined; }
+        clearTimeout(flushT); flushT = 0; dirty = null;
+        ST.clear(); ST.set(JSON.stringify(s)); fireChanged(removed);
+      },
       clear: async () => {
         const s = memory(); const ch = {};
         for (const k in s) ch[k] = undefined;
@@ -133,7 +139,7 @@
   window.chrome = {
     runtime: {
       id: 'wiss-stundenplan-app',
-      sendMessage: (msg) => dispatch(msg, {}),
+      sendMessage: (msg) => dispatch(msg, { url: chrome.runtime.getURL('popup.html') }),
       onMessage: { addListener: (fn) => L.msg.push(fn) },
       onInstalled: { addListener: (fn) => L.installed.push(fn) },
       onStartup: { addListener: (fn) => L.startup.push(fn) },

@@ -3,7 +3,7 @@
 // If the session has expired it re-logs in silently via Microsoft SSO in a
 // minimized window, fetches, and closes the window again.
 
-if (typeof importScripts === 'function') importScripts('sync-core.js', 'sync-engine.js', 'sync-background.js');
+if (typeof importScripts === 'function') importScripts('demo.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js');
 
 const BASE = 'https://wiss.tocco.ch';
 const EXTRANET = BASE + '/extranet/';
@@ -211,7 +211,7 @@ function range() {
 }
 
 async function getState() {
-  return browser.storage.local.get(['lessons', 'lastSync', 'status', 'error', 'lastAttempt']);
+  return browser.storage.local.get(['lessons', 'lastSync', 'status', 'error', 'lastAttempt', 'demoMode']);
 }
 async function setStatus(status, extra = {}) {
   await browser.storage.local.set({ status, ...extra });
@@ -260,6 +260,7 @@ async function teachersNeeded() {
 function learnTeachers(tabId = null) {
   if (teacherJob) return teacherJob;
   teacherJob = (async () => {
+    if ((await browser.storage.local.get('demoMode')).demoMode) return;
     const { teachersDone: prev = 0 } = await browser.storage.local.get('teachersDone');
     let hidden = null;
     try {
@@ -397,6 +398,11 @@ function refresh(opts = {}) {
 
 async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {}) {
   const st = await getState();
+  if (st.demoMode) {
+    const data = WissDemo.data();
+    await browser.storage.local.set({ ...data, lastSync: Date.now(), status: 'ok', error: null });
+    return;
+  }
   if (!force && st.lastSync && Date.now() - st.lastSync < MIN_GAP_MS && st.status === 'ok') return;
 
   await setStatus('syncing', { lastAttempt: Date.now() });
@@ -479,6 +485,8 @@ async function save(data, me) {
 
 // Room occupancy for one day (on demand from the Räume view).
 async function roomDay(fromStr, toStr) {
+  const state = await browser.storage.local.get(['demoMode', 'lessons']);
+  if (state.demoMode) return { bookings: (state.lessons || []).filter(l => l.start < toStr && l.end > fromStr).map(l => ({ id: l.id, room: l.room, start: l.start, end: l.end, label: l.label, cls: l.cls })) };
   let me = null;
   try { me = await toccoWhoAmI(); } catch (e) {}
   if (!me) {
@@ -672,6 +680,7 @@ async function reminderPlan() {
 }
 
 async function scheduleNotifications() {
+  if ((await browser.storage.local.get('demoMode')).demoMode) return;
   const plan = await reminderPlan();
   if (IS_APP && globalThis.__wissApp) {
     const pr = await prefs();
@@ -786,6 +795,22 @@ if (browser.notifications && browser.notifications.onClicked) {
 }
 
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+  if (msg.type === 'demoStart' || msg.type === 'demoExit') {
+    if (!sender.url || !sender.url.startsWith(browser.runtime.getURL('popup.html'))) return false;
+    (async () => {
+      if (inflight) await inflight;
+      const st = await browser.storage.local.get(['user', 'lessons', 'demoMode', 'deviceSync', 'notes', 'examOverrides']);
+      if (msg.type === 'demoExit') {
+        if (st.demoMode) await browser.storage.local.remove(WissDemo.keys);
+        return { ok: true };
+      }
+      if (st.demoMode) return { ok: true };
+      if (st.user || st.lessons?.length || st.deviceSync?.enabled || Object.keys(st.notes || {}).length || Object.keys(st.examOverrides || {}).length) return { error: 'Bitte für die Demo ein separates Browserprofil verwenden.' };
+      await browser.storage.local.set({ ...WissDemo.data(), demoMode: true, user: { username: 'demo@example.invalid' }, setupDone: true, status: 'ok', error: null, lastSync: Date.now(), teachersDone: Date.now(), notes: {}, examOverrides: {} });
+      return { ok: true };
+    })().then(sendResponse, e => sendResponse({ error: String(e.message || e) }));
+    return true;
+  }
   if (msg.type === 'refresh') {
     refresh({ force: !!msg.force, resume: !!msg.resume, allowLogin: true }).then(() => sendResponse({ ok: true }));
     return true;
@@ -820,6 +845,7 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg.type === 'teachers' && msg.rows) {
     (async () => {
+      if ((await browser.storage.local.get('demoMode')).demoMode) return;
       const { teachers = {} } = await browser.storage.local.get('teachers');
       for (const r of msg.rows) {
         if (!r.teacher) continue;

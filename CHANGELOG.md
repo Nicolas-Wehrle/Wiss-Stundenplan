@@ -1,12 +1,10 @@
-## 1.12.1 – Chrome-Demokonto und Store-Unterlagen
+## 1.12.1 – Demokonto auf allen Plattformen
 - Optionales lokales Demokonto mit fiktiven Daten im vorhandenen Schema.
 - Schutz bestehender Konten und deaktivierter Geräte-Sync in der Demo.
+- Firefox-, Android- und iPhone-Builds inklusive Demo-Laden und dauerhaftem Löschen.
+- Logo über DOM-Parser statt direkter innerHTML-Zuweisung.
 - Store-Bilder, deutsche Beschreibung, Testanweisungen und Datenschutz.
-- Nur Chrome; andere Plattformen unverändert.
-
-# Changelog
-
-All versions of WISS Stundenplan. Newest first.
+- Release-Packager entfernt den Chrome-Entwicklungsschlüssel und verweigert veraltete APKs.
 
 ## 1.12.0
 

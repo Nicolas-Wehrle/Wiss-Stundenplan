@@ -1,5 +1,24 @@
-Chrome 1.12.1
+# WISS Stundenplan 1.12.1
 
-Lokales Demokonto mit fiktiven Daten im bestehenden Schema. Ohne WISS-Login testbar, inklusive Wochenplan, Noten, Absenzen und Raumbelegung. Kein Überschreiben bestehender Konten; Sync in der Demo deaktiviert.
+Diese Version bringt das lokale Demokonto auf Chrome/Edge, Firefox, Android und iPhone/Safari.
 
-Chrome-Web-Store-Bilder, deutsche Beschreibung, Datenschutz und Testanweisungen vorbereitet. Andere Plattformen bleiben auf dem bisherigen Stand.
+- Ohne WISS-Anmeldung ausprobieren: «Demokonto testen» während der Einrichtung.
+- Fiktiver Wochenplan, Prüfungen, Noten, Absenzen und Raumbelegung im bisherigen Datenformat.
+- Demo überschreibt keine vorhandenen Konten; Gerätesync bleibt in der Demo deaktiviert.
+- «Demo beenden» entfernt die fiktiven Daten und Demo-Notizen.
+- Mobile Adapter unterstützen den Demo-Kontowechsel und das dauerhafte Entfernen der Demodaten.
+- Direkte innerHTML-Zuweisung beim Zeichnen des mitgelieferten Logos durch die bestehende DOM-Parser-Funktion ersetzt.
+- Chrome-Web-Store-ZIP ohne Entwicklungsschlüssel; Store-Bilder, deutsche Beschreibung und Veröffentlichungshinweise liegen bei.
+
+## Downloads
+- Chrome/Edge: `WISS-Stundenplan-Chrome.zip` (entpacken und als lokale Erweiterung laden; dieselbe ZIP ist für den Chrome Web Store geeignet).
+- Firefox: `WISS-Stundenplan-Firefox.xpi` (von Mozilla signiert). Die Firefox-ZIP ist ausschliesslich das Upload-/Quellpaket für Mozilla.
+- Android: `WISS-Stundenplan.apk`. Version 1.12.1 / versionCode 11201, signiert mit demselben Zertifikat wie 1.12.0; als Update installierbar.
+- iPhone/Safari: `WISS-Stundenplan.user.js` für die Userscripts-Erweiterung.
+- `Chrome-Web-Store-Assets.zip`: Screenshots, Werbekacheln, Symbol, Beschreibung, Datenschutz und Anleitung.
+- `SHA256SUMS.txt`: Prüfsummen der Pakete.
+
+## Validierung
+Android-Release-Build und Signaturprüfung erfolgreich; Signierzertifikat stimmt mit 1.12.0 überein. Browser-Tests für Android und iPhone prüfen Demo, alle Ansichten, lokale Notizen, Sync-Sperre und dauerhafte Demo-Bereinigung. Bestehender plattformübergreifender Sync-Browsertest prüft Opt-in, Verknüpfung, Verschlüsselung, Zusammenführung und Löschung. Die Anmeldung mit einem echten WISS-Konto und ein physisches iPhone wurden in diesem Build nicht getestet.
+
+Inoffizielles Schülerprojekt, nicht von WISS oder Tocco entwickelt oder unterstützt.

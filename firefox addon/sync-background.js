@@ -22,6 +22,7 @@
     }
   });
   const run = async () => {
+    if ((await browser.storage.local.get('demoMode')).demoMode) return;
     await engine.sync();
     const { deviceSync } = await browser.storage.local.get('deviceSync');
     if (!deviceSync?.enabled || deviceSync.status === 'synced') browser.alarms.clear?.('device-sync-retry');
@@ -31,6 +32,10 @@
     if (!msg || !['deviceSyncWrite', 'deviceSyncConnect', 'deviceSyncNow', 'deviceSyncDisconnect', 'deviceSyncDelete', 'deviceSyncRecovery', 'deviceSyncReset', 'deviceSyncPairOffer', 'deviceSyncPairJoin'].includes(msg.type)) return;
     if (!trusted(sender)) { respond({ error: 'permission-denied' }); return false; }
     const task = async () => {
+      if ((await browser.storage.local.get('demoMode')).demoMode) {
+        if (msg.type === 'deviceSyncWrite') { await browser.storage.local.set(msg.patch || {}); return; }
+        if (msg.type !== 'deviceSyncReset') throw new Error('demo-mode');
+      }
       if (msg.type === 'deviceSyncWrite') return engine.write(msg.patch || {});
       if (msg.type === 'deviceSyncConnect') return engine.connect({ server: msg.server, code: msg.code });
       if (msg.type === 'deviceSyncNow') return engine.sync();
@@ -46,6 +51,7 @@
   // The popup closes while the browser asks for the sync permission. Finish what was pressed.
   const session = browser.storage.session;
   if (session && browser.permissions?.onAdded) browser.permissions.onAdded.addListener(() => setTimeout(async () => {
+    if ((await browser.storage.local.get('demoMode')).demoMode) return;
     const { syncIntent: it } = await session.get('syncIntent');
     if (!it || Date.now() - it.at > 5 * 60000) return;   // the popup is still open and does it itself
     await session.remove('syncIntent');

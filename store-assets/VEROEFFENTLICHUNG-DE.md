@@ -58,7 +58,7 @@ Die drei Nutzungszusicherungen nur entsprechend dem tatsächlichen Code bestäti
 5. Testanweisungen, Datenschutz-URL und Berechtigungsbegründungen einfügen; Kategorie, Sprache und Vertriebsregionen kontrollieren.
 6. Entwurf speichern, verbleibende Dashboard-Fehler prüfen, dann zur Prüfung einreichen. Google entscheidet über die Freigabe; Upload ist keine Veröffentlichung.
 
-Diese Änderung betrifft nur Chrome. Firefox, Android, iPhone, deren signierte Dateien und updates.json behalten ihre bisherigen Versionen. Eine Chrome-GitHub-Veröffentlichung sollte nicht als neueste plattformübergreifende Veröffentlichung markiert werden, damit die bisherigen Updater keine unvollständigen Fremdplattform-Assets erwarten.
+Version 1.12.1 wird auch für Firefox, Android und iPhone gebaut. Die Firefox-XPI muss von Mozilla signiert sein; updates.json wird erst auf die neue Version gesetzt, wenn diese signierte Datei vorliegt. Die Android-APK wird mit dem vorhandenen Zertifikat signiert. Der iPhone-Build ist ein Safari-Userscript, keine native App-Store-App.
 
 ## Offizielle Quellen
 - Bilder: https://developer.chrome.com/docs/webstore/images

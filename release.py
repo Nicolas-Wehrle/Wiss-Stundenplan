@@ -5,7 +5,7 @@ Run it after the build steps (see README). Then upload the files from release/v<
 to a new GitHub release with the tag v<version>, and commit + push updates.json and
 iphone/WISS-Stundenplan.user.js (the iPhone and Firefox auto-update read them from the repo).
 """
-import json, os, shutil, zipfile
+import json, os, shutil, zipfile, runpy, re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -21,14 +21,22 @@ def zipdir(src, dst):
                 p = Path(root) / f
                 z.write(p, p.relative_to(src))
 
-zipdir(ROOT / 'chrome addon', out / 'WISS-Stundenplan-Chrome.zip')
+runpy.run_path(str(ROOT / 'build-chrome-store.py'))
+shutil.copy2(out / 'WISS-Stundenplan-Chrome-Web-Store.zip', out / 'WISS-Stundenplan-Chrome.zip')
 zipdir(ROOT / 'firefox addon', out / 'WISS-Stundenplan-Firefox.zip')
 done = ['WISS-Stundenplan-Chrome.zip', 'WISS-Stundenplan-Firefox.zip']
 missing = []
 
 apk = ROOT / 'android app' / 'app' / 'build' / 'outputs' / 'apk' / 'release' / 'app-release.apk'
 if not apk.exists(): apk = ROOT / 'WISS-Stundenplan.apk'   # built elsewhere and put in the main folder
-if apk.exists(): shutil.copy2(apk, out / 'WISS-Stundenplan.apk'); done.append('WISS-Stundenplan.apk')
+def apk_version(f):
+    try:
+        with zipfile.ZipFile(f) as z:
+            match = re.search(r"const VERSION = '([^']+)'", z.read('assets/web/app-shim.js').decode('utf-8'))
+            return match.group(1) if match else None
+    except Exception: return None
+if apk.exists() and apk_version(apk) == version: shutil.copy2(apk, out / 'WISS-Stundenplan.apk'); done.append('WISS-Stundenplan.apk')
+elif apk.exists(): missing.append(f'WISS-Stundenplan.apk  (built version {apk_version(apk)}, expected {version}; rebuild before publishing)')
 else: missing.append('WISS-Stundenplan.apk  (build it: cd "android app" && ./gradlew assembleRelease, or put the APK in this folder)')
 
 ios = ROOT / 'iphone' / 'WISS-Stundenplan.user.js'

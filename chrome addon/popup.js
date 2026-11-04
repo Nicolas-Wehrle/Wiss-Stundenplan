@@ -284,7 +284,7 @@ function logoSVG(style) {
   return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${L.bg[0]}"/><stop offset="1" stop-color="${L.bg[1]}"/></linearGradient></defs>`
     + `<rect width="100" height="100" rx="${L.R}" fill="url(#${id})"/>${L.edge ? `<rect x="1" y="1" width="98" height="98" rx="${L.R - 1}" fill="none" stroke="${L.edge}" stroke-width="2"/>` : ''}${cells}</svg>`;
 }
-function paintLogos() { for (const el of document.querySelectorAll('.logo')) el.innerHTML = logoSVG(document.documentElement.dataset.style || 'standard'); }
+function paintLogos() { for (const el of document.querySelectorAll('.logo')) setHTML(el, logoSVG(document.documentElement.dataset.style || 'standard')); }
 
 // ---- small status message at the bottom ----
 let toastT = 0;

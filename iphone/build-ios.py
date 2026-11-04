@@ -68,6 +68,7 @@ parts = [
     '// wait one tick after window.stop() so the (empty) document is settled, then build the app',
     'const __wissStart = () => {', 'takeOver();',
     '// ---------- adapter ----------', shim,
+    '// ---------- demo data ----------', read('demo.js'),
     '// ---------- sync core ----------', read('sync-core.js'),
     '// ---------- QR encoder ----------', read('vendor/qrcode.js'),
     '// ---------- sync engine ----------', read('sync-engine.js'),

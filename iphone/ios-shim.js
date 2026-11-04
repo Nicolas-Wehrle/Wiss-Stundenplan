@@ -58,6 +58,13 @@ const storage = {
       for (const k of Object.keys(obj)) { ch[k] = { oldValue: s[k], newValue: obj[k] }; s[k] = JSON.parse(JSON.stringify(obj[k])); }
       writeStore(); fireChanged(ch);
     },
+    remove: async (keys) => {
+      const s = readStore(), ch = {};
+      for (const k of typeof keys === 'string' ? [keys] : keys) {
+        if (k in s) { ch[k] = { oldValue: s[k] }; delete s[k]; }
+      }
+      writeNow(); fireChanged(ch);
+    },
     clear: async () => {
       const s = readStore(), ch = {};
       for (const k of Object.keys(s)) ch[k] = { oldValue: s[k] };
@@ -133,7 +140,7 @@ const alarms = {
 const chrome = {
   runtime: {
     id: 'wiss-stundenplan-ios',
-    sendMessage: (msg) => dispatch(msg, {}),
+    sendMessage: (msg) => dispatch(msg, { url: chrome.runtime.getURL('popup.html') }),
     onMessage: { addListener: (fn) => L.msg.push(fn) },
     onInstalled: { addListener: (fn) => L.installed.push(fn) },
     onStartup: { addListener: (fn) => L.startup.push(fn) },

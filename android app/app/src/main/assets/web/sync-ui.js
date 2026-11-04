@@ -15,6 +15,7 @@ const SYNC_ERRORS = {
   'pair-expired': 'Code abgelaufen oder schon benutzt. Mach auf dem anderen Gerät einen neuen.'
 };
 function renderDeviceSync() {
+  if (S.demoMode) return `<p>${tr('Im Demokonto ist die Gerätesynchronisation deaktiviert.')}</p>`;
   queueMicrotask(drawSyncQR);
   const cfg = S.deviceSync || {}, connected = cfg.status && cfg.status !== 'off';
   const statuses = { off: 'Aus', pending: 'Änderungen warten', syncing: 'Wird synchronisiert…', synced: 'Synchronisiert', error: 'Synchronisation fehlgeschlagen' };

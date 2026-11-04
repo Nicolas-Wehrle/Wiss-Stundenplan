@@ -13,10 +13,10 @@ const root = fileURLToPath(new URL('../../', import.meta.url)), web = path.join(
 const out = path.join(root, 'tests/browser/artifacts'); fs.mkdirSync(out, { recursive: true });
 const repo = new FakeRepository(), store = new DurableStore(repo, { debounceMs: 5, maxWaitMs: 10 }), server = createServer(store);
 server.listen(0, '127.0.0.1'); await new Promise((r) => server.once('listening', r));
-const b = await chromium.launch(), errors = []; let syncRequests = 0;
+const b = await chromium.launch({ executablePath: process.env.BROWSER_EXECUTABLE }), errors = []; let syncRequests = 0;
 async function waitData(page, predicate) {
   for (let i = 0; i < 200; i++) {
-    try { if (await page.evaluate(predicate)) return; }
+    try { if (await page.evaluate(() => !!globalThis.chrome?.storage?.local) && await page.evaluate(predicate)) return; }
     catch (e) { if (!e.message.includes('chrome is not defined') && !e.message.includes('Execution context was destroyed')) throw e; }
     await new Promise((r) => setTimeout(r, 100));
   }
