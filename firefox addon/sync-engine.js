@@ -47,8 +47,11 @@
         if (meta.revision !== prev && s.deviceSync?.enabled) schedule(2000);
       });
     }
-    async function api(config, keys, method, body, signal) {
-      if (!await permission(config.server)) throw new Error('permission-denied');
+    async function api(config, keys, method, body, signal, suffix = '') {
+      return call(config.server, '/v1/accounts/' + keys.id + suffix, { method, auth: keys.auth, body, signal });
+    }
+    async function call(server, path, { method = 'GET', auth = null, body = null, signal = null }) {
+      if (!await permission(server)) throw new Error('permission-denied');
       // MV3 workers may be terminated if a fetch response takes 30 seconds. Abort first,
       // persist pending state, and let the next GET recover any ambiguous durable write.
       const controller = new AbortController(), abort = () => controller.abort();
@@ -56,9 +59,9 @@
       signal?.addEventListener('abort', abort, { once: true });
       const deadline = setTimeout(abort, 24000);
       try {
-      const r = await request(config.server + '/v1/accounts/' + keys.id, {
+      const r = await request(server + path, {
         method, credentials: 'omit', cache: 'no-store', redirect: 'error', signal: controller.signal,
-        headers: { Authorization: 'Bearer ' + keys.auth, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+        headers: { ...(auth ? { Authorization: 'Bearer ' + auth } : {}), ...(body ? { 'Content-Type': 'application/json' } : {}) },
         ...(body ? { body: JSON.stringify(body) } : {})
       });
       if (!r.ok) { const e = new Error(r.status === 404 ? 'account-gone' : r.status === 401 ? 'authentication-failed' : r.status === 413 ? 'package-too-large' : r.status === 429 ? 'rate-limited' : r.status === 409 ? 'version-conflict' : 'server-unavailable'); e.status = r.status; throw e; }
@@ -168,7 +171,24 @@
       await serial(async () => { await vault.set(null); await storage.set({ deviceSync: { enabled: false, status: 'off' } }); });
     }
     async function recover() { const v = await vault.get(); if (!v) throw new Error('missing-key'); return C.recovery(v.server, v.master); }
-    return { write, connect, sync, disconnect, recover, idle: () => queue };
+    // Linking another device with a short code. This device must be connected (only it can offer).
+    async function pairOffer() {
+      const s = await state(), creds = await vault.get();
+      if (!creds || !s.deviceSync?.enabled) throw new Error('missing-key');
+      const keys = await C.derive(creds.master), code = C.pairCode(), sealed = await C.pairSeal(code, creds.server, creds.master);
+      const r = await api({ server: creds.server }, keys, 'POST', sealed, null, '/pairing');
+      return { pairCode: code, expires: r && r.expires };
+    }
+    // The new device: fetch the package once, decrypt it with the code, then connect as with a recovery code.
+    async function pairJoin({ server, code }) {
+      const srv = C.endpoint(server), k = await C.pairKeys(code);
+      let r;
+      try { r = await call(srv, '/v1/pairing/' + k.id, {}); }
+      catch (e) { if (e.status === 404) throw new Error('pair-expired'); throw e; }
+      const creds = await C.pairOpen(code, r && r.blob);
+      return connect({ code: await C.recovery(creds.server, creds.master) });
+    }
+    return { write, connect, sync, disconnect, recover, pairOffer, pairJoin, idle: () => queue };
   }
   globalThis.WissSyncEngine = { create };
 })();

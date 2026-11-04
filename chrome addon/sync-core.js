@@ -43,6 +43,41 @@
     const server = endpoint(dec.decode(unb64(p[1]))); await derive(p[2]);
     return { server, master: p[2] };
   }
+  // ---- short-code device linking ----
+  // 8 characters from Crockford's base32 (no I, L, O, U) = 40 bits. The code itself never reaches the
+  // server: PBKDF2 turns it into a lookup ID and an AES key, so the server only ever holds ciphertext.
+  const PAIR_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ', PAIR_ROUNDS = 310000;
+  function pairCode() {
+    const b = crypto.getRandomValues(new Uint8Array(5)); let bits = 0n;
+    for (const x of b) bits = (bits << 8n) | BigInt(x);
+    let s = ''; for (let i = 0; i < 8; i++) { s = PAIR_ALPHABET[Number(bits & 31n)] + s; bits >>= 5n; }
+    return s.slice(0, 4) + '-' + s.slice(4);
+  }
+  function normalizePair(code) {
+    const s = String(code || '').toUpperCase().replace(/[\s-]/g, '').replace(/O/g, '0').replace(/[IL]/g, '1');
+    if (!/^[0-9A-HJKMNP-TV-Z]{8}$/.test(s)) fail('invalid-code');
+    return s;
+  }
+  const isPairCode = (code) => { try { normalizePair(code); return true; } catch { return false; } };
+  async function pairKeys(code) {
+    const base = await crypto.subtle.importKey('raw', enc.encode('WISS-PAIR:' + normalizePair(code)), 'PBKDF2', false, ['deriveBits']);
+    const bits = new Uint8Array(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: enc.encode('wiss-pair-v1'), iterations: PAIR_ROUNDS }, base, 512));
+    return { id: b64(bits.slice(0, 32)), key: await crypto.subtle.importKey('raw', bits.slice(32), 'AES-GCM', false, ['encrypt', 'decrypt']) };
+  }
+  async function pairSeal(code, server, master) {
+    const k = await pairKeys(code), iv = crypto.getRandomValues(new Uint8Array(12));
+    const data = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode('wiss-pair:' + k.id) }, k.key, enc.encode(JSON.stringify({ s: endpoint(server), m: master })));
+    return { pair: k.id, blob: { format: FORMAT, iv: b64(iv), data: b64(new Uint8Array(data)) } };
+  }
+  async function pairOpen(code, blob) {
+    const k = await pairKeys(code);
+    if (!plain(blob) || blob.format !== FORMAT) fail('invalid-package');
+    let v;
+    try { v = JSON.parse(dec.decode(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(blob.iv), additionalData: enc.encode('wiss-pair:' + k.id) }, k.key, unb64(blob.data)))); }
+    catch { fail('invalid-code'); }
+    const server = endpoint(v.s); await derive(v.m);
+    return { server, master: v.m };
+  }
   const empty = () => ({ format: FORMAT, notes: {}, examOverrides: {}, settings: {} });
   function validValue(group, key, v) {
     if (group === 'notes') return typeof v === 'string';
@@ -117,5 +152,5 @@
       return validate(JSON.parse(dec.decode(data)));
     } catch (e) { if (e.message === 'package-too-large') throw e; fail('cannot-decrypt'); }
   }
-  globalThis.WissSyncCore = { FORMAT, MAX_BYTES, PREFS, GROUPS, b64, unb64, random, endpoint, derive, recovery, parseRecovery, empty, validate, equal, merge, snapshot, materialize, encrypt, decrypt, validValue, safeKey };
+  globalThis.WissSyncCore = { FORMAT, MAX_BYTES, PREFS, GROUPS, b64, unb64, random, endpoint, derive, recovery, parseRecovery, pairCode, normalizePair, isPairCode, pairKeys, pairSeal, pairOpen, empty, validate, equal, merge, snapshot, materialize, encrypt, decrypt, validValue, safeKey };
 })();

@@ -28,13 +28,15 @@
   };
   const trusted = (sender) => !sender.tab || (sender.url && sender.url.startsWith(chrome.runtime.getURL('popup.html')));
   chrome.runtime.onMessage.addListener((msg, sender, respond) => {
-    if (!msg || !['deviceSyncWrite', 'deviceSyncConnect', 'deviceSyncNow', 'deviceSyncDisconnect', 'deviceSyncDelete', 'deviceSyncRecovery', 'deviceSyncReset'].includes(msg.type)) return;
+    if (!msg || !['deviceSyncWrite', 'deviceSyncConnect', 'deviceSyncNow', 'deviceSyncDisconnect', 'deviceSyncDelete', 'deviceSyncRecovery', 'deviceSyncReset', 'deviceSyncPairOffer', 'deviceSyncPairJoin'].includes(msg.type)) return;
     if (!trusted(sender)) { respond({ error: 'permission-denied' }); return false; }
     const task = async () => {
       if (msg.type === 'deviceSyncWrite') return engine.write(msg.patch || {});
       if (msg.type === 'deviceSyncConnect') return engine.connect({ server: msg.server, code: msg.code });
       if (msg.type === 'deviceSyncNow') return engine.sync();
       if (msg.type === 'deviceSyncRecovery') return { recovery: await engine.recover() };
+      if (msg.type === 'deviceSyncPairOffer') return engine.pairOffer();
+      if (msg.type === 'deviceSyncPairJoin') return engine.pairJoin({ server: msg.server, code: msg.code });
       if (msg.type === 'deviceSyncReset') { await engine.disconnect(); await chrome.storage.local.clear(); return; }
       await engine.disconnect({ erase: msg.type === 'deviceSyncDelete' });
     };

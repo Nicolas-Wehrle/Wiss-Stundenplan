@@ -51,6 +51,8 @@ const seg = (k, opts, cur = P(k)) => `<div class="seg sm" role="radiogroup">${op
 const sw = (k, on = !!P(k)) => `<button class="sw ${on ? 'on' : ''}" role="switch" aria-checked="${on}" data-act="pref-toggle" data-k="${k}"><i></i></button>`;
 const sec = (id, title, body) => `<section class="set-sec" id="set-${id}" data-sec="${id}"><div class="set-h">${tr(title)}</div><div class="card set-card">${body}</div></section>`;
 
+const LOGO_MARK = '<svg aria-hidden="true" viewBox="18 18 64 64"><rect x="23" y="23" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="42" y="23" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="61" y="23" width="15" height="15" rx="4.5" fill="#ffc857"/><rect x="23" y="42" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="42" y="42" width="15" height="15" rx="4.5" fill="#ffffff"/><rect x="61" y="42" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="23" y="61" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="42" y="61" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/><rect x="61" y="61" width="15" height="15" rx="4.5" fill="#ffffff" fill-opacity=".3"/></svg>';
+
 // id, name, short description (all names are German source strings, translated with tr())
 const STYLES = [
   ['standard', 'Standard', 'WISS-Rot'], ['apple', 'Apple', 'Wie iOS'], ['samsung', 'Samsung', 'Wie One UI'],
@@ -60,8 +62,10 @@ const STYLES = [
 function stylePreview(id, name, desc) {
   const on = P('style') === id;
   return `<button class="stile ${on ? 'on' : ''}" data-act="pref" data-k="style" data-v="${id}" aria-pressed="${on}">
-    <span class="sprev sp-${id}"><i class="a"></i><i class="b"></i><i class="c"></i><span class="dots"></span></span>
-    <b>${name}</b><small>${desc}</small></button>`;
+    <span class="sprev" data-s="${id}" aria-hidden="true"><span class="pv-top"><i class="pv-logo"></i><i class="pv-h"></i></span>
+      <span class="pv-card"><em>10:30</em><i class="pv-t"></i><i class="pv-m"></i></span><span class="pv-card b"><em>13:15</em><i class="pv-t"></i><i class="pv-m"></i></span>
+      <span class="pv-tabs"><i class="on"></i><i></i><i></i><i></i></span></span>
+    <b>${name}</b></button>`;
 }
 
 function renderSettings({ acc, ab, zp, user }) {
@@ -85,48 +89,49 @@ function renderSettings({ acc, ab, zp, user }) {
   const tabs = [['last', tr('Zuletzt offen')], ['week', tr('Woche')], ['exams', tr('Prüfungen')], ['grades', tr('Noten')], ['absences', tr('Absenzen')], ['rooms', tr('Räume')]];
   const timetable = [
     row(tr('Start-Ansicht'), '', `<select id="prefStartTab">${tabs.map(([v, l]) => `<option value="${v}" ${P('startTab') === v ? 'selected' : ''}>${l}</option>`).join('')}</select>`),
-    row(tr('Vergangenes ausblenden'), tr('Im Popup nur kommende Lektionen dieser Woche zeigen'), sw('foldPast')),
+    row(tr('Vergangenes ausblenden'), '', sw('foldPast')),
+    row(tr('Nächste Prüfung in der Woche'), '', sw('showNextExam')),
     `<div class="srow col"><div class="sl"><b>${tr('ZP-Schätzung')}</b></div>${zp}</div>`
   ].join('');
 
   const permRow = IS_APP_PAGE && notifPerm !== 'granted'
     ? `<div class="srow warnrow"><div class="sl"><b>${tr('Benachrichtigungen sind blockiert')}</b><small>${tr('Sonst kommen keine Erinnerungen.')}</small></div><div class="sc"><button class="btn" data-act="notif-perm">${tr('Erlauben')}</button></div></div>` : '';
   const notify = permRow + [
-    row(tr('Vor jeder Lektion'), tr('z.B. "Mathematik in ZH-404, 10:30"'), sw('notifyLessons')),
+    row(tr('Vor jeder Lektion'), '', sw('notifyLessons')),
     P('notifyLessons') ? row(tr('Vorlauf'), '', seg('notifyLessonMin', [[5, '5'], [10, '10'], [15, '15'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`, 'sub') : '',
-    row(tr('Absenzen-Frist'), tr('2 Tage bevor die Frist abläuft'), sw('notifyAbsences')),
+    row(tr('Absenzen-Frist'), tr('2 Tage vorher'), sw('notifyAbsences')),
     row(tr('Neue Noten'), '', sw('notifyGrades')),
     row(tr('Testen'), '', `<button class="btn ghost" data-act="notif-test">${tr('Test-Benachrichtigung')}</button>`)
-  ].join('') + (IS_APP_PAGE ? `<p class="shint">${tr('Erinnerungen kommen auch bei geschlossener App. Neue Noten siehst du, sobald die App aktualisiert.')}</p>`
-    : `<p class="shint">${tr('Erinnerungen kommen nur, wenn der Browser offen ist.')}</p>`);
+  ].join('') + (IS_APP_PAGE ? `<p class="shint">${tr('Kommt auch bei geschlossener App.')}</p>`
+    : `<p class="shint">${tr('Nur wenn der Browser offen ist.')}</p>`);
 
   const notifyBox = window.__wissIOS
-    ? `<p class="shint" style="margin-top:12px">${tr('Auf dem iPhone gibt es keine Benachrichtigungen. Das erlaubt Apple nur Apps aus dem App Store.')}</p>` : notify;
+    ? `<p class="shint" style="margin-top:12px">${tr('Auf dem iPhone gibt es keine Benachrichtigungen.')}</p>` : notify;
   const grades = [
-    row(tr('Wunschnote'), tr('Für den Notenrechner'), seg('targetGrade', [[4, '4'], [4.5, '4.5'], [5, '5'], [5.5, '5.5'], [6, '6']])),
+    row(tr('Wunschnote'), '', seg('targetGrade', [[4, '4'], [4.5, '4.5'], [5, '5'], [5.5, '5.5'], [6, '6']])),
     row(tr('Rundung der Modulnote'), '', seg('gradeStep', [[0.5, '0.5'], [0.1, '0.1'], [0, tr('keine')]]))
   ].join('');
 
   const sync = [
     `<div class="set-h">${tr('Schuldaten aktualisieren')}</div>`,
-    row(tr('Im Hintergrund'), tr('Lädt regelmässig neue Daten'), seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
+    row(tr('Im Hintergrund'), '', seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
     row(tr('Jetzt'), S.lastSync ? tr('Zuletzt: {T}', { T: ago(S.lastSync) }) : '', `<button class="btn ghost" data-act="sync-now">${tr('Aktualisieren')}</button>`),
     S.syncLog && S.syncLog.lines && S.syncLog.lines.length ? `<details class="diag"><summary><b>${tr('Diagnose')}</b> <small class="muted">${tr('letzte Aktualisierung, {T}', { T: esc(ago(S.syncLog.at)) })}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>` : ''
   ].join('');
 
   const data = [
     row(tr('Notizen'), tr('{N} gespeichert', { N: Object.keys(S.notes || {}).length }), `<button class="btn ghost" data-act="export-notes">${IS_APP_PAGE ? tr('Kopieren') : tr('Exportieren')}</button>`),
-    row(tr('Lokale Daten'), tr('Löscht Stundenplan, Noten, Notizen und Einstellungen auf diesem Gerät. Synchronisierte Daten bleiben auf dem Server.'),
+    row(tr('Lokale Daten'), tr('Nur auf diesem Gerät'),
       `<button class="btn ${setupState.resetArm ? '' : 'ghost'} danger" data-act="${setupState.resetArm ? 'reset-confirm' : 'reset'}">${setupState.resetArm ? tr('Wirklich löschen?') : tr('Alles löschen')}</button>`)
   ].join('');
 
   const ver = hasChrome && browser.runtime.getManifest ? browser.runtime.getManifest().version : '';
   const ui = S.updateInfo;
   const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr('Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
-  const about = `<div class="about"><span class="logo">W</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
+  const about = `<div class="about"><span class="logo">${LOGO_MARK}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
     ${row(tr('Updates'), updText, updateAvailable() ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}
-    <p class="shint">${tr('Daten: wiss.tocco.ch (dein Login) · Module: modulbaukasten.ch · Schriften: Doto, Space Mono (SIL OFL)')}</p>`;
+    <p class="shint">${tr('Daten von wiss.tocco.ch und modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;
 
   return `<div class="settings">
     <div class="set-top"><h2>${tr('Einstellungen')}</h2><button class="btn" data-act="setup-close">${tr('Fertig')}</button></div>

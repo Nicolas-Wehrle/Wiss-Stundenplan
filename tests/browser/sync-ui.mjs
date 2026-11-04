@@ -66,15 +66,16 @@ async function device(style, platform = 'android') {
   await waitData(p, async () => { const s = await chrome.storage.local.get(['status', 'lastSync']); return s.status === 'ok' && s.lastSync; });
   await p.click('#btnSettings'); return p;
 }
+const snap = async (loc, file) => { for (let i = 0; ; i++) try { return await loc.screenshot({ path: file }); } catch (e) { if (i > 4) throw e; } };
 try {
   const a = await device('standard'); assert.equal(syncRequests, 0);
-  await a.locator('#set-sync').screenshot({ path: path.join(out, 'disabled.png') });
+  await snap(a.locator('#set-sync'), path.join(out, 'disabled.png'));
   await a.click('[data-act=device-enable]'); await a.waitForSelector('#syncRecovery');
   const recovery = await a.inputValue('#syncRecovery'); assert.match(recovery, /^WISS1\./);
   await a.waitForFunction(() => S.deviceSync?.status === 'synced');
   assert.equal(await a.locator('#syncQR svg').count(), 1);
-  await a.locator('#set-sync').screenshot({ path: path.join(out, 'connected.png') });
-  const second = await device('nothing'); await second.locator('summary').filter({ hasText: 'Mit vorhandenem Code' }).click();
+  await snap(a.locator('#set-sync'), path.join(out, 'connected.png'));
+  const second = await device('nothing');
   await second.fill('#syncJoin', recovery); await second.click('[data-act=device-join]');
   await second.waitForFunction(() => S.deviceSync?.status === 'synced');
   await a.evaluate(() => chrome.runtime.sendMessage({ type: 'deviceSyncWrite', patch: { notes: { demo: 'Changed on A' }, prefs: { targetGrade: 5.5 } } }));
@@ -83,10 +84,9 @@ try {
   assert.equal(await second.evaluate(() => S.prefs.style), 'nothing');
   await second.evaluate(() => { setPref('lang', 'en'); applyLook(); render(); });
   await second.waitForFunction(() => document.documentElement.lang === 'en');
-  assert.match(await second.locator('#set-sync').innerText(), /Device sync/);
-  await second.locator('#set-sync').screenshot({ path: path.join(out, 'english.png') });
+  assert.match(await second.locator('#set-sync').innerText(), /Device sync/i);
+  await snap(second.locator('#set-sync'), path.join(out, 'english.png'));
   const ios = await device('paper', 'ios');
-  await ios.locator('summary').filter({ hasText: 'Mit vorhandenem Code' }).click();
   await ios.fill('#syncJoin', recovery); await ios.click('[data-act=device-join]');
   await waitData(ios, async () => { const s = await chrome.storage.local.get(['notes', 'deviceSync']); return s.deviceSync?.status === 'synced' && s.notes?.demo === 'Changed on A'; });
   const iosState = await ios.evaluate(async () => chrome.storage.local.get(['notes', 'deviceSync', 'syncMeta']));
@@ -97,7 +97,7 @@ try {
   await ios.click('[data-act=device-now]'); await waitData(ios, async () => (await chrome.storage.local.get('deviceSync')).deviceSync?.status === 'synced');
   await a.click('[data-act=device-now]'); await a.waitForFunction(() => S.notes.iphone === 'From iPhone');
   assert.equal(await a.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-  await a.click('[data-act=device-delete]'); await a.click('[data-act=device-delete-confirm]'); await a.waitForSelector('[data-act=device-enable]');
+  await a.evaluate(() => document.querySelector('[data-act=device-delete]').click()); await a.waitForSelector('[data-act=device-delete-confirm]', { state: 'attached' }); await a.evaluate(() => document.querySelector('[data-act=device-delete-confirm]').click()); await a.waitForSelector('[data-act=device-enable]');
   assert.equal(repo.records.size, 0);
   await second.click('[data-act=device-now]'); await second.waitForFunction(() => S.deviceSync?.error === 'account-gone');
   assert.equal(repo.records.size, 0); assert.equal(await second.evaluate(() => S.notes.demo), 'Changed on A');

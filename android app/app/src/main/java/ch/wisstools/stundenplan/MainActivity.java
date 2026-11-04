@@ -417,6 +417,19 @@ public class MainActivity extends Activity {
         @JavascriptInterface
         public void openExternal(String url) { MainActivity.this.openExternal(url); }
 
+        /** Opens Android's share menu with plain text (a lesson, a day, an exam, a room). */
+        @JavascriptInterface
+        public void share(String text, String title) {
+            if (text == null || text.isEmpty() || text.length() > 4000) return;
+            ui.post(() -> {
+                Intent send = new Intent(Intent.ACTION_SEND);
+                send.setType("text/plain");
+                send.putExtra(Intent.EXTRA_TEXT, text);
+                if (title != null && !title.isEmpty()) send.putExtra(Intent.EXTRA_SUBJECT, title);
+                try { startActivity(Intent.createChooser(send, title == null || title.isEmpty() ? null : title)); } catch (Exception ignored) {}
+            });
+        }
+
         // ---- notifications + widget ----
         @JavascriptInterface
         public void notify(String id, String title, String body) { Notifs.show(MainActivity.this, id, title, body); }

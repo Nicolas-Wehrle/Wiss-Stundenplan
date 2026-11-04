@@ -11,12 +11,20 @@ export function authorized(record, token) {
 }
 
 export class GitHubRepository {
-  constructor({ repo, token, branch = 'main', request = fetch }) {
+  constructor({ repo, token, branch = 'main', request = fetch, budgetPerHour = 4000, now = Date.now }) {
     if (!/^[\w.-]+\/[\w.-]+$/.test(repo || '') || !token || !/^[\w.-]+$/.test(branch)) throw new Error('Set SYNC_DATA_REPO, GITHUB_TOKEN and a simple SYNC_DATA_BRANCH.');
     this.base = 'https://api.github.com/repos/' + repo;
     this.token = token; this.branch = branch; this.request = request;
+    // Hard cap below GitHub's 5,000 requests/hour so nobody can exhaust the token for everyone.
+    this.budgetPerHour = budgetPerHour; this.now = now; this.window = { at: 0, n: 0 };
+  }
+  spend() {
+    const time = this.now();
+    if (time - this.window.at >= 3600000) this.window = { at: time, n: 0 };
+    if (++this.window.n > this.budgetPerHour) throw new HttpError(503, 'storage-busy');
   }
   async api(path, method = 'GET', data) {
+    this.spend();
     const r = await this.request(this.base + path, { method, redirect: 'error', signal: AbortSignal.timeout(15000), headers: {
       Accept: 'application/vnd.github+json', Authorization: 'Bearer ' + this.token,
       'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'WISS-Encrypted-Sync', ...(data ? { 'Content-Type': 'application/json' } : {})
@@ -54,7 +62,7 @@ export class GitHubRepository {
         records.set(entry.path.slice(5, -5), value);
       }
     }));
-    return { head: ref.object.sha, tree: commit.tree.sha, records, accountCount: accountFiles.length };
+    return { head: ref.object.sha, tree: commit.tree.sha, records, accountCount: accountFiles.length, ids: accountFiles.map((x) => x.path.slice(5, -5)) };
   }
   async commit(base, changes) {
     const tree = [];
@@ -77,13 +85,36 @@ export class DurableStore {
   constructor(repo, { debounceMs = 15000, maxWaitMs = 20000, now = Date.now, maxAccounts = 10000 } = {}) {
     this.repo = repo; this.debounceMs = debounceMs; this.maxWaitMs = maxWaitMs; this.now = now;
     this.maxAccounts = maxAccounts; this.pending = []; this.closed = false; this.worker = null;
-    this.cache = null; this.cacheAt = 0;
+    // Index of existing account IDs and their auth hashes. Requests for unknown IDs or with a wrong
+    // token are rejected from memory, so unauthenticated traffic never costs a GitHub request.
+    this.known = null; this.authCache = new Map(); this.refreshedAt = 0;
   }
-  async init() { await this.repo.verify?.(); await this.repo.load(new Set()); }
+  async init() { await this.repo.verify?.(); await this.refreshIndex(); }
+  async refreshIndex() {
+    const base = await this.repo.load(new Set());
+    this.known = new Set(base.ids || base.records.keys()); this.refreshedAt = this.now();
+  }
+  async gate(id, token) {
+    if (!this.known) return;                                   // index not built (tests, startup failure): old path
+    if (!this.known.has(id)) {
+      // Another deployment may have created it: re-list at most once a minute, never per request.
+      if (this.now() - this.refreshedAt >= 60000) await this.refreshIndex();
+      if (!this.known.has(id)) throw new HttpError(404, 'not-found');
+    }
+    if (this.authCache.has(id)) authorized({ auth: this.authCache.get(id) }, token);
+  }
+  remember(id, record) {
+    if (!this.known) return;
+    if (record) { this.known.add(id); this.authCache.set(id, record.auth); }
+    else { this.known.delete(id); this.authCache.delete(id); }
+  }
   async read(id, token) {
+    await this.gate(id, token);
     // Never serve cached data as authoritative: a second deployment may have written or deleted it.
     const record = this.repo.read ? await this.repo.read(id) : (await this.repo.load()).records.get(id);
+    if (!record) this.remember(id, null);
     authorized(record, token);
+    this.remember(id, record);
     if (this.expired(record)) throw new HttpError(404, 'not-found');
     // Activity only needs a daily durable touch; failed touches are retried next time.
     if (this.now() - record.seen > 86400000) await this.mutate({ kind: 'touch', id, token });
@@ -91,6 +122,12 @@ export class DurableStore {
   }
   expired(r) { return this.now() - r.seen >= 365 * 86400000; }
   mutate(op, immediate = false) {
+    if (this.closed) return Promise.reject(new HttpError(503, 'shutting-down'));
+    if (op.kind === 'create' && this.known?.has(op.id)) return Promise.reject(new HttpError(409, 'already-exists'));
+    if (op.kind === 'update' || op.kind === 'delete') return this.gate(op.id, op.token).then(() => this.enqueue(op, immediate));
+    return this.enqueue(op, immediate);
+  }
+  enqueue(op, immediate) {
     if (this.closed) return Promise.reject(new HttpError(503, 'shutting-down'));
     const p = new Promise((resolve, reject) => this.pending.push({ op, resolve, reject }));
     clearTimeout(this.timer);
@@ -142,6 +179,7 @@ export class DurableStore {
           const base = await this.repo.load(new Set(batch.map((x) => x.op.id))), outcome = this.apply(base, batch);
           try { if (outcome.changes.size) await this.repo.commit(base, outcome.changes); }
           catch (e) { if (e.status === 409) continue; throw e; }
+          for (const [id, record] of outcome.changes) this.remember(id, record);
           for (const { item, error, value } of outcome.results) error ? item.reject(error) : item.resolve(value);
           return;
         }
@@ -156,7 +194,7 @@ export class DurableStore {
     for (let attempt = 0; attempt < 5; attempt++) {
       const base = await this.repo.load(), changes = new Map([...base.records].filter(([, r]) => this.expired(r)).map(([id]) => [id, null]));
       if (!changes.size) return;
-      try { await this.repo.commit(base, changes); return; } catch (e) { if (e.status !== 409) throw e; }
+      try { await this.repo.commit(base, changes); for (const id of changes.keys()) this.remember(id, null); return; } catch (e) { if (e.status !== 409) throw e; }
     }
     throw new HttpError(503, 'storage-busy');
   }

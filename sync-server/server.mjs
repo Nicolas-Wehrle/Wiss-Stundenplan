@@ -13,8 +13,16 @@ async function body(req) {
   for await (const chunk of req) { size += chunk.length; if (size > LIMIT) throw new HttpError(413, 'package-too-large'); chunks.push(chunk); }
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw new HttpError(400, 'invalid-json'); }
 }
+// Short-code device linking. The pairing package is encrypted on the device with a key derived from
+// the short code (PBKDF2), lives only in this process's memory for 10 minutes and can be fetched once.
+// It is never written to GitHub or any log.
+const PAIR_TTL = 10 * 60000, PAIR_MAX = 500, PAIR_PER_ACCOUNT = 3;
+function validatePairBlob(blob) {
+  if (!blob || Object.keys(blob).sort().join(',') !== 'data,format,iv' || blob.format !== 1 || !/^[A-Za-z0-9_-]{16}$/.test(blob.iv) || typeof blob.data !== 'string' || !/^[A-Za-z0-9_-]{22,1400}$/.test(blob.data)) throw new HttpError(400, 'invalid-package');
+}
 export function createServer(store, { allowedOrigins = ['https://wiss.tocco.ch'], trustProxy = false, now = Date.now } = {}) {
-  const buckets = new Map();
+  const buckets = new Map(), pairs = new Map();
+  const sweepPairs = () => { const t = now(); for (const [k, v] of pairs) if (v.exp <= t) pairs.delete(k); };
   function limit(key, max) {
     const time = now(); let b = buckets.get(key);
     if (!b || time - b.at >= 60000) { b = { at: time, n: 0 }; buckets.set(key, b); }
@@ -26,6 +34,7 @@ export function createServer(store, { allowedOrigins = ['https://wiss.tocco.ch']
     const origin = req.headers.origin;
     const allowed = !origin || allowedOrigins.includes(origin) || /^chrome-extension:\/\/[a-p]{32}$/.test(origin) || /^moz-extension:\/\/[a-f0-9-]{36}$/.test(origin);
     res.setHeader('Cache-Control', 'no-store'); res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000'); res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader('Vary', 'Origin');
     if (origin && allowed) res.setHeader('Access-Control-Allow-Origin', origin);
     const send = (status, data) => { res.writeHead(status, { 'Content-Type': 'application/json' }); res.end(data == null ? undefined : JSON.stringify(data)); };
@@ -35,20 +44,43 @@ export function createServer(store, { allowedOrigins = ['https://wiss.tocco.ch']
       limit('ip:' + ip, 120);
       if (req.url === '/health' && req.method === 'GET') return send(200, { ok: true });
       if (req.url === '/privacy' && req.method === 'GET') return send(200, { content: 'Optional encrypted sync. We store a random ID, authentication hash, encrypted package, size and activity times. Hosting providers process IP addresses. School data and encryption keys are not uploaded. Deletion removes the active file after durable storage confirms it. Encrypted history may remain in GitHub backups; monthly history compaction is not a guarantee of physical erasure. Accounts expire after about 12 months without sync.' });
-      const match = /^\/v1\/accounts\/([A-Za-z0-9_-]{43})$/.exec(req.url || '');
-      if (!match || !idPattern.test(match[1])) throw new HttpError(404, 'not-found');
       if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'authorization, content-type');
         res.setHeader('Access-Control-Max-Age', '600'); return send(204);
       }
+      // One-time pickup of a linking package. No account auth: the 43-character pairing ID is derived
+      // from the short code with PBKDF2, so guessing needs the code. Rate-limited per IP.
+      const pick = /^\/v1\/pairing\/([A-Za-z0-9_-]{43})$/.exec(req.url || '');
+      if (pick) {
+        if (req.method !== 'GET') throw new HttpError(405, 'method-not-allowed');
+        limit('pair:' + ip, 10); sweepPairs();
+        const entry = pairs.get(pick[1]); if (!entry) throw new HttpError(404, 'not-found');
+        pairs.delete(pick[1]); return send(200, { blob: entry.blob });
+      }
+      const match = /^\/v1\/accounts\/([A-Za-z0-9_-]{43})(\/pairing)?$/.exec(req.url || '');
+      if (!match || !idPattern.test(match[1])) throw new HttpError(404, 'not-found');
       const id = match[1], auth = /^Bearer ([A-Za-z0-9_-]{43})$/.exec(req.headers.authorization || '');
       if (!auth) throw new HttpError(401, 'unauthorized');
       limit('id:' + id, 60); const token = auth[1];
+      if (match[2]) {
+        // Offer a linking package (authenticated: only a connected device can create one).
+        if (req.method !== 'POST') throw new HttpError(405, 'method-not-allowed');
+        const value = await body(req);
+        if (!value || typeof value !== 'object' || Object.keys(value).sort().join(',') !== 'blob,pair' || !/^[A-Za-z0-9_-]{43}$/.test(value.pair)) throw new HttpError(400, 'invalid-package');
+        validatePairBlob(value.blob);
+        await store.read(id, token);                                  // proves the account and token
+        sweepPairs();
+        if (pairs.size >= PAIR_MAX) throw new HttpError(503, 'busy');
+        if ([...pairs.values()].filter((x) => x.owner === id).length >= PAIR_PER_ACCOUNT) throw new HttpError(429, 'rate-limited');
+        if (pairs.has(value.pair)) throw new HttpError(409, 'already-exists');
+        pairs.set(value.pair, { blob: value.blob, owner: id, exp: now() + PAIR_TTL });
+        return send(201, { expires: now() + PAIR_TTL });
+      }
       if (req.method === 'GET') return send(200, await store.read(id, token));
       if (req.method === 'DELETE') { await store.mutate({ kind: 'delete', id, token }, true); return send(204); }
       if (req.method === 'POST' || req.method === 'PUT') {
-        if (req.method === 'POST') limit('create:' + ip, 5);
+        if (req.method === 'POST') { limit('create:' + ip, 5); limit('create:all', 20); }   // per IP and for everyone together
         const value = await body(req);
         if (!value || typeof value !== 'object' || Array.isArray(value)) throw new HttpError(400, 'invalid-package');
         validateBlob(value.blob);

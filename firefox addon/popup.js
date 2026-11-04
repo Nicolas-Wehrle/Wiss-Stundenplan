@@ -26,7 +26,7 @@ let S = {
 const PREF_DEFAULTS = {
   lang: 'de', theme: 'system', style: 'standard', accent: '', mono: false, corners: 'round', size: 'm', startTab: 'last', foldPast: true,
   notifyLessons: false, notifyLessonMin: 15, notifyAbsences: true, notifyGrades: true,
-  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20
+  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true
 };
 const P = (k) => (S.prefs && S.prefs[k] !== undefined ? S.prefs[k] : PREF_DEFAULTS[k]);
 function setPref(k, v) {
@@ -259,7 +259,34 @@ const vacationOf = (k) => (D ? D.vacations.find((v) => k >= v.start && k <= keyA
 // =====================================================================
 // Small renderers
 // =====================================================================
+// ---- sharing: the phone's share menu where it exists, otherwise copy to the clipboard ----
+function shareText(text, title) {
+  if (globalThis.__wissApp && globalThis.__wissApp.share) { globalThis.__wissApp.share(text, title || ''); return; }
+  if (navigator.share) { navigator.share({ title, text }).catch(() => {}); return; }
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(() => toast(tr('Kopiert, du kannst es jetzt einfügen'))).catch(() => toast(tr('Teilen geht hier leider nicht')));
+}
+let toastT = 0;
+function toast(msg) {
+  let el = document.getElementById('toast');
+  if (!el) { el = document.createElement('div'); el.id = 'toast'; el.setAttribute('role', 'status'); document.body.appendChild(el); }
+  el.textContent = msg; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2200);
+}
+const lessonLine = (l) => { const { num, name } = splitLabel(l.label); return `${hm(new Date(l.start))}–${hm(new Date(l.end))} ${num ? num + ' ' : ''}${name}${l.room ? ' · ' + l.room : ''}`; };
+function shareLesson(l) {
+  const xs = examsOf(l), t = teacherFor(l);
+  shareText(`${fmtDay(l._day, true)}\n${lessonLine(l)}${t ? '\n' + t : ''}${xs.length ? '\n' + xs.map((x) => x.label + (x.est ? ' (' + tr('geschätzt') + ')' : '')).join(', ') : ''}`, tr('Lektion'));
+}
+function shareDay(k) {
+  const ls = D.lessons.filter((l) => l._day === k);
+  shareText(`${fmtDay(k, true)}\n` + (ls.length ? ls.map(lessonLine).join('\n') : tr('Kein Unterricht')), tr('Stundenplan'));
+}
+function shareExam(x) {
+  const { num, name } = splitLabel(x.module.label);
+  shareText(`${x.label}${x.est ? ' (' + tr('geschätzt') + ')' : ''}: ${num ? num + ' ' : ''}${name}\n${fmtDay(x.day, true)}, ${hm(new Date(x.lesson.start))}${x.lesson.room ? ' · ' + x.lesson.room : ''}`, tr('Prüfung'));
+}
 const ICON = {
+  share: '<svg class="ico" viewBox="0 0 24 24"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  x: '<svg class="ico" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>',
   room: '<svg class="ico" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="9.5" r="2.5" fill="currentColor"/></svg>',
   user: '<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="2"/><path d="M4 21a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
   note: '<svg class="ico" viewBox="0 0 24 24"><path d="M5 4h10l4 4v12H5z M14 4v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>',
@@ -337,7 +364,7 @@ function renderStatus() {
 // WEEK view
 // =====================================================================
 function nowCard() {
-  const now = Date.now();
+  const now = Date.now(), tk = todayKey();
   const cur = D.lessons.find((l) => new Date(l.start) <= now && new Date(l.end) > now);
   const nxt = D.lessons.find((l) => new Date(l.start) > now);
   const l = cur || nxt;
@@ -348,18 +375,44 @@ function nowCard() {
   if (cur) {
     const pct = Math.min(100, Math.max(0, ((now - s) / (e - s)) * 100));
     const left = Math.round((e - now) / 60000);
-    kicker = `<div class="kicker">Jetzt · noch ${left >= 60 ? Math.floor(left / 60) + ' h ' + (left % 60) + ' min' : left + ' min'}</div>`;
+    kicker = `<div class="kicker"><i class="live"></i>Jetzt · noch ${left >= 60 ? Math.floor(left / 60) + ' h ' + (left % 60) + ' min' : left + ' min'}</div>`;
     bar = `<div class="bar"><i style="width:${pct}%"></i></div>`;
   } else {
-    const n = daysBetween(todayKey(), l._day);
+    const n = daysBetween(tk, l._day);
     kicker = `<div class="kicker next">Als Nächstes · ${n === 0 ? 'Heute' : n === 1 ? 'Morgen' : fmtDay(l._day, true)}</div>`;
   }
   const t = teacherFor(l);
-  const nextExam = D.examList.find((x) => new Date(x.lesson.end) > now);
-  const foot = nextExam ? `<div class="foot">Nächste Prüfung: ${xtag(nextExam)} <b>${esc(splitLabel(nextExam.module.label).name)}</b> · ${fmtDay(nextExam.day)} (${inDays(nextExam.day)})</div>` : '';
-  return `<div class="card nowcard" style="${sv(l.label)}" data-lid="${l.id}">${kicker}
-    <div class="title">${esc(name)} ${examsOf(l).map((x) => xtag(x)).join(' ')}</div>
-    <div class="meta">${hm(s)}–${hm(e)}${l.room ? ' · ' + esc(l.room) : ''}${t ? ' · ' + esc(t) : ''}${num ? ' · Modul ' + esc(num) : ''}</div>${bar}${foot}</div>`;
+  // today at a glance: every block of the day on one line, with a marker for "now"
+  const today = D.lessons.filter((x) => x._day === tk);
+  let strip = '';
+  if (today.length) {
+    const a = new Date(today[0].start).getTime(), b = new Date(today[today.length - 1].end).getTime(), span = Math.max(1, b - a);
+    strip = `<div class="daystrip" aria-hidden="true">${today.map((x) => `<i style="${sv(x.label)}left:${((new Date(x.start) - a) / span) * 100}%;width:${Math.max(2, ((new Date(x.end) - new Date(x.start)) / span) * 100)}%" class="${new Date(x.end) < now ? 'done' : ''}"></i>`).join('')}${now >= a && now <= b ? `<b style="left:${((now - a) / span) * 100}%"></b>` : ''}</div>
+      <div class="daystrip-l"><span>${hm(new Date(a))}</span><span>${hm(new Date(b))}</span></div>`;
+  }
+  const nextExam = P('showNextExam') ? D.examList.find((x) => new Date(x.lesson.end) > now) : null;
+  const foot = nextExam ? `<div class="foot"><span>${xtag(nextExam)} <b>${esc(splitLabel(nextExam.module.label).name)}</b> · ${inDays(nextExam.day)}</span><button class="icon xs" data-act="hide-nextexam" title="${esc(tr('Nicht mehr anzeigen'))}" aria-label="${esc(tr('Nicht mehr anzeigen'))}">${ICON.x}</button></div>` : '';
+  return `<div class="card nowcard hero" style="${sv(l.label)}" data-lid="${l.id}">${kicker}
+    <div class="hrow"><div class="hmain"><div class="title">${esc(name)} ${examsOf(l).map((x) => xtag(x)).join(' ')}</div>
+    <div class="meta">${hm(s)}–${hm(e)}${t ? ' · ' + esc(t) : ''}</div></div>${l.room ? roomBig(l.room) : ''}</div>${bar}${strip}${foot}</div>`;
+}
+
+// the room is what you look for most: big, with the building prefix small
+function roomBig(room) {
+  const m = String(room).match(/^([A-Z]{2,3}-)(.+)$/);
+  return `<div class="hroom"><small>${tr('Raum')}</small><b>${m ? `<i>${esc(m[1])}</i>${esc(m[2])}` : esc(room)}</b></div>`;
+}
+
+// Mo–Fr at a glance: one pill per day, a dot per block, a tap jumps to the day
+function weekStrip(days) {
+  const tk = todayKey();
+  return `<div class="wstrip">${days.map((d) => {
+    const xs = d.lessons.flatMap((l) => examsOf(l));
+    const off = !d.lessons.length;
+    return `<button class="wday ${d.key === tk ? 'today' : ''} ${d.key < tk ? 'past' : ''} ${off ? 'off' : ''}" data-act="jumpday" data-k="${d.key}">
+      <small>${WDS[dow(d.key)]}</small><b>${keyDate(d.key).getUTCDate()}</b>
+      <span class="wdots">${off ? `<i class="none"></i>` : d.lessons.slice(0, 4).map((l) => `<i style="${sv(l.label)}"></i>`).join('')}</span>${xs.length ? `<span class="wx">${esc(xs[0].label.replace(/\s.*/, ''))}</span>` : ''}</button>`;
+  }).join('')}</div>`;
 }
 
 function weekDays() {
@@ -401,7 +454,7 @@ function lessonCard(l) {
   return `<div class="card lesson ${cls} ${xs.length ? 'exam' : ''}" style="${sv(l.label)}" data-lid="${l.id}">
     <div class="time">${hm(s)}<small>${hm(e)}</small></div>
     <div><div class="ltitle">${num ? `<span class="badge">${esc(num)}</span>` : ''}<span>${esc(name)}</span>${xs.map((x) => xtag(x)).join('')}${absTag(absenceOf(l.id))}</div>
-    <div class="lmeta">${l.room ? `<span>${ICON.room}${esc(l.room)}</span>` : ''}${t ? `<span>${ICON.user}${esc(t)}</span>` : ''}${l._dayN ? `<span class="prog">Tag ${l._dayIdx + 1}/${l._dayN}</span>` : ''}</div>
+    <div class="lmeta">${l.room ? `<span class="lroom">${esc(l.room)}</span>` : ''}${t ? `<span>${esc(t)}</span>` : ''}</div>
     ${l.comment ? `<div class="tnote" data-raw>${esc(l.comment)}</div>` : ''}
     ${note ? `<div class="note">${ICON.note}<span data-raw>${esc(note.length > 90 ? note.slice(0, 90) + '…' : note)}</span></div>` : ''}</div></div>`;
 }
@@ -412,9 +465,9 @@ function renderWeekList(days) {
     const isToday = d.key === tk;
     const vac = vacationOf(d.key);
     if (vac && !d.lessons.length && !d.hol) return '';
-    const head = `<div class="dayhead">${WD[dow(d.key)]} <span style="font-weight:500">${fmtShort(d.key)}</span>${isToday ? '<span class="pill">HEUTE</span>' : ''}${d.hol ? `<span class="hpill">${esc(d.hol)}</span>` : ''}</div>`;
+    const head = `<div class="dayhead">${WD[dow(d.key)]} <span style="font-weight:500">${fmtShort(d.key)}</span>${isToday ? '<span class="pill">HEUTE</span>' : ''}${d.hol ? `<span class="hpill">${esc(d.hol)}</span>` : ''}${d.lessons.length ? `<button class="icon xs dshare" data-act="share-day" data-k="${d.key}" title="${esc(tr('Tag teilen'))}" aria-label="${esc(tr('Tag teilen'))}">${ICON.share}</button>` : ''}</div>`;
     const body = d.lessons.length ? d.lessons.map(lessonCard).join('') : `<div class="free">${d.hol ? 'Feiertag' : d.doneCount ? 'Für heute fertig' : 'Kein Unterricht'}</div>`;
-    return `<section class="day ${isToday ? 'today' : ''}">${head}${body}</section>`;
+    return `<section class="day ${isToday ? 'today' : ''}" id="day-${d.key}">${head}${body}</section>`;
   }).join('');
 }
 
@@ -481,7 +534,7 @@ function renderWeek() {
   let body;
   if (!f.days.length || (!grid && !f.days.some((d) => d.lessons.length || d.hol))) body = `<div class="free" style="margin:4px 2px 0">Diese Woche ist vorbei. Mit dem Pfeil oben gehts zur nächsten.</div>`;
   else body = grid ? renderWeekGrid(f.days) : renderWeekList(f.days);
-  return (weekOffset === 0 && !grid ? nowCard() : '') + weekNav(mon) + vacCard(mon) + f.bar + body;
+  return (weekOffset === 0 && !grid ? nowCard() : '') + weekNav(mon) + (grid ? '' : weekStrip(days)) + vacCard(mon) + f.bar + body;
 }
 
 // =====================================================================
@@ -495,20 +548,34 @@ function examRow(x) {
   return `<div class="card xrow ${soon ? 'soon' : ''} ${k < todayKey() ? 'done' : ''}" data-lid="${x.lesson.id}" style="${sv(x.module.label)}">
     <div class="xdate"><small>${WDS[dow(k)]}</small><b>${d.getUTCDate()}</b><small>${MON[d.getUTCMonth()]}</small></div>
     <div class="xmain"><div class="t">${esc(name)}</div>
-      <div class="m">${xtag(x)}${num ? `<span class="badge">${esc(num)}</span>` : ''}<span>${hm(new Date(x.lesson.start))}</span>${x.lesson.room ? `<span>${esc(x.lesson.room)}</span>` : ''}${x.est ? '<span>· geschätzt</span>' : ''}</div></div>
-    <div class="xright">${done ? `<b class="gval ${gradeCls(x.grade)}">${fmtG(x.grade)}</b>Note` : `<b>${inDays(k)}</b>${x.weight != null ? x.weight + ' %' : ''}`}</div></div>`;
+      <div class="m">${xtag(x)}${num ? `<span class="badge">${esc(num)}</span>` : ''}<span>${hm(new Date(x.lesson.start))}</span>${x.lesson.room ? `<span>${esc(x.lesson.room)}</span>` : ''}</div></div>
+    <div class="xright">${done ? `<b class="gval ${gradeCls(x.grade)}">${fmtG(x.grade)}</b>Note` : `<b>${inDays(k)}</b>`}</div></div>`;
 }
 function renderExams() {
   const tk = todayKey();
   const up = D.examList.filter((x) => x.day >= tk);
   const past = D.examList.filter((x) => x.day < tk).reverse();
-  const wk = up.filter((x) => daysBetween(tk, x.day) <= 7), later = up.filter((x) => daysBetween(tk, x.day) > 7);
-  let h = `<div class="legend"><span class="xtag zp">ZP</span> Zwischenprüfung <span class="xtag lb">LB</span> Leistungsbeurteilung <span class="xtag pj">Projekt</span>
-    <span class="xtag est" style="color:var(--muted)">gestrichelt</span> = geschätzt, Klick zum Korrigieren</div>`;
-  if (!D.examList.length) return h + `<div class="empty">Keine Prüfungen gefunden.</div>`;
-  if (wk.length) h += `<div class="section-title">Nächste 7 Tage <small>${wk.length}</small></div>` + wk.map(examRow).join('');
-  if (later.length) h += `<div class="section-title">Später <small>${later.length}</small></div>` + later.map(examRow).join('');
-  if (past.length) h += `<div class="section-title">Vergangen <small>${past.length}</small></div>` + past.slice(0, 20).map(examRow).join('');
+  if (!D.examList.length) return `<div class="empty">Keine Prüfungen gefunden.</div>`;
+  let h = '';
+  const nx = up[0];
+  if (nx) {
+    const n = daysBetween(tk, nx.day), { num, name } = splitLabel(nx.module.label);
+    h += `<div class="card xhero hero" data-lid="${nx.lesson.id}" style="${sv(nx.module.label)}">
+      <div class="xcount"><b>${n}</b><small>${n === 1 ? tr('Tag') : tr('Tage')}</small></div>
+      <div class="xhm"><div class="kicker">${tr('Nächste Prüfung')} ${xtag(nx)}</div><div class="title">${esc(name)}</div>
+        <div class="meta">${fmtDay(nx.day)} · ${hm(new Date(nx.lesson.start))}${nx.lesson.room ? ' · ' + esc(nx.lesson.room) : ''}</div></div>
+      <button class="icon xs" data-act="share-exam" data-lid="${nx.lesson.id}" data-lab="${esc(nx.label)}" title="${esc(tr('Teilen'))}" aria-label="${esc(tr('Teilen'))}">${ICON.share}</button></div>`;
+  }
+  const in7 = up.filter((x) => daysBetween(tk, x.day) <= 7).length, in30 = up.filter((x) => daysBetween(tk, x.day) <= 30).length, est = up.filter((x) => x.est).length;
+  h += `<div class="avg"><div class="card"><div class="k">${tr('7 Tage')}</div><div class="v ${in7 ? 'gval warn' : ''}">${in7}</div></div>
+    <div class="card"><div class="k">${tr('30 Tage')}</div><div class="v">${in30}</div></div>
+    <div class="card"><div class="k">${tr('Geschätzt')}</div><div class="v">${est}</div></div></div>`;
+  // the rest of the year, month by month
+  const MONL = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+  const groups = new Map();
+  for (const x of up.slice(nx ? 1 : 0)) { const k = x.day.slice(0, 7); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(x); }
+  for (const [ym, list] of groups) h += `<div class="section-title">${tr(MONL[+ym.slice(5) - 1])} ${ym.slice(0, 4)} <small>${list.length}</small></div>` + list.map(examRow).join('');
+  if (past.length) h += `<details class="semfold"><summary class="section-title">${tr('Vergangen')} <small>${past.length}</small></summary>${past.slice(0, 30).map(examRow).join('')}</details>`;
   return h;
 }
 
@@ -580,9 +647,10 @@ function renderGrades() {
   // group open entries per module (ABU has 2 parts)
   const open = G.filter((g) => g.grade == null || /offen/i.test(g.status));
   const seen = new Set();
-  let h = `<div class="avg"><div class="card"><div class="k">Schnitt</div><div class="v gval ${gradeCls(avg)}">${fmtG(avg && Math.round(avg * 100) / 100)}</div></div>
-    <div class="card"><div class="k">Abgeschlossen</div><div class="v">${done.length}</div></div>
-    <div class="card"><div class="k">Ungenügend</div><div class="v ${insuff ? 'gval bad' : ''}">${insuff}</div></div></div>`;
+  const prog = moduleProgress(), best = done.length ? Math.max(...done.map((g) => +g.grade)) : null;
+  let h = `<div class="card ghero hero"><div class="gh-main"><div class="k">${tr('Schnitt')}</div><div class="v gval ${gradeCls(avg)}">${fmtG(avg && Math.round(avg * 100) / 100)}</div>
+      ${insuff ? `<div class="k"><b class="gval bad">${tr('{N} ungenügend', { N: insuff })}</b></div>` : ''}</div>
+    ${prog ? `<div class="ring" style="--p:${Math.round((prog.done / Math.max(1, prog.total)) * 100)}" title="${esc(tr('Schulmodule abgeschlossen'))}"><b>${prog.done}<small>/${prog.total}</small></b><span>${tr('Module')}</span></div>` : ''}</div>`;
   h += gradeTrend();
 
   const card = (g) => {
@@ -599,9 +667,8 @@ function renderGrades() {
       const restLab = c.missing.map((x) => x.label).join(' + ') || tr('Rest');
       need = `<div class="calc"><div class="need">${nT == null
         ? tr('Eine {T} geht nicht mehr, höchstens noch eine {M}.', { T: fmtG(tgt), M: fmtG(c.max) })
-        : tr(c.missing.length > 1 ? 'Für eine {T} brauchst du in {R} ({W} %) im Schnitt mindestens eine {N}.' : 'Für eine {T} brauchst du in {R} ({W} %) mindestens eine {N}.', { T: `<b>${fmtG(tgt)}</b>`, R: esc(restLab), W: c.rest, N: `<b class="gval ${nT > 5.5 ? 'bad' : ''}">${nT <= 1 ? '1' : fmtG(nT)}</b>` })}
-        ${c.part != null ? `<span class="muted"> · ${tr('bisher')} ${fmtG(Math.round(c.part * 100) / 100)}</span>` : ''}</div>
-        <div class="ntrow"><span class="ntl">${tr('Nötig für')}</span>${row}</div></div>`;
+        : tr('Für eine {T} brauchst du noch eine {N}', { T: `<b>${fmtG(tgt)}</b>`, N: `<b class="gval ${nT > 5.5 ? 'bad' : ''}">${nT <= 1 ? '1' : fmtG(nT)}</b>` })}</div>
+        <details class="ntfold"><summary>${tr('Alle Zielnoten')}</summary><div class="ntrow"><span class="ntl">${tr('Nötig für')}</span>${row}</div></details></div>`;
     }
     const { num, name } = splitLabel(g.label);
     const lid = (D.mods.get(g.event)?.lessons.find((l) => new Date(l.end) > Date.now()) || D.mods.get(g.event)?.lessons.slice(-1)[0])?.id;
@@ -611,10 +678,30 @@ function renderGrades() {
       <div class="gparts">${g.exams.map((x) => `<span class="gpart"><span class="xtag ${examKind(x.label)}">${esc(x.label)}</span><span class="w">${x.weight ?? ''}%</span><span class="gval ${gradeCls(x.grade)}">${fmtG(x.grade)}</span></span>`).join('')}</div>${need}</div>`;
   };
   const openList = open.filter((g) => { const k = g.event + g.part; if (seen.has(k)) return false; seen.add(k); return true; });
-  if (openList.length) h += `<div class="section-title">Laufend <small>${openList.length}</small></div>` + openList.map(card).join('');
+  // the modules you have class in next come first, the rest is folded away
+  const nextOf = (g) => { const l = D.mods.get(g.event)?.lessons.find((x) => new Date(x.end) > Date.now()); return l ? new Date(l.start).getTime() : Infinity; };
+  openList.sort((a, b) => nextOf(a) - nextOf(b));
+  const SHOW = 4;
+  if (openList.length) h += `<div class="section-title">Laufend <small>${openList.length}</small></div>` + openList.slice(0, SHOW).map(card).join('')
+    + (openList.length > SHOW ? `<details class="semfold morefold"><summary class="section-title">${tr('Weitere laufende Module')} <small>${openList.length - SHOW}</small></summary>${openList.slice(SHOW).map(card).join('')}</details>` : '');
   const closed = done.filter((g) => !/offen/i.test(g.status)).sort((a, b) => +b.grade - +a.grade);
-  if (closed.length) h += `<div class="section-title">Abgeschlossen <small>${closed.length}</small></div>` + closed.map(card).join('');
+  // finished modules as a compact grid: number, name, grade
+  const tile = (g) => {
+    const { num, name } = splitLabel(g.label);
+    const lid = (D.mods.get(g.event)?.lessons.slice(-1)[0])?.id;
+    return `<div class="card gtile ${gradeCls(+g.grade)}" style="${sv(g.label)}" ${lid ? `data-lid="${lid}"` : ''} title="${esc(name)}">${num ? `<span class="badge">${esc(num)}</span>` : ''}<span class="gt">${esc(g.part && g.part !== name && !num ? name + ' · ' + g.part : name)}</span><b class="gval ${gradeCls(+g.grade)}">${fmtG(+g.grade)}</b></div>`;
+  };
+  if (closed.length) h += `<div class="section-title">Abgeschlossen <small>${closed.length}</small></div><div class="ggrid">${closed.map(tile).join('')}</div>`;
   return h + renderAllModules();
+}
+
+// how many school modules of the apprenticeship are done (for the ring in the grades overview)
+function moduleProgress() {
+  const nums = Object.keys(MODS || {}).filter((n) => /Berufsfachschule/i.test(MODS[n].ort));
+  if (!nums.length) return null;
+  const doneNums = new Set();
+  for (const g of S.grades || []) if (g.grade != null && !/offen/i.test(g.status)) for (const n of (splitLabel(g.label).num || '').split('-')) doneNums.add(n);
+  return { done: nums.filter((n) => doneNums.has(n)).length, total: nums.length };
 }
 
 // All modules of the apprenticeship (modulbaukasten) with status from Tocco
@@ -650,7 +737,9 @@ function renderAllModules() {
     <div class="bar" style="height:6px;margin:0 2px 8px"><i style="width:${(schoolDone / Math.max(1, school.length)) * 100}%;background:var(--ok)"></i></div>
     <div class="legend" style="margin:0 2px 6px"><span class="mst done">✓</span> abgeschlossen <span class="mst run">●</span> läuft <span class="mst plan">◷</span> geplant <span class="mst todo">○</span> offen · üK = überbetrieblicher Kurs</div>`;
   for (const y of Object.keys(years).sort()) {
-    h += `<div class="mgroup"><div class="mgh">${esc(y)}</div>`;
+    const running = years[y].some((n) => statusOf(n).s === 'run');
+    const nDone = years[y].filter((n) => statusOf(n).s === 'done').length;
+    h += `<details class="mgroup" ${running ? 'open' : ''}><summary class="mgh">${esc(y)} <small>${nDone}/${years[y].length}</small></summary>`;
     for (const n of years[y].sort((a, b) => a - b)) {
       const mi = MODS[n], st = statusOf(n);
       const uk = /üK/.test(mi.ort), wahl = /Wahl/i.test(mi.typ);
@@ -660,7 +749,7 @@ function renderAllModules() {
         <span class="badge">${esc(n)}</span><span class="mt">${esc(mi.t)}${uk ? ' <span class="mini">üK</span>' : ''}${wahl ? ' <span class="mini">Wahl</span>' : ''}</span>
         <span class="mr">${st.g != null ? `<b class="gval ${gradeCls(st.g)}">${fmtG(st.g)}</b>` : `<span class="muted">${esc(st.t)}</span>`}</span></div>`;
     }
-    h += `</div>`;
+    h += `</details>`;
   }
   return h + `<div class="muted" style="font-size:11px;margin-top:8px">Modulbeschreibungen: modulbaukasten.ch (ICT-Berufsbildung Schweiz)</div>`;
 }
@@ -852,19 +941,21 @@ function renderAbsences() {
   const rateCls = (r, min) => r == null ? '' : r < min ? 'bad' : r < min + 3 ? 'warn' : 'good';
   const openAct = A.filter((a) => needsAction(a) && deadline(a).open).sort((a, b) => deadline(a).end - deadline(b).end);
 
-  let h = `<div class="avg">
-    <div class="card"><div class="k">Zu entschuldigen</div><div class="v ${openAct.length ? 'gval warn' : 'gval good'}">${openAct.length || '✓'}</div><div class="k">${openAct.length ? 'Frist ' + EXCUSE_DAYS + ' Tage' : 'nichts offen'}</div></div>
-    <div class="card"><div class="k">Abwesend</div><div class="v">${A.length}</div><div class="k">${exc.length} entsch. · ${unexc.length} unentsch.</div></div>
-    <div class="card"><div class="k">${cur ? 'Semester ' + semOf(cur.abbr) : 'Anwesenheit'}</div><div class="v gval ${cur ? rateCls(cur.semRate, cur.min || 90) : ''}">${cur && cur.semRate != null ? cur.semRate + ' %' : '–'}</div><div class="k">Minimum ${cur ? cur.min || 90 : 90} %</div></div></div>`;
-
-  // only what still needs doing goes on top
+  // only what still needs doing goes on top, then the numbers
+  let h = '';
   if (openAct.length) {
-    h += `<div class="section-title">Jetzt entschuldigen <small>innert ${EXCUSE_DAYS} Tagen (Teams-Genehmigung)</small></div>`;
+    h += `<div class="section-title todo">Jetzt entschuldigen</div>`;
     for (const a of openAct) h += absRow(a, true);
   }
+  h += `<div class="avg">
+    <div class="card"><div class="k">Zu entschuldigen</div><div class="v ${openAct.length ? 'gval warn' : 'gval good'}">${openAct.length || '✓'}</div></div>
+    <div class="card"><div class="k">Abwesend</div><div class="v">${A.length}</div></div>
+    <div class="card"><div class="k">Anwesenheit</div><div class="v gval ${cur ? rateCls(cur.semRate, cur.min || 90) : ''}">${cur && cur.semRate != null ? cur.semRate + ' %' : '–'}</div></div></div>`;
 
+
+  h += absenceBudget(cur ? M.filter((m) => m.type !== 'Semester' && semOf(m.abbr) === semOf(cur.abbr) && m.total > 0 && m.label) : []);
   h += `<div class="section-title">Übersicht</div>` + renderHeat(A);
-  if (A.length) h += `<div class="section-title">Verlauf <small>${A.length} Absenzen · ${fmtG(sum(A))} Lektionen</small></div>` + renderAbsTimeline(A);
+  if (A.length) h += `<details class="semfold"><summary class="section-title">Verlauf <small>${A.length} Absenzen · ${fmtG(sum(A))} Lektionen</small></summary>${renderAbsTimeline(A)}</details>`;
 
   // modules per semester: current semester open, older ones folded
   const now = Date.now();
@@ -880,7 +971,7 @@ function renderAbsences() {
       const future = D.lessons.filter((l) => l._ev === m.event && new Date(l.start) > now);
       const F = future.reduce((x, l) => x + lessonsOf((new Date(l.end) - new Date(l.start)) / 60000), 0);
       let extra = '';
-      if (F > 0 && rate < min + 5) {
+      if (false) {
         const endRate = Math.round(((m.actual || 0) + F) / ((m.total || 0) + F) * 100);
         const buffer = Math.floor((m.actual || 0) + F - (min / 100) * ((m.total || 0) + F));
         extra = `<div class="need">${tr('Noch {F} Lekt. geplant · am Ende max. {R}', { F, R: `<b class="gval ${rateCls(endRate, min)}">${endRate} %</b>` })} · ${buffer >= 0 ? tr('noch {B} Lekt. Puffer', { B: `<b>${buffer}</b>` }) : `<b class="gval bad">${tr('Minimum nicht mehr erreichbar')}</b>`}</div>`;
@@ -895,10 +986,36 @@ function renderAbsences() {
         <div class="muted" style="font-size:11.5px;margin-top:5px">${fmtG(m.actual ?? 0)} / ${fmtG(m.total)} Lektionen${m.excused ? ` · ${fmtG(m.excused)} entsch.` : ''}${m.unexcused ? ` · <b class="gval bad">${fmtG(m.unexcused)} unentsch.</b>` : ''}</div>${extra}</div>`;
     }
     const head = `Semester ${n} <small>${sem.semActual ?? '–'} / ${sem.semTotal ?? '–'} Lekt. · <b class="gval ${rateCls(sem.semRate, sem.min || 90)}">${sem.semRate ?? '–'} %</b></small>`;
-    h += si === 0 ? `<div class="section-title">${head}</div>${body}`
-      : `<details class="semfold"><summary class="section-title">${head}</summary>${body}</details>`;
+    h += `<details class="semfold"><summary class="section-title">${si === 0 ? tr('Module') + ' · ' : ''}${head}</summary>${body}</details>`;
   });
   return h;
+}
+
+// How many more lessons can be missed per module before falling under the minimum attendance,
+// counting the lessons still planned this semester. Smallest buffer first.
+function absenceBudget(mods) {
+  const now = Date.now(), rows = [];
+  for (const m of mods) {
+    const min = m.min || 90;
+    const future = D.lessons.filter((l) => l._ev === m.event && new Date(l.start) > now);
+    const F = future.reduce((x, l) => x + lessonsOf((new Date(l.end) - new Date(l.start)) / 60000), 0);
+    if (!F) continue;
+    const total = (m.total || 0) + F, can = Math.floor((m.actual || 0) + F - (min / 100) * total);
+    rows.push({ m, F, can, total, min });
+  }
+  if (!rows.length) return '';
+  rows.sort((a, b) => a.can - b.can);
+  const html = rows.slice(0, 6).map(({ m, F, can, total, min }) => {
+    const { num, name } = splitLabel(m.label);
+    const allowed = Math.floor(total * (1 - min / 100)), used = Math.max(0, allowed - Math.max(0, can));
+    const cls = can < 0 ? 'bad' : can <= 1 ? 'warn' : 'good';
+    const lid = (D.mods.get(m.event)?.lessons.find((l) => new Date(l.end) > now))?.id;
+    return `<div class="brow" style="${sv(m.label)}" ${lid ? `data-lid="${lid}"` : ''}>
+      <div class="bh"><span>${num ? `<span class="badge">${esc(num)}</span> ` : ''}${esc(name)}</span><b class="gval ${cls}">${can < 0 ? tr('zu viel') : can === 0 ? tr('keine mehr') : tr('noch {N}', { N: can })}</b></div>
+      <div class="bbar"><i class="${cls}" style="width:${allowed ? Math.min(100, (used / allowed) * 100) : 100}%"></i></div>
+      </div>`;
+  }).join('');
+  return `<div class="section-title">${tr('Noch fehlen erlaubt')} <small>${tr('Lektionen')}</small></div><div class="card budget">${html}</div>`;
 }
 
 function absRow(a, withDeadline) {
@@ -1064,7 +1181,13 @@ function renderRooms() {
   // where is my class right now / today
   const mineToday = D.lessons.filter((l) => l._day === k);
   const curMine = mineToday.find((l) => new Date(l.start) <= atMs && new Date(l.end) > atMs);
-  h += `<div class="section-title">${esc(roomState.building)} <small>${freeCount} von ${rooms.length} frei um ${hhmm}${curMine ? ` · deine Klasse: <b style="color:var(--accent)">${esc(curMine.room || '?')}</b>` : ''}</small></div>`;
+  // quick answer first: the rooms that stay free the longest
+  const freeNow = rooms.map((r) => ({ r, st: roomStatus(r.label, bookings, atMs) })).filter((x) => x.st.state === 'free')
+    .sort((a, b) => (b.st.next ? new Date(b.st.next.start) : Infinity) - (a.st.next ? new Date(a.st.next.start) : Infinity) || a.r.label.localeCompare(b.r.label, 'de', { numeric: true }));
+  h += `<div class="card rhero hero"><div class="rh-top"><div><div class="k">${tr('Frei um {T}', { T: hhmm })}</div><div class="v">${freeCount}<small> / ${rooms.length}</small></div></div>
+    ${curMine ? `<div class="rh-mine"><span class="k">${tr('Deine Klasse')}</span><b>${esc(curMine.room || '?')}</b></div>` : ''}</div>
+    ${freeNow.length ? `<div class="rfree">${freeNow.slice(0, 6).map(({ r, st }) => `<button class="rchip" data-room="${esc(r.label)}"><b>${esc(r.label.replace(/^[A-Z]{2}-/, ''))}</b><small>${st.next ? tr('bis {T}', { T: hm(new Date(st.next.start)) }) : tr('ganzer Tag')}</small></button>`).join('')}</div>` : `<div class="muted">${tr('Gerade ist kein Raum frei.')}</div>`}</div>`;
+  h += `<div class="section-title">${esc(roomState.building)}</div>`;
 
   for (const f of floors) {
     const list = byFloor[f].sort((a, b) => a.label.localeCompare(b.label, 'de', { numeric: true }));
@@ -1090,7 +1213,7 @@ function renderRooms() {
   if (roomState.sel) {
     const r = (S.rooms || []).find((x) => x.label === roomState.sel);
     const st = roomStatus(roomState.sel, bookings, atMs);
-    h += `<div class="card rdetail"><div style="display:flex;justify-content:space-between;align-items:baseline"><b style="font-size:14px">${esc(roomState.sel)}</b><span class="muted">${r && r.seats ? r.seats + ' Plätze' : ''}${r && r.surface ? ' · ' + r.surface + ' m²' : ''}${r && r.floor ? ' · ' + esc(r.floor) : ''}</span></div>
+    h += `<div class="card rdetail"><div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px"><b style="font-size:14px">${esc(roomState.sel)} <button class="icon xs" data-act="share-room" data-room="${esc(roomState.sel)}" title="${esc(tr('Teilen'))}" aria-label="${esc(tr('Teilen'))}">${ICON.share}</button></b><span class="muted">${r && r.seats ? r.seats + ' Plätze' : ''}${r && r.surface ? ' · ' + r.surface + ' m²' : ''}${r && r.floor ? ' · ' + esc(r.floor) : ''}</span></div>
       ${r && r.comment ? `<div class="muted" style="margin-top:4px;white-space:pre-line;font-size:12px">${esc(r.comment.replace(/Weitere Informationen.*$/s, '').trim())}</div>` : ''}
       ${timeline(st.bs, st.mineIds, from, to, atMs)}
       <div class="tlaxis">${[8, 10, 12, 14, 16].map((hh) => `<span style="left:${((hh - 7) / 11) * 100}%">${hh}:00</span>`).join('')}</div>
@@ -1147,7 +1270,7 @@ function openSheet(lid) {
 
   setHTML($('sheet'), `<div class="sh" style="${sv(l.label)}"><div><div class="stripe"></div>
       <h2>${esc(name)}</h2><div class="muted">${num ? 'Modul ' + esc(num) + ' · ' : ''}${esc(l.cls || '')}</div></div>
-      <button class="icon" data-act="close" aria-label="Schliessen">${ICON.close}</button></div>
+      <div class="shbtns"><button class="icon" data-act="share-lesson" data-lid="${l.id}" aria-label="${esc(tr('Teilen'))}" title="${esc(tr('Teilen'))}">${ICON.share}</button><button class="icon" data-act="close" aria-label="Schliessen">${ICON.close}</button></div></div>
     <div class="when"><b>${fmtDay(l._day, true)}, ${hm(s)}–${hm(e)}</b><span>${inDays(l._day)}</span></div>
     <div class="facts">
       <div class="fact"><span>Raum</span><b>${room}</b></div>
@@ -1434,6 +1557,19 @@ document.addEventListener('click', (ev) => {
   if (a) {
     const act = a.dataset.act;
     if (act === 'reveal') { const on = a.classList.toggle('shown'); a.title = on ? '' : tr('Antippen zum Anzeigen'); return; }
+    if (act === 'share-lesson') { const l = D.lessons.find((x) => x.id === a.dataset.lid); if (l) shareLesson(l); return; }
+    if (act === 'share-day') { shareDay(a.dataset.k); return; }
+    if (act === 'share-exam') { const x = D.examList.find((y) => y.lesson.id === a.dataset.lid && y.label === a.dataset.lab); if (x) shareExam(x); return; }
+    if (act === 'share-room') {
+      const st = roomStatus(a.dataset.room, (roomState.cache[roomState.date] || { bookings: [] }).bookings, Date.now());
+      shareText(`${a.dataset.room}: ${st.text}`, tr('Raum')); return;
+    }
+    if (act === 'hide-nextexam') { setPref('showNextExam', false); toast(tr('Ausgeblendet. In den Einstellungen wieder einschalten.')); render(); return; }
+    if (act === 'jumpday') {
+      const go = () => { const el = document.getElementById('day-' + a.dataset.k); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+      if (!document.getElementById('day-' + a.dataset.k) && !showPast) { showPast = true; render(); }
+      requestAnimationFrame(go); return;
+    }
     if (act === 'prev') { weekOffset--; render(); }
     else if (act === 'next') { weekOffset++; render(); }
     else if (act === 'today') { weekOffset = 0; showPast = !P('foldPast'); render(); }

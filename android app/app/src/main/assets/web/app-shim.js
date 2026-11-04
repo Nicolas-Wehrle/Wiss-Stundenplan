@@ -4,7 +4,7 @@
 (() => {
   'use strict';
   const H = window.AndroidHost, ST = window.AndroidStore;
-  const VERSION = '1.11.0';
+  const VERSION = '1.12.0';
   const L = { msg: [], changed: [], installed: [], startup: [], alarm: [] };
 
   // ---------- messaging (popup ⇄ background run in the same page here) ----------
@@ -127,6 +127,7 @@
     permission: () => H.notifPermission(),
     requestPermission: () => H.requestNotifPermission(),
     installUpdate: (url) => H.installUpdate(String(url)),
+    share: (text, title) => H.share(String(text), String(title || '')),
     openExternal: (url) => H.openExternal(String(url))
   };
 
