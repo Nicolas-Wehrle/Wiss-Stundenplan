@@ -1585,3 +1585,57 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
 .xrow:not(.soon) .xright b { color: var(--muted); font-weight: 600; }
 .xrow.soon .xright b { color: var(--accent); }
 .section-title.todo { color: var(--bad); }
+
+/* sync: "Mehr", "Server" and "Datenschutz" as tidy fold-out rows */
+.sync-more { border-top: 1px solid var(--line); margin-top: 14px; }
+.sync-more + .sync-more { margin-top: 0; }
+.sync-more > summary { display: flex; align-items: center; justify-content: space-between; padding: 13px 0; font-weight: 600; cursor: pointer; list-style: none; user-select: none; -webkit-user-select: none; }
+.sync-more > summary::-webkit-details-marker { display: none; }
+.sync-more > summary::after { content: ''; width: 7px; height: 7px; border: solid var(--muted); border-width: 0 2px 2px 0; transform: rotate(45deg); margin: -4px 4px 0 0; transition: transform .2s ease; }
+.sync-more[open] > summary::after { transform: rotate(-135deg); margin-top: 3px; }
+.sync-more > :not(summary) { margin-top: 0; }
+.sync-more .sync-label { margin: 0 0 14px; }
+.sync-more .sync-actions { margin: 0 0 14px; }
+.sync-more .shint { margin: 0 0 10px; }
+.sync-facts { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 12px; }
+.sync-facts li { display: grid; grid-template-columns: 30px 1fr; gap: 11px; align-items: start; }
+.sync-facts i { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.sync-facts i svg { width: 16px; height: 16px; }
+.sync-facts span { font-size: 12.5px; line-height: 1.4; color: var(--muted); padding-top: 1px; }
+.sync-facts b { display: block; color: var(--ink); font-size: 13px; font-weight: 650; }
+.sync-join { margin-bottom: 0; }
+
+/* ---------- device sync panel ---------- */
+#set-sync .set-card { padding: 14px 14px 2px; }
+.btn.wide { display: block; width: 100%; padding: 10px 14px; border-radius: 12px; font-size: 13.5px; }
+.sync-hero { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+.sync-hero > div { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.sync-hero b { font-size: 14px; }
+.sync-hero small { color: var(--muted); font-size: 12px; }
+.sh-ico { flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-soft); color: var(--accent); }
+.sh-ico svg { width: 22px; height: 22px; }
+.sync-or { display: flex; align-items: center; gap: 10px; margin: 14px 0 10px; color: var(--faint); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
+.sync-or::before, .sync-or::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+#set-sync .sync-join { margin: 0; padding: 0; border: 0; border-radius: 0; }
+.sync-join label { display: block; font-weight: 600; margin-bottom: 7px; }
+.sync-join small { display: block; color: var(--muted); font-size: 11.5px; margin-top: 7px; }
+.sync-joinrow { margin-top: 0; }
+.sync-status { display: flex; align-items: center; gap: 11px; margin-bottom: 14px; }
+.sync-status > i { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--warn); box-shadow: 0 0 0 4px var(--warn-soft); margin: 0 4px 0 3px; }
+.sync-status.ok > i { background: var(--ok); box-shadow: 0 0 0 4px var(--ok-soft); }
+.sync-status.bad > i { background: var(--bad); box-shadow: 0 0 0 4px var(--bad-soft); }
+.sync-status > div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sync-status b { font-size: 14px; }
+.sync-status small { color: var(--muted); font-size: 12px; }
+.sync-status .icon svg { width: 18px; height: 18px; }
+#set-sync .sync-error { margin: -4px 0 12px; padding: 9px 12px; border-radius: 10px; background: var(--bad-soft); color: var(--bad); font-size: 12.5px; }
+#set-sync .pair-card { margin: 0; }
+#set-sync .sync-recovery { margin: 14px 0 0; padding: 14px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface-2); }
+.sr-h { display: flex; flex-direction: column; margin-bottom: 10px; }
+.sr-h small { color: var(--muted); font-size: 11.5px; }
+#set-sync .sync-recovery textarea { margin: 10px 0 2px; font-size: 11px; border-radius: 10px; resize: none; }
+#syncQR { display: flex; justify-content: center; }
+#syncQR svg { width: 150px; height: 150px; border-radius: 12px; background: #fff; }
+#set-sync .sync-more:first-of-type { margin-top: 16px; }
+#set-sync .sync-actions { margin: 0 0 14px; }
+#set-sync .sync-recovery .sync-actions { margin: 6px 0 0; }

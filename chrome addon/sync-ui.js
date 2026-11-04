@@ -20,22 +20,36 @@ function renderDeviceSync() {
   const statuses = { off: 'Aus', pending: 'Änderungen warten', syncing: 'Wird synchronisiert…', synced: 'Synchronisiert', error: 'Synchronisation fehlgeschlagen' };
   const btn = (act, text, cls = 'ghost') => `<button class="btn ${cls}" data-act="${act}" ${syncUI.busy ? 'disabled' : ''}>${tr(text)}</button>`;
   const error = syncUI.error || cfg.error;
-  const intro = `<p class="shint">${tr('Notizen und Prüfungskorrekturen auf all deinen Geräten. Verschlüsselt, der Server kann nichts lesen.')}</p>`;
+  const ICO = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+  const devices = ICO('<rect x="2.5" y="5" width="12" height="9" rx="1.8"/><path d="M5.5 17.5h6"/><rect x="16" y="8" width="5.5" height="11" rx="1.4"/>');
   const privacy = `<details class="sync-more"><summary>${tr('Datenschutz')}</summary><ul class="sync-facts">
-    <li>${tr('Der Server sieht nur eine zufällige ID, die Grösse und die Zeit.')}</li>
-    <li>${tr('Wer den Wiederherstellungscode hat, hat Zugriff. Ohne Code und ohne Gerät sind die Daten weg.')}</li>
-    <li>${tr('Inaktive Daten werden nach etwa 12 Monaten gelöscht.')}</li></ul></details>`;
-  const code = syncUI.code ? `<div class="sync-recovery"><b>${tr('Wiederherstellungscode')}</b><p class="shint">${tr('Gut aufbewahren und niemandem geben.')}</p><textarea readonly data-raw id="syncRecovery" rows="4">${esc(syncUI.code)}</textarea><div id="syncQR" aria-label="${tr('Verbindungscode als QR-Code')}"></div><div class="sync-actions">${btn('device-code-copy', 'Kopieren')}${btn('device-code-hide', 'Ausblenden')}</div></div>` : '';
-  const conflicts = (S.syncConflicts || []).length ? `<details><summary>${tr('Wiederherstellbare Notizen')} (${S.syncConflicts.length})</summary>${S.syncConflicts.map((c, i) => `<div class="sync-conflict"><small data-raw>${esc(c.key)}</small><pre data-raw>${esc(c.value)}</pre><button class="btn ghost" data-act="device-note-restore" data-index="${i}">${tr('Übernehmen')}</button></div>`).join('')}</details>` : '';
-  return (connected ?
-    row(tr('Synchronisation'), tr(statuses[cfg.status] || 'Aus') + (cfg.lastSuccess ? ' · ' + ago(cfg.lastSuccess) : ''), btn('device-now', 'Jetzt')) +
-    pairBlock() + `<div class="sync-actions">${btn('device-pair', 'Gerät hinzufügen', 'btn')}${btn('device-code', 'Wiederherstellungscode')}</div>
-    <details class="sync-more" ${syncUI.deleteArmed ? 'open' : ''}><summary>${tr('Mehr')}</summary><p class="shint" data-raw>${esc(cfg.server || '')}</p><div class="sync-actions">${btn('device-disconnect', 'Gerät trennen')}${btn(syncUI.deleteArmed ? 'device-delete-confirm' : 'device-delete', syncUI.deleteArmed ? 'Wirklich löschen?' : 'Daten löschen', 'danger')}</div></details>` :
-    intro + `<div class="sync-actions">${btn('device-enable', 'Einschalten', 'btn')}</div>
-    <div class="sync-join"><b>${tr('Schon auf einem anderen Gerät?')}</b><p class="shint">${tr('Dort «Gerät hinzufügen» tippen und den Code hier eingeben.')}</p>
-      <div class="sync-joinrow"><input id="syncJoin" class="pair-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX" aria-label="${tr('Code')}">${btn('device-join', 'Verbinden', 'btn')}</div></div>
-    <details class="sync-more"><summary>${tr('Server')}</summary><label class="sync-label"><input id="syncServer" type="url" value="https://wiss-stundenplan-sync.onrender.com" autocomplete="off" aria-label="${tr('Sync-Server')}"></label></details>`) +
-    (error ? `<p class="sync-error" role="alert">${tr(SYNC_ERRORS[error] || SYNC_ERRORS['server-unavailable'])}</p>` : '') + code + conflicts + privacy;
+    <li><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i><span><b>${tr('Verschlüsselt')}</b>${tr('Nur deine Geräte haben den Schlüssel.')}</span></li>
+    <li><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></i><span><b>${tr('Der Server sieht fast nichts')}</b>${tr('Nur eine zufällige ID, die Grösse und die Zeit.')}</span></li>
+    <li><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3"/></svg></i><span><b>${tr('Code gut aufbewahren')}</b>${tr('Wer ihn hat, hat Zugriff. Ohne Code und ohne Gerät sind die Daten weg.')}</span></li>
+    <li><i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg></i><span><b>${tr('Wird aufgeräumt')}</b>${tr('Unbenutzte Daten werden nach etwa 12 Monaten gelöscht.')}</span></li></ul></details>`;
+  const code = syncUI.code ? `<div class="sync-recovery"><div class="sr-h"><b>${tr('Wiederherstellungscode')}</b><small>${tr('Gut aufbewahren und niemandem geben.')}</small></div>
+    <div id="syncQR" aria-label="${tr('Verbindungscode als QR-Code')}"></div><textarea readonly data-raw id="syncRecovery" rows="3">${esc(syncUI.code)}</textarea>
+    <div class="sync-actions">${btn('device-code-copy', 'Kopieren')}${btn('device-code-hide', 'Ausblenden')}</div></div>` : '';
+  const conflicts = (S.syncConflicts || []).length ? `<details class="sync-more"><summary>${tr('Wiederherstellbare Notizen')} (${S.syncConflicts.length})</summary>${S.syncConflicts.map((c, i) => `<div class="sync-conflict"><small data-raw>${esc(c.key)}</small><pre data-raw>${esc(c.value)}</pre><button class="btn ghost" data-act="device-note-restore" data-index="${i}">${tr('Übernehmen')}</button></div>`).join('')}</details>` : '';
+  const err = error ? `<p class="sync-error" role="alert">${tr(SYNC_ERRORS[error] || SYNC_ERRORS['server-unavailable'])}</p>` : '';
+  if (!connected) {
+    return `<div class="sync-hero"><span class="sh-ico">${devices}</span><div><b>${tr('Auf all deinen Geräten')}</b><small>${tr('Notizen und Prüfungskorrekturen, verschlüsselt.')}</small></div></div>
+      ${btn('device-enable', 'Einschalten', 'btn wide')}
+      <div class="sync-or"><span>${tr('oder')}</span></div>
+      <div class="sync-join"><label for="syncJoin">${tr('Code vom anderen Gerät')}</label>
+        <div class="sync-joinrow"><input id="syncJoin" class="pair-input" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="XXXX-XXXX">${btn('device-join', 'Verbinden', 'btn')}</div>
+        <small>${tr('Dort unter Sync auf «Gerät hinzufügen» tippen.')}</small></div>
+      ${err}
+      <details class="sync-more"><summary>${tr('Server')}</summary><label class="sync-label"><input id="syncServer" type="url" value="https://wiss-stundenplan-sync.onrender.com" autocomplete="off" aria-label="${tr('Sync-Server')}"></label></details>${privacy}`;
+  }
+  const st = cfg.status === 'error' || error ? 'bad' : cfg.status === 'synced' ? 'ok' : 'busy';
+  return `<div class="sync-status ${st}"><i></i><div><b>${tr(statuses[cfg.status] || 'Aus')}</b>${cfg.lastSuccess ? `<small>${tr('Zuletzt: {T}', { T: ago(cfg.lastSuccess) })}</small>` : ''}</div>
+      <button class="icon" data-act="device-now" ${syncUI.busy ? 'disabled' : ''} title="${esc(tr('Jetzt synchronisieren'))}" aria-label="${esc(tr('Jetzt synchronisieren'))}">${ICO('<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>')}</button></div>
+    ${err}${syncUI.pair ? pairBlock() : btn('device-pair', 'Gerät hinzufügen', 'btn wide')}
+    ${code}${conflicts}
+    <details class="sync-more"><summary>${tr('Wiederherstellungscode')}</summary><p class="shint">${tr('Damit kommst du an deine Daten, falls alle Geräte weg sind.')}</p><div class="sync-actions">${btn('device-code', 'Anzeigen')}</div></details>
+    ${privacy}
+    <details class="sync-more" ${syncUI.deleteArmed ? 'open' : ''}><summary>${tr('Trennen oder löschen')}</summary><p class="shint" data-raw>${esc(cfg.server || '')}</p><div class="sync-actions">${btn('device-disconnect', 'Gerät trennen')}${btn(syncUI.deleteArmed ? 'device-delete-confirm' : 'device-delete', syncUI.deleteArmed ? 'Wirklich löschen?' : 'Daten löschen', 'danger')}</div></details>`;
 }
 function pairBlock() {
   if (!syncUI.pair) return '';
@@ -69,19 +83,24 @@ document.addEventListener('click', (ev) => {
   if (act === 'device-pair-copy') { navigator.clipboard?.writeText(syncUI.pair?.code || '').catch(() => {}); a.textContent = tr('Kopiert'); return; }
   const join = document.getElementById('syncJoin')?.value.trim(), server = document.getElementById('syncServer')?.value.trim();
   let perm;
+  // The browser closes the popup while it asks for permission. Remember what was pressed,
+  // so the background can finish the step once permission is given (no second click).
+  const remember = (kind, srv, code) => { try { chrome.storage.session?.set({ syncIntent: { act: kind, server: srv, code, at: Date.now() } }); } catch (e) {} };
   try {
-    if (act === 'device-enable') perm = requestSyncPermission(server);
+    if (act === 'device-enable') { remember('enable', server); perm = requestSyncPermission(server); }
     if (act === 'device-join') {
-      if (WissSyncCore.isPairCode(join)) perm = requestSyncPermission(server || 'https://wiss-stundenplan-sync.onrender.com');
+      if (WissSyncCore.isPairCode(join)) { const srv = server || 'https://wiss-stundenplan-sync.onrender.com'; remember('pair', srv, join); perm = requestSyncPermission(srv); }
       else {
         const p = String(join).split('.'); if (p.length !== 4 || p[0] !== 'WISS1') throw new Error('invalid-code');
-        perm = requestSyncPermission(new TextDecoder().decode(WissSyncCore.unb64(p[1])));
+        remember('join', '', join); perm = requestSyncPermission(new TextDecoder().decode(WissSyncCore.unb64(p[1])));
       }
     }
   } catch (e) { syncUI.error = e.message; render(); return; }
   syncUI.busy = true; syncUI.error = '';
   const run = async () => {
-    if (perm && !await perm) throw new Error('permission-denied');
+    const granted = perm ? await perm : true;
+    try { await chrome.storage.session?.remove('syncIntent'); } catch (e) {}
+    if (!granted) throw new Error('permission-denied');
     if (act === 'device-join' && WissSyncCore.isPairCode(join)) {
       await syncMessage('deviceSyncPairJoin', { server: server || 'https://wiss-stundenplan-sync.onrender.com', code: join });
     } else if (act === 'device-enable' || act === 'device-join') {
@@ -101,3 +120,17 @@ document.addEventListener('click', (ev) => {
 });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') { syncUI.code = ''; syncUI.pair = null; document.querySelector('.sync-recovery')?.remove(); } });
 document.addEventListener('click', (e) => { if (['setup-close', 'setup-done'].includes(e.target.closest('[data-act]')?.dataset.act)) syncUI.code = ''; });
+
+// Finished by the background after the permission prompt closed the popup: show the result right away.
+(async () => {
+  try {
+    if (!chrome.storage?.session) return;
+    const { syncDone } = await chrome.storage.session.get('syncDone');
+    if (!syncDone || Date.now() - syncDone.at > 10 * 60000) return;
+    await chrome.storage.session.remove('syncDone');
+    if (syncDone.error) syncUI.error = syncDone.error;
+    else if (syncDone.showRecovery) syncUI.code = (await syncMessage('deviceSyncRecovery')).recovery || '';
+    const open = () => { if (!document.getElementById('set-sync')) document.getElementById('btnSettings')?.click(); setTimeout(() => { render(); document.getElementById('set-sync')?.scrollIntoView({ block: 'start' }); }, 120); };
+    if (document.readyState === 'complete') setTimeout(open, 300); else addEventListener('load', () => setTimeout(open, 300));
+  } catch (e) {}
+})();

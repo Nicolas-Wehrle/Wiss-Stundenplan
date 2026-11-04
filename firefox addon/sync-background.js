@@ -43,6 +43,18 @@
     task().then((result) => respond({ ok: true, ...result }), (e) => respond({ error: e.message || 'server-unavailable' }));
     return true;
   });
+  // The popup closes while the browser asks for the sync permission. Finish what was pressed.
+  const session = browser.storage.session;
+  if (session && browser.permissions?.onAdded) browser.permissions.onAdded.addListener(() => setTimeout(async () => {
+    const { syncIntent: it } = await session.get('syncIntent');
+    if (!it || Date.now() - it.at > 5 * 60000) return;   // the popup is still open and does it itself
+    await session.remove('syncIntent');
+    try {
+      if (it.act === 'pair') await engine.pairJoin({ server: it.server, code: it.code });
+      else await engine.connect(it.act === 'join' ? { code: it.code } : { server: it.server });
+      await session.set({ syncDone: { showRecovery: it.act === 'enable', at: Date.now() } });
+    } catch (e) { await session.set({ syncDone: { error: e.message || 'server-unavailable', at: Date.now() } }); }
+  }, 1500));
   const start = async () => {
     const { deviceSync } = await browser.storage.local.get('deviceSync');
     if (!deviceSync?.enabled) return;

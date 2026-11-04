@@ -5,7 +5,7 @@ const LOOK_KEY = 'wissLook';          // cached in localStorage so the next open
 const ACCENTS = ['#b52a33', '#d71921', '#0969da', '#1a7f37', '#7a4cc9', '#e36209', '#d63384', '#0f8a83'];
 const SET_SECTIONS = [
   ['account', 'Konto'], ['look', 'Darstellung'], ['timetable', 'Stundenplan'], ['notify', 'Benachrichtigungen'],
-  ['grades', 'Noten'], ['job', 'Lehrberuf'], ['sync', 'Synchronisation'], ['data', 'Daten'], ['about', 'Über']
+  ['grades', 'Noten'], ['job', 'Lehrberuf'], ['refresh', 'Aktualisieren'], ['sync', 'Sync'], ['data', 'Daten'], ['about', 'Über']
 ];
 const IS_APP_PAGE = !!(window.chrome && globalThis.__wissApp);
 let setSec = 'account';
@@ -113,7 +113,6 @@ function renderSettings({ acc, ab, zp, user }) {
   ].join('');
 
   const sync = [
-    `<div class="set-h">${tr('Schuldaten aktualisieren')}</div>`,
     row(tr('Im Hintergrund'), '', seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
     row(tr('Jetzt'), S.lastSync ? tr('Zuletzt: {T}', { T: ago(S.lastSync) }) : '', `<button class="btn ghost" data-act="sync-now">${tr('Aktualisieren')}</button>`),
     S.syncLog && S.syncLog.lines && S.syncLog.lines.length ? `<details class="diag"><summary><b>${tr('Diagnose')}</b> <small class="muted">${tr('letzte Aktualisierung, {T}', { T: esc(ago(S.syncLog.at)) })}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>` : ''
@@ -143,7 +142,8 @@ function renderSettings({ acc, ab, zp, user }) {
       ${sec('notify', 'Benachrichtigungen', notifyBox)}
       ${sec('grades', 'Noten', grades)}
       ${sec('job', 'Lehrberuf', ab)}
-      ${sec('sync', 'Synchronisation', sync + `<div class="set-h">${tr('Geräte-Synchronisation')}</div>` + (typeof renderDeviceSync === 'function' ? renderDeviceSync() : ''))}
+      ${sec('refresh', 'Schuldaten aktualisieren', sync)}
+      ${sec('sync', 'Geräte-Synchronisation', typeof renderDeviceSync === 'function' ? renderDeviceSync() : '')}
       ${sec('data', 'Daten', data)}
       ${sec('about', 'Über', about)}
     </div></div>`;

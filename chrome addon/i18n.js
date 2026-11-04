@@ -23,6 +23,22 @@
   } catch (e) {}
 
   const EN = {
+    "Verschlüsselt": "Encrypted",
+    "Nur deine Geräte haben den Schlüssel.": "Only your devices have the key.",
+    "Der Server sieht fast nichts": "The server sees almost nothing",
+    "Nur eine zufällige ID, die Grösse und die Zeit.": "Just a random ID, the size and the time.",
+    "Code gut aufbewahren": "Keep the code safe",
+    "Wer ihn hat, hat Zugriff. Ohne Code und ohne Gerät sind die Daten weg.": "Whoever has it has access. Without the code and a device, the data is gone.",
+    "Wird aufgeräumt": "Cleaned up",
+    "Unbenutzte Daten werden nach etwa 12 Monaten gelöscht.": "Unused data is deleted after about 12 months.",
+    "Auf all deinen Geräten": "On all your devices",
+    "Notizen und Prüfungskorrekturen, verschlüsselt.": "Notes and exam corrections, encrypted.",
+    "oder": "or",
+    "Code vom anderen Gerät": "Code from your other device",
+    "Dort unter Sync auf «Gerät hinzufügen» tippen.": "There, tap \"Add device\" under Sync.",
+    "Damit kommst du an deine Daten, falls alle Geräte weg sind.": "Gets you back to your data if all your devices are gone.",
+    "Anzeigen": "Show",
+    "Trennen oder löschen": "Disconnect or delete",
     "Kommt auch bei geschlossener App.": "Works even when the app is closed.",
     "Nur wenn der Browser offen ist.": "Only while the browser is open.",
     "Auf dem iPhone gibt es keine Benachrichtigungen.": "No notifications on iPhone.",
