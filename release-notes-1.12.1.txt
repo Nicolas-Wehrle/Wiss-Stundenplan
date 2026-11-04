@@ -1,0 +1,5 @@
+Chrome 1.12.1
+
+Lokales Demokonto mit fiktiven Daten im bestehenden Schema. Ohne WISS-Login testbar, inklusive Wochenplan, Noten, Absenzen und Raumbelegung. Kein Überschreiben bestehender Konten; Sync in der Demo deaktiviert.
+
+Chrome-Web-Store-Bilder, deutsche Beschreibung, Datenschutz und Testanweisungen vorbereitet. Andere Plattformen bleiben auf dem bisherigen Stand.

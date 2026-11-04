@@ -356,7 +356,9 @@ function renderStatus() {
   el.className = 'status ' + cls; setHTML(el, html);
 
   const b = $('banner');
-  if (S.status === 'needsLogin') {
+  if (S.demoMode) {
+    setHTML(b, `<div class="banner"><p>${tr('Demokonto · ausschliesslich fiktive Daten')}</p><button class="btn ghost" data-act="demo-exit">${tr('Demo beenden')}</button></div>`);
+  } else if (S.status === 'needsLogin') {
     setHTML(b, `<div class="banner"><p>Du musst dich kurz neu anmelden.</p><button class="btn" data-act="login">Anmelden</button></div>`);
   } else if (S.status === 'error' && S.error) {
     setHTML(b, `<div class="banner"><p>Konnte nicht aktualisieren: ${esc(S.error)}</p></div>`);
@@ -1492,11 +1494,12 @@ function renderSetup() {
   if (setupState.permOk === false) acc = `<p class="muted">Braucht Zugriff auf <b>wiss.tocco.ch</b> und <b>modulbaukasten.ch</b>.</p>
     <div class="row"><button class="btn" data-act="grant">Zugriff erlauben</button></div>`;
   else if (user) acc = `<p><b class="priv" data-act="reveal" data-raw tabindex="0" role="button" title="${tr('Antippen zum Anzeigen')}">${esc(user)}</b><br><span class="muted">${S.lessons.length} Lektionen · ${(S.grades || []).length} Noten · ${tCount ? tCount + ' Lehrpersonen' : 'Lehrpersonen laden…'}</span></p>
-    ${!first ? '<div class="row"><button class="btn ghost" data-act="teachers">Lehrpersonen aktualisieren</button></div>' : ''}`;
+    ${!first && !S.demoMode ? '<div class="row"><button class="btn ghost" data-act="teachers">Lehrpersonen aktualisieren</button></div>' : ''}`;
   else acc = `${syncing ? '<p><span class="spin" style="display:inline-block;vertical-align:-1px"></span> Prüfe Anmeldung…</p>' : ''}<p class="muted">Einmal mit deinem WISS-Konto (<b>@wiss-edu.ch</b>) anmelden.</p>
     <div class="row"><button class="btn" data-act="login">Anmelden</button><button class="btn ghost" data-act="setup-check">Schon angemeldet</button></div>
     ${setupState.loginOpened ? '<p class="muted" style="font-size:12px">Melde dich im neuen Fenster an, danach geht es hier weiter.</p>' : ''}`;
 
+  if (!user) acc += `<p class="muted">${tr('Ohne WISS-Login mit fiktiven Daten ausprobieren.')}</p><button class="btn ghost" data-act="demo-start">${tr('Demokonto testen')}</button>`;
   let ab;
   if (setupState.catErr) ab = `<p class="muted">Modulkatalog nicht erreichbar (${esc(setupState.catErr)}). <a data-act="cat-retry">Erneut versuchen</a></p>`;
   else if (!setupState.catalog) ab = `<p class="muted">Lade Lehrberufe…</p>`;
@@ -1590,6 +1593,9 @@ document.addEventListener('click', (ev) => {
     if (act === 'prev') { weekOffset--; render(); }
     else if (act === 'next') { weekOffset++; render(); }
     else if (act === 'today') { weekOffset = 0; showPast = !P('foldPast'); render(); }
+    else if (act === 'demo-start' || act === 'demo-exit') {
+      chrome.runtime.sendMessage({ type: act === 'demo-start' ? 'demoStart' : 'demoExit' }).then(r => { if (r?.error) toast(r.error); else location.reload(); });
+    }
     else if (act === 'login') { setupState.loginOpened = true; chrome.runtime.sendMessage({ type: 'openLogin' }); render(); }
     else if (act === 'teachers') { chrome.runtime.sendMessage({ type: 'learnTeachers' }).catch(() => {}); a.textContent = 'Läuft im Hintergrund (~30 s)…'; a.disabled = true; }
     else if (act === 'grant') {
@@ -1690,7 +1696,7 @@ function initWeekOffset() {
 let loadedOnce = false;
 async function load() {
   const s = await chrome.storage.local.get(['lessons', 'teachers', 'grades', 'rooms', 'notes', 'examOverrides', 'status', 'lastSync', 'error', 'uiTab', 'roomCache',
-    'user', 'setupDone', 'privacyOk', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts']);
+    'demoMode', 'user', 'setupDone', 'privacyOk', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts']);
   const keep = { tab: S.tab, showSetup: S.showSetup, showPrivacy: S.showPrivacy };
   S = { ...S, ...s, lessons: s.lessons || [], teachers: s.teachers || {}, grades: s.grades || [], rooms: s.rooms || [], notes: s.notes || {}, examOverrides: s.examOverrides || {}, absences: s.absences || [], attendance: s.attendance || null,
     user: s.user || null, setupDone: !!s.setupDone, abschluss: s.abschluss || null, prefs: s.prefs || {} };

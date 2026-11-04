@@ -1,3 +1,9 @@
+## 1.12.1 – Chrome-Demokonto und Store-Unterlagen
+- Optionales lokales Demokonto mit fiktiven Daten im vorhandenen Schema.
+- Schutz bestehender Konten und deaktivierter Geräte-Sync in der Demo.
+- Store-Bilder, deutsche Beschreibung, Testanweisungen und Datenschutz.
+- Nur Chrome; andere Plattformen unverändert.
+
 # Changelog
 
 All versions of WISS Stundenplan. Newest first.

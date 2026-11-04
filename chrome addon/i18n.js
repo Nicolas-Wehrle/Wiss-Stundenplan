@@ -23,6 +23,12 @@
   } catch (e) {}
 
   const EN = {
+    'Demokonto · ausschliesslich fiktive Daten': 'Demo account · fictional data only',
+    'Demo beenden': 'Exit demo',
+    'Ohne WISS-Login mit fiktiven Daten ausprobieren.': 'Try fictional data without a WISS login.',
+    'Demokonto testen': 'Try demo account',
+    'Im Demokonto ist die Gerätesynchronisation deaktiviert.': 'Device sync is disabled in the demo account.',
+
     "Deine Daten": "Your data",
     "Kurz und ehrlich, was mit deinen Daten passiert.": "Short and honest: what happens with your data.",
     "Bleibt auf deinem Gerät": "Stays on your device",

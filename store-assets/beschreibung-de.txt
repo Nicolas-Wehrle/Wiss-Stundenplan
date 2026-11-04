@@ -1,0 +1,20 @@
+Dein WISS-Stundenplan – direkt im Browser und ohne langes Warten. Die zuletzt geladenen Daten erscheinen sofort und werden im Hintergrund aktualisiert.
+
+Alles Wichtige für deinen Schulalltag:
+• Wochenübersicht mit Unterrichtszeiten und Räumen
+• Prüfungen und Leistungsbeurteilungen im Blick; geschätzte Termine sind gekennzeichnet
+• Notenübersicht mit Durchschnitt und Notenrechner
+• Absenzen, Präsenz und Hinweise auf offene Entschuldigungen
+• Freie Räume und verfügbare Raumpläne
+• Eigene Notizen zu Lektionen
+• Deutsch und Englisch sowie verschiedene Designs mit hellem und dunklem Modus
+
+Mit deinem WISS-Konto anmelden und loslegen. Die Erweiterung verwendet deine bestehende Extranet-Sitzung. Dein Passwort wird von der Erweiterung weder eingegeben noch gespeichert.
+
+Du möchtest die Funktionen zuerst ausprobieren? Wähle bei der Einrichtung «Demokonto testen». Dafür brauchst du keinen WISS-Login. Alle angezeigten Demoangaben sind frei erfunden.
+
+Deine Schuldaten werden lokal auf deinem Gerät gespeichert. Die optionale Gerätesynchronisation überträgt nur Notizen, Prüfungskorrekturen und ausgewählte Einstellungen Ende-zu-Ende-verschlüsselt. Stundenplan, Noten, Absenzen und WISS-Zugangsdaten werden nicht an den Sync-Server übertragen. Keine Werbung und kein Tracking.
+
+Weitere Versionen für Edge, Firefox, Android und Safari auf dem iPhone findest du im GitHub-Projekt: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan
+
+Hinweis: Dies ist ein inoffizielles Schülerprojekt. Es steht in keiner Verbindung zu WISS oder Tocco und wurde von diesen weder entwickelt noch unterstützt. Für echte Schuldaten benötigst du dein eigenes WISS-Konto. Die Demo enthält ausschliesslich fiktive Daten. Massgeblich bleiben die Angaben im offiziellen Extranet.
