@@ -20,8 +20,13 @@ Invoke-Checked -Program 'git' -Arguments @('push', 'origin', 'main')
 $assetNames = @('WISS-Stundenplan-Chrome.zip', 'WISS-Stundenplan-Firefox.zip', 'WISS-Stundenplan-Firefox.xpi', 'WISS-Stundenplan.apk', 'WISS-Stundenplan.user.js', 'Chrome-Web-Store-Assets.zip', 'SHA256SUMS.txt')
 $assets = @($assetNames | ForEach-Object { Join-Path $PSScriptRoot "release/$tag/$_" })
 $notes = Join-Path $PSScriptRoot "release-notes-$version.txt"
+# Windows PowerShell 5 treats redirected native stderr as an ErrorRecord.
+$savedErrorPreference = $ErrorActionPreference
+$ErrorActionPreference = 'Continue'
 $existing = gh release view $tag --repo $repo --json isDraft --jq '.isDraft' 2>$null
-if ($LASTEXITCODE -eq 0) {
+$releaseExists = $LASTEXITCODE -eq 0
+$ErrorActionPreference = $savedErrorPreference
+if ($releaseExists) {
     if ($existing -eq 'false') {
         Write-Host "Release is already published: https://github.com/$repo/releases/tag/$tag"
         exit 0
