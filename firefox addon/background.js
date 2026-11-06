@@ -277,20 +277,41 @@ function learnTeachers(tabId = null) {
 
 // Opens a page out of the way: a minimized window on desktop, a background tab where
 // windows aren't available (Firefox for Android). Returns { tabId, close() }.
-// Firefox can't really minimize a new window (on Linux it pops up in front),
-// so there the page opens as a background tab in the current window instead.
+// Out of sight: Chrome uses a minimized window. Firefox can't minimize a new window (on Linux it pops
+// up in front), so there it is a tab that is hidden from the tab bar (tabHide permission).
+// reveal() brings it to the front, but only when you tap "Anmelden".
 const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent || '');
 async function openHidden(url) {
   if (browser.windows && browser.windows.create && !IS_FIREFOX) {
     for (const opts of [{ url, state: 'minimized' }, { url }]) {
       try {
         const win = await browser.windows.create(opts);
-        return { tabId: win.tabs[0].id, close: () => browser.windows.remove(win.id).catch(() => {}) };
+        return {
+          tabId: win.tabs[0].id, close: () => browser.windows.remove(win.id).catch(() => {}),
+          reveal: async () => { try { await browser.windows.update(win.id, { state: 'normal', focused: true }); } catch (e) {} },
+        };
       } catch (e) { /* try next */ }
     }
   }
   const tab = await browser.tabs.create({ url, active: false });
-  return { tabId: tab.id, close: () => browser.tabs.remove(tab.id).catch(() => {}) };
+  const api = typeof browser !== 'undefined' ? browser : chrome;
+  if (IS_FIREFOX && api.tabs && api.tabs.hide) { try { await api.tabs.hide(tab.id); } catch (e) {} }
+  return {
+    tabId: tab.id, close: () => browser.tabs.remove(tab.id).catch(() => {}),
+    reveal: async () => {
+      try { if (IS_FIREFOX && api.tabs && api.tabs.show) await api.tabs.show(tab.id); } catch (e) {}
+      try { await browser.tabs.update(tab.id, { active: true }); } catch (e) {}
+      try { if (tab.windowId != null && browser.windows) await browser.windows.update(tab.windowId, { focused: true }); } catch (e) {}
+    },
+  };
+}
+
+// A sign-in that needs you (Microsoft asks for something) stays open but hidden. "Anmelden" shows it.
+let pendingLogin = null;   // { tabId, reveal, close, at }
+function parkLogin(h) {
+  if (pendingLogin && pendingLogin.tabId !== h.tabId) pendingLogin.close();
+  pendingLogin = { ...h, at: Date.now() };
+  setTimeout(() => { if (pendingLogin && pendingLogin.tabId === h.tabId && !pendingLogin.shown) { pendingLogin.close(); pendingLogin = null; } }, 10 * 60000);
 }
 
 // ---------- silent login in a minimized window ----------
@@ -359,7 +380,12 @@ async function silentLogin() {
         // e.g. Microsoft's sign-in page asking for a password / account choice → needs the user
         baseSince = 0;
         if (!foreignSince) foreignSince = Date.now();
-        else if (Date.now() - foreignSince > NEEDS_USER_MS) { slog('Microsoft wartet auf Eingabe'); if (IS_APP) { await show('Anmeldefenster wird angezeigt'); keepOpen = true; } break; }
+        else if (Date.now() - foreignSince > NEEDS_USER_MS) {
+          slog('Microsoft wartet auf Eingabe');
+          if (IS_APP) { await show('Anmeldefenster wird angezeigt'); keepOpen = true; }
+          else { parkLogin(hidden); keepOpen = true; slog('Anmeldung bleibt versteckt, bis du auf «Anmelden» tippst'); }
+          break;
+        }
       }
     }
     if (Date.now() >= end) slog('Anmeldung: Zeit abgelaufen');
@@ -746,8 +772,7 @@ browser.runtime.onInstalled.addListener(async (details) => {
 browser.runtime.onStartup.addListener(() => {
   resetKeepalive();
   scheduleNotifications().catch(() => {});
-  // Firefox: no sign-in page right when the browser opens. It happens once you open the timetable.
-  refresh({ force: true, allowLogin: !IS_FIREFOX });
+  refresh({ force: true, allowLogin: true });
 });
 browser.alarms.onAlarm.addListener((a) => {
   if (a.name === 'keepalive') refresh({ force: true, allowLogin: false });
@@ -870,9 +895,21 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'extranetLoaded') {
     getState().then((st) => {
       if (st.status !== 'ok' || !st.lastSync || Date.now() - st.lastSync > MIN_GAP_MS) {
-        refresh({ force: true, allowLogin: false, viaTab: sender.tab && sender.tab.id });
+        const done = refresh({ force: true, allowLogin: false, viaTab: sender.tab && sender.tab.id });
+        if (pendingLogin && sender.tab && sender.tab.id === pendingLogin.tabId) {
+          const p = pendingLogin;
+          done.then(async () => { const { status } = await browser.storage.local.get('status'); if (status === 'ok') { pendingLogin = null; p.close(); } });
+        }
       }
     });
   }
-  if (msg.type === 'openLogin') browser.tabs.create({ url: EXTRANET_LOGIN });
+  if (msg.type === 'openLogin') {
+    // show the sign-in that is already waiting in the background, or open a new one
+    (async () => {
+      if (pendingLogin) {
+        try { await browser.tabs.get(pendingLogin.tabId); pendingLogin.shown = true; await pendingLogin.reveal(); return; } catch (e) { pendingLogin = null; }
+      }
+      browser.tabs.create({ url: EXTRANET_LOGIN });
+    })();
+  }
 });

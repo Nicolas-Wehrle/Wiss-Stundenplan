@@ -60,6 +60,8 @@ m['browser_specific_settings'] = {'gecko': {
 }, 'gecko_android': {
     'strict_min_version': '142.0'                   # also runs on Firefox for Android (142+ for data_collection_permissions)
 }}
+# hide the extranet page while the add-on signs in by itself (desktop Firefox; ignored on Android)
+if 'tabHide' not in m['permissions']: m['permissions'].append('tabHide')
 m['description'] = m['description']
 (dst / 'manifest.json').write_text(json.dumps(m, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
 

@@ -23,6 +23,8 @@
   } catch (e) {}
 
   const EN = {
+    "Unsichtbar im Hintergrund. Braucht Microsoft dich, tippst du auf «Anmelden».": "Invisible in the background. If Microsoft needs you, tap \"Sign in\".",
+    "Aus: ist die Sitzung abgelaufen, tippst du auf «Anmelden».": "Off: when the session has expired, you tap \"Sign in\".",
     "Selbst anmelden": "Sign in by itself",
     "Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist": "Briefly opens a window when the session has expired",
     "Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».": "Never a window or tab. When the session has expired, you tap \"Sign in\".",

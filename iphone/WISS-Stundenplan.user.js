@@ -3112,6 +3112,8 @@ var qrcode = function() {
   } catch (e) {}
 
   const EN = {
+    "Unsichtbar im Hintergrund. Braucht Microsoft dich, tippst du auf «Anmelden».": "Invisible in the background. If Microsoft needs you, tap \"Sign in\".",
+    "Aus: ist die Sitzung abgelaufen, tippst du auf «Anmelden».": "Off: when the session has expired, you tap \"Sign in\".",
     "Selbst anmelden": "Sign in by itself",
     "Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist": "Briefly opens a window when the session has expired",
     "Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».": "Never a window or tab. When the session has expired, you tap \"Sign in\".",
@@ -4607,20 +4609,41 @@ function learnTeachers(tabId = null) {
 
 // Opens a page out of the way: a minimized window on desktop, a background tab where
 // windows aren't available (Firefox for Android). Returns { tabId, close() }.
-// Firefox can't really minimize a new window (on Linux it pops up in front),
-// so there the page opens as a background tab in the current window instead.
+// Out of sight: Chrome uses a minimized window. Firefox can't minimize a new window (on Linux it pops
+// up in front), so there it is a tab that is hidden from the tab bar (tabHide permission).
+// reveal() brings it to the front, but only when you tap "Anmelden".
 const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent || '');
 async function openHidden(url) {
   if (chrome.windows && chrome.windows.create && !IS_FIREFOX) {
     for (const opts of [{ url, focused: false, state: 'minimized' }, { url, focused: false }]) {
       try {
         const win = await chrome.windows.create(opts);
-        return { tabId: win.tabs[0].id, close: () => chrome.windows.remove(win.id).catch(() => {}) };
+        return {
+          tabId: win.tabs[0].id, close: () => chrome.windows.remove(win.id).catch(() => {}),
+          reveal: async () => { try { await chrome.windows.update(win.id, { state: 'normal', focused: true }); } catch (e) {} },
+        };
       } catch (e) { /* try next */ }
     }
   }
   const tab = await chrome.tabs.create({ url, active: false });
-  return { tabId: tab.id, close: () => chrome.tabs.remove(tab.id).catch(() => {}) };
+  const api = typeof browser !== 'undefined' ? browser : chrome;
+  if (IS_FIREFOX && api.tabs && api.tabs.hide) { try { await api.tabs.hide(tab.id); } catch (e) {} }
+  return {
+    tabId: tab.id, close: () => chrome.tabs.remove(tab.id).catch(() => {}),
+    reveal: async () => {
+      try { if (IS_FIREFOX && api.tabs && api.tabs.show) await api.tabs.show(tab.id); } catch (e) {}
+      try { await chrome.tabs.update(tab.id, { active: true }); } catch (e) {}
+      try { if (tab.windowId != null && chrome.windows) await chrome.windows.update(tab.windowId, { focused: true }); } catch (e) {}
+    },
+  };
+}
+
+// A sign-in that needs you (Microsoft asks for something) stays open but hidden. "Anmelden" shows it.
+let pendingLogin = null;   // { tabId, reveal, close, at }
+function parkLogin(h) {
+  if (pendingLogin && pendingLogin.tabId !== h.tabId) pendingLogin.close();
+  pendingLogin = { ...h, at: Date.now() };
+  setTimeout(() => { if (pendingLogin && pendingLogin.tabId === h.tabId && !pendingLogin.shown) { pendingLogin.close(); pendingLogin = null; } }, 10 * 60000);
 }
 
 // ---------- silent login in a minimized window ----------
@@ -4689,7 +4712,12 @@ async function silentLogin() {
         // e.g. Microsoft's sign-in page asking for a password / account choice → needs the user
         baseSince = 0;
         if (!foreignSince) foreignSince = Date.now();
-        else if (Date.now() - foreignSince > NEEDS_USER_MS) { slog('Microsoft wartet auf Eingabe'); if (IS_APP) { await show('Anmeldefenster wird angezeigt'); keepOpen = true; } break; }
+        else if (Date.now() - foreignSince > NEEDS_USER_MS) {
+          slog('Microsoft wartet auf Eingabe');
+          if (IS_APP) { await show('Anmeldefenster wird angezeigt'); keepOpen = true; }
+          else { parkLogin(hidden); keepOpen = true; slog('Anmeldung bleibt versteckt, bis du auf «Anmelden» tippst'); }
+          break;
+        }
       }
     }
     if (Date.now() >= end) slog('Anmeldung: Zeit abgelaufen');
@@ -5076,8 +5104,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 chrome.runtime.onStartup.addListener(() => {
   resetKeepalive();
   scheduleNotifications().catch(() => {});
-  // Firefox: no sign-in page right when the browser opens. It happens once you open the timetable.
-  refresh({ force: true, allowLogin: !IS_FIREFOX });
+  refresh({ force: true, allowLogin: true });
 });
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === 'keepalive') refresh({ force: true, allowLogin: false });
@@ -5200,11 +5227,23 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'extranetLoaded') {
     getState().then((st) => {
       if (st.status !== 'ok' || !st.lastSync || Date.now() - st.lastSync > MIN_GAP_MS) {
-        refresh({ force: true, allowLogin: false, viaTab: sender.tab && sender.tab.id });
+        const done = refresh({ force: true, allowLogin: false, viaTab: sender.tab && sender.tab.id });
+        if (pendingLogin && sender.tab && sender.tab.id === pendingLogin.tabId) {
+          const p = pendingLogin;
+          done.then(async () => { const { status } = await chrome.storage.local.get('status'); if (status === 'ok') { pendingLogin = null; p.close(); } });
+        }
       }
     });
   }
-  if (msg.type === 'openLogin') chrome.tabs.create({ url: EXTRANET_LOGIN });
+  if (msg.type === 'openLogin') {
+    // show the sign-in that is already waiting in the background, or open a new one
+    (async () => {
+      if (pendingLogin) {
+        try { await chrome.tabs.get(pendingLogin.tabId); pendingLogin.shown = true; await pendingLogin.reveal(); return; } catch (e) { pendingLogin = null; }
+      }
+      chrome.tabs.create({ url: EXTRANET_LOGIN });
+    })();
+  }
 });
 
 })();
@@ -5241,7 +5280,7 @@ let S = {
 const PREF_DEFAULTS = {
   lang: 'de', theme: 'system', style: 'standard', accent: '', mono: false, corners: 'round', size: 'm', startTab: 'last', foldPast: true,
   notifyLessons: false, notifyLessonMin: 15, notifyAbsences: true, notifyGrades: true,
-  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true, bgLogin: false
+  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true, bgLogin: true
 };
 const P = (k) => (S.prefs && S.prefs[k] !== undefined ? S.prefs[k] : PREF_DEFAULTS[k]);
 function setPref(k, v) {
@@ -7105,7 +7144,7 @@ function renderSettings({ acc, ab, zp, user }) {
   const sync = [
     row(tr('Im Hintergrund'), '', seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
     row(tr('Jetzt'), S.lastSync ? tr('Zuletzt: {T}', { T: ago(S.lastSync) }) : '', `<button class="btn ghost" data-act="sync-now">${tr('Aktualisieren')}</button>`),
-    PLATFORM === 'chrome' || PLATFORM === 'firefox' ? row(tr('Selbst anmelden'), tr(P('bgLogin') ? 'Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist' : 'Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».'), sw('bgLogin')) : '',
+    PLATFORM === 'chrome' || PLATFORM === 'firefox' ? row(tr('Selbst anmelden'), tr(P('bgLogin') ? 'Unsichtbar im Hintergrund. Braucht Microsoft dich, tippst du auf «Anmelden».' : 'Aus: ist die Sitzung abgelaufen, tippst du auf «Anmelden».'), sw('bgLogin')) : '',
     S.syncLog && S.syncLog.lines && S.syncLog.lines.length ? `<details class="diag"><summary><b>${tr('Diagnose')}</b> <small class="muted">${tr('letzte Aktualisierung, {T}', { T: esc(ago(S.syncLog.at)) })}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>` : ''
   ].join('');
 
