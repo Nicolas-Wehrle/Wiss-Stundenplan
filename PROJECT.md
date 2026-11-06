@@ -298,7 +298,7 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 
 ## 14. Version history (short)
 
-- **1.12.2** Full-screen layout (side column with today + next exams), no solid header bars on picture styles, light animations with a toggle (`motion`, `data-motion=off`), logo setting (`themeLogo`), calmer Standard hero, Chrome Web Store link. Firefox (`IS_FIREFOX` in background.js): `openHidden` uses a background tab instead of a minimized window (Firefox on Linux shows new windows in front), and browser start refreshes without sign-in.
+- **1.12.2** Full-screen layout (side column with today + next exams), no solid header bars on picture styles, light animations with a toggle (`motion`, `data-motion=off`), logo setting (`themeLogo`), calmer Standard hero, Chrome Web Store link. Firefox (`IS_FIREFOX` in background.js): `openHidden` uses a background tab instead of a minimized window (Firefox on Linux shows new windows in front), and browser start refreshes without sign-in. Pref `bgLogin` (default false): in Chrome/Firefox the background never opens a window or tab (`quiet` in `doRefresh`); expired session → status `needsLogin` → "Anmelden" banner. Android app and iPhone ignore it.
 - **1.12.0** New logo and brand (Bricolage Grotesque + Geist, red/ink/gold), Apple glass look, overview card at the top of every tab, absence budget, free rooms first, hideable next exam, much less text, privacy page on first start, encrypted device sync with short-code pairing, hardened sync server.
 - **1.10.1** Widget adapts to its height; fixed green Terminal widget fill.
 - **1.10.0** Every style has its own app layout and widget layout; tab icons.

@@ -23,6 +23,9 @@
   } catch (e) {}
 
   const EN = {
+    "Selbst anmelden": "Sign in by itself",
+    "Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist": "Briefly opens a window when the session has expired",
+    "Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».": "Never a window or tab. When the session has expired, you tap \"Sign in\".",
     "Uhrzeit": "Time",
     "Passend zum Stil": "Match the style",
     "Immer rot": "Always red",

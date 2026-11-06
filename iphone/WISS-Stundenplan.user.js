@@ -3112,6 +3112,9 @@ var qrcode = function() {
   } catch (e) {}
 
   const EN = {
+    "Selbst anmelden": "Sign in by itself",
+    "Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist": "Briefly opens a window when the session has expired",
+    "Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».": "Never a window or tab. When the session has expired, you tap \"Sign in\".",
     "Uhrzeit": "Time",
     "Passend zum Stil": "Match the style",
     "Immer rot": "Always red",
@@ -4735,6 +4738,9 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
   }
   if (!force && st.lastSync && Date.now() - st.lastSync < MIN_GAP_MS && st.status === 'ok') return;
 
+  // Quiet mode (default in browsers): never open a window or tab by itself. When the session
+  // has expired the popup shows the "Anmelden" button instead.
+  const quiet = !IS_APP && !globalThis.__wissIOS && !((await chrome.storage.local.get('prefs')).prefs || {}).bgLogin;
   await setStatus('syncing', { lastAttempt: Date.now() });
   slog('Start' + (force ? ' (manuell)' : ''));
   const [from, to] = range();
@@ -4749,7 +4755,7 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
       slog(`Daten: ${data.lessons.length} Lektionen`);
       await save(data, me);
       slog('Fertig');
-      if (allowLogin && await teachersNeeded()) learnTeachers();   // runs in the background, not awaited
+      if (allowLogin && !quiet && await teachersNeeded()) learnTeachers();   // runs in the background, not awaited
       return;
     }
 
@@ -4765,6 +4771,7 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
     }
 
     // 2) Session expired → silent SSO in a minimized window (background tab on Android).
+    if (quiet) { slog('Sitzung abgelaufen, wartet auf «Anmelden»'); await setStatus('needsLogin', { error: null }); return; }
     if (!allowLogin) { await setStatus(st.lessons ? 'stale' : 'needsLogin'); return; }
     // Never signed in on this device → a silent attempt can't work; show the sign-in button right away.
     const { user: knownUser } = await chrome.storage.local.get('user');
@@ -5234,7 +5241,7 @@ let S = {
 const PREF_DEFAULTS = {
   lang: 'de', theme: 'system', style: 'standard', accent: '', mono: false, corners: 'round', size: 'm', startTab: 'last', foldPast: true,
   notifyLessons: false, notifyLessonMin: 15, notifyAbsences: true, notifyGrades: true,
-  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true
+  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true, bgLogin: false
 };
 const P = (k) => (S.prefs && S.prefs[k] !== undefined ? S.prefs[k] : PREF_DEFAULTS[k]);
 function setPref(k, v) {
@@ -7098,6 +7105,7 @@ function renderSettings({ acc, ab, zp, user }) {
   const sync = [
     row(tr('Im Hintergrund'), '', seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
     row(tr('Jetzt'), S.lastSync ? tr('Zuletzt: {T}', { T: ago(S.lastSync) }) : '', `<button class="btn ghost" data-act="sync-now">${tr('Aktualisieren')}</button>`),
+    PLATFORM === 'chrome' || PLATFORM === 'firefox' ? row(tr('Selbst anmelden'), tr(P('bgLogin') ? 'Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist' : 'Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».'), sw('bgLogin')) : '',
     S.syncLog && S.syncLog.lines && S.syncLog.lines.length ? `<details class="diag"><summary><b>${tr('Diagnose')}</b> <small class="muted">${tr('letzte Aktualisierung, {T}', { T: esc(ago(S.syncLog.at)) })}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>` : ''
   ].join('');
 

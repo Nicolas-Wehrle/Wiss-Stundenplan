@@ -7,5 +7,5 @@ WISS Stundenplan 1.12.2
 - Rooms: a much easier time slider with quick times.
 - Faster.
 - Calmer card at the top of the week in the Standard style.
-- Firefox: no more WISS window popping up when the browser starts.
+- Chrome and Firefox never open a window or tab by themselves. If the session has expired, tap "Anmelden".
 - Chrome: now in the Chrome Web Store, with automatic updates.

@@ -5,7 +5,7 @@
 - Light animations on buttons, cards and fold-outs. Switching tabs is instant, without a fade. Can be turned off under Einstellungen › Darstellung › Animationen.
 - New setting for the logo: matching the style, or always the red one.
 - The card at the top of the week looks calmer in the Standard style: no glow, the room in plain colours.
-- Firefox: no more window with the WISS page when the browser starts (it popped up on Linux). Firefox now signs in only when you open the timetable, in a background tab.
+- Chrome and Firefox never open a window or tab by themselves anymore. When the WISS session has expired, the popup shows "Anmelden"; one tap signs you in and the page closes again. Signing in by itself in a hidden window can be turned back on under Einstellungen › Schuldaten aktualisieren › Selbst anmelden. The Android app and iPhone keep signing in by themselves, out of sight.
 - Rooms: new time picker. Big slider that no longer jumps while you drag, hour marks, and quick buttons for now and your lesson start times.
 - Faster: screens that didn't change aren't redrawn, and long lists off screen are skipped until you scroll to them.
 - Tab bars with icons (Pastell, Apple) use the full width again.

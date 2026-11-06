@@ -118,6 +118,7 @@ function renderSettings({ acc, ab, zp, user }) {
   const sync = [
     row(tr('Im Hintergrund'), '', seg('syncMinutes', [[0, tr('Aus')], [10, '10'], [20, '20'], [30, '30']]) + `<span class="unit">${tr('Min.')}</span>`),
     row(tr('Jetzt'), S.lastSync ? tr('Zuletzt: {T}', { T: ago(S.lastSync) }) : '', `<button class="btn ghost" data-act="sync-now">${tr('Aktualisieren')}</button>`),
+    PLATFORM === 'chrome' || PLATFORM === 'firefox' ? row(tr('Selbst anmelden'), tr(P('bgLogin') ? 'Öffnet kurz ein Fenster, wenn die Sitzung abgelaufen ist' : 'Nie ein Fenster oder Tab. Ist die Sitzung abgelaufen, tippst du auf «Anmelden».'), sw('bgLogin')) : '',
     S.syncLog && S.syncLog.lines && S.syncLog.lines.length ? `<details class="diag"><summary><b>${tr('Diagnose')}</b> <small class="muted">${tr('letzte Aktualisierung, {T}', { T: esc(ago(S.syncLog.at)) })}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>` : ''
   ].join('');
 
