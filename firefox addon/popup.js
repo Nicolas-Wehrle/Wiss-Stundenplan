@@ -26,7 +26,7 @@ let S = {
 const PREF_DEFAULTS = {
   lang: 'de', theme: 'system', style: 'standard', accent: '', mono: false, corners: 'round', size: 'm', startTab: 'last', foldPast: true,
   notifyLessons: false, notifyLessonMin: 15, notifyAbsences: true, notifyGrades: true,
-  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true
+  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true
 };
 const P = (k) => (S.prefs && S.prefs[k] !== undefined ? S.prefs[k] : PREF_DEFAULTS[k]);
 function setPref(k, v) {
@@ -284,7 +284,8 @@ function logoSVG(style) {
   return `<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${L.bg[0]}"/><stop offset="1" stop-color="${L.bg[1]}"/></linearGradient></defs>`
     + `<rect width="100" height="100" rx="${L.R}" fill="url(#${id})"/>${L.edge ? `<rect x="1" y="1" width="98" height="98" rx="${L.R - 1}" fill="none" stroke="${L.edge}" stroke-width="2"/>` : ''}${cells}</svg>`;
 }
-function paintLogos() { for (const el of document.querySelectorAll('.logo')) setHTML(el, logoSVG(document.documentElement.dataset.style || 'standard')); }
+const logoStyle = (style) => (P('themeLogo') ? style : 'standard');
+function paintLogos() { for (const el of document.querySelectorAll('.logo')) setHTML(el, logoSVG(logoStyle(document.documentElement.dataset.style || 'standard'))); }
 
 // ---- small status message at the bottom ----
 let toastT = 0;
@@ -544,6 +545,12 @@ function renderWeek() {
   let body;
   if (!f.days.length || (!grid && !f.days.some((d) => d.lessons.length || d.hol))) body = `<div class="free" style="margin:4px 2px 0">Diese Woche ist vorbei. Mit dem Pfeil oben gehts zur nächsten.</div>`;
   else body = grid ? renderWeekGrid(f.days) : renderWeekList(f.days);
+  if (grid && window.innerWidth >= 1100) {
+    // big screen: today and the next exams on the left, the week on the right
+    const tk = todayKey(), up = D.examList.filter((x) => x.day >= tk).slice(0, 4);
+    const side = (weekOffset === 0 ? nowCard() : '') + (up.length ? `<div class="section-title">${tr('Nächste Prüfungen')}</div>${up.map(examRow).join('')}` : '');
+    return `<div class="fwrap"><aside class="fside">${side || `<div class="free">${tr('Keine Prüfungen in Sicht.')}</div>`}</aside><div class="fmain">${weekNav(mon)}${vacCard(mon)}${f.bar}${body}</div></div>`;
+  }
   return (weekOffset === 0 && !grid ? nowCard() : '') + weekNav(mon) + (grid ? '' : weekStrip(days)) + vacCard(mon) + f.bar + body;
 }
 
@@ -1537,6 +1544,7 @@ function renderSetup() {
 // =====================================================================
 // Render + events
 // =====================================================================
+let lastViewKey = '', enterT = 0;
 function render() {
   if (!D) derive();
   renderStatus();
@@ -1548,6 +1556,13 @@ function render() {
   $('tabs').hidden = setup;
   if (setup) setHTML($('banner'), '');
   setHTML(v, setup ? ((!S.setupDone && !S.privacyOk) || S.showPrivacy ? renderPrivacy() : renderSetup()) : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms());
+  document.body.dataset.tab = setup ? 'settings' : S.tab;
+  // a short fade-in when the screen really changes (another tab, week or the settings), not on every refresh
+  const viewKey = setup ? 'set' + (S.showPrivacy ? 'p' : '') : S.tab + '|' + weekOffset;
+  if (viewKey !== lastViewKey) {
+    if (lastViewKey) { v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter'); clearTimeout(enterT); enterT = setTimeout(() => v.classList.remove('enter'), 600); }
+    lastViewKey = viewKey;
+  }
   v.scrollTop = scroll;
   // horizontal strips keep their position; the first time, the selected item is brought into view
   for (const id of ['stiles']) {

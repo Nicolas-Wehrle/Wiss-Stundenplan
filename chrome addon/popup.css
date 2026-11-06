@@ -1469,10 +1469,10 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
   --surface: #1e1b26; --ink: #f6f4f8; --muted: rgba(246,244,248,.62); --faint: rgba(246,244,248,.4); --line: rgba(255,255,255,.1);
   --accent-soft: rgba(255,77,99,.16); --accent: #ff5a6f; --ok: #5ed39a; --ok-soft: rgba(94,211,154,.14); --warn: #ffcf6b; --bad: #ff7a8b; --now: var(--gold);
   --l: 68%; --s: 70%; --tint-l: 22%;
-  background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c, #ff4d63) 22%, transparent), transparent 60%), linear-gradient(155deg, #29252f, #141219);
+  background: #1d1a24;
   color: var(--ink); border: 0; border-radius: 20px; box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 14px 34px -14px rgba(22,20,29,.55);
 }
-:is([data-style=standard], :root:not([data-style]))[data-mode=dark] .hero { box-shadow: 0 0 0 1px rgba(255,255,255,.07) inset, 0 14px 34px -14px rgba(0,0,0,.9); background: radial-gradient(120% 90% at 100% 0%, color-mix(in srgb, var(--c, #ff4d63) 26%, transparent), transparent 60%), linear-gradient(155deg, #26222e, #18161e); }
+:is([data-style=standard], :root:not([data-style]))[data-mode=dark] .hero { box-shadow: 0 0 0 1px rgba(255,255,255,.07) inset; background: var(--surface); }
 :is([data-style=standard], :root:not([data-style]))[data-mode=dark] .nowcard.hero { padding: 15px 16px 14px; border-left: 0; }
 :is([data-style=standard], :root:not([data-style]))[data-mode=dark] .nowcard.hero .title { font-size: 19px; font-weight: 750; letter-spacing: -.02em; margin: 5px 0 3px; }
 :is([data-style=standard], :root:not([data-style]))[data-mode=dark] .nowcard.hero .kicker { color: var(--gold); }
@@ -1490,8 +1490,8 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
 
 /* light mode: the hero cards stay light, a soft glow in the module colour and the signal red */
 :is([data-style=standard], :root:not([data-style])):not([data-mode=dark]) .hero {
-  background: radial-gradient(120% 100% at 100% 0%, color-mix(in srgb, var(--c, var(--accent)) 16%, transparent), transparent 62%), linear-gradient(160deg, #ffffff, #fffaf7);
-  border: 0; border-radius: 20px; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, var(--accent)) 14%, var(--line)), 0 14px 32px -18px color-mix(in srgb, var(--c, var(--accent)) 45%, rgba(22,20,29,.4));
+  background: var(--surface);
+  border: 0; border-radius: 20px; box-shadow: inset 0 0 0 1px var(--line), 0 6px 18px -10px rgba(22,20,29,.18);
 }
 :is([data-style=standard], :root:not([data-style])):not([data-mode=dark]) .nowcard.hero { padding: 15px 16px 14px; border-left: 0; }
 :is([data-style=standard], :root:not([data-style])):not([data-mode=dark]) .nowcard.hero .title { font-size: 19px; font-weight: 750; letter-spacing: -.02em; margin: 5px 0 3px; }
@@ -1656,3 +1656,62 @@ body:not(.full):not(.mobile) .tabs button { flex: none; white-space: nowrap; }
 [data-style=github] body:not(.full):not(.mobile) .tabs .ti { display: none !important; }
 :is([data-style=nothing], [data-style=neon]) body:not(.full):not(.mobile) .tabs { padding: 0 4px; gap: 0; }
 :is([data-style=nothing], [data-style=neon]) body:not(.full):not(.mobile) .tabs button { padding-left: 6px; padding-right: 6px; letter-spacing: .02em; }
+
+
+/* 1.12.2 · calmer top card: one quiet colour line for the module, no glow, room in plain ink */
+:is([data-style=standard], :root:not([data-style])) .nowcard.hero::before { content: ''; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 0 3px 3px 0; background: var(--c); }
+:is([data-style=standard], :root:not([data-style])) .nowcard.hero { position: relative; padding-left: 18px; }
+:is([data-style=standard], :root:not([data-style])) .nowcard.hero .kicker { color: var(--muted) !important; }
+:is([data-style=standard], :root:not([data-style])) .nowcard.hero .kicker .live { background: var(--accent); }
+:is([data-style=standard], :root:not([data-style])) .hero .hroom { background: transparent !important; color: var(--ink) !important; box-shadow: none !important; border-left: 1px solid var(--line); border-radius: 0; padding: 2px 0 2px 14px; text-align: left; }
+:is([data-style=standard], :root:not([data-style])) .hero .hroom small { color: var(--muted) !important; opacity: 1 !important; }
+:is([data-style=standard], :root:not([data-style])) .hero .hroom b i { opacity: .5; }
+:is([data-style=standard], :root:not([data-style])) .hero .daystrip b { background: var(--ink) !important; box-shadow: none !important; }
+:is([data-style=standard], :root:not([data-style])) .hero .daystrip i { box-shadow: 0 0 0 1.5px var(--surface) !important; }
+:is([data-style=standard], :root:not([data-style])) .hero .xcount { background: var(--accent-soft) !important; color: var(--accent) !important; box-shadow: none !important; }
+:is([data-style=standard], :root:not([data-style])) .hero .xcount small { color: var(--accent) !important; }
+:is([data-style=standard], :root:not([data-style])) .ring::before { background: conic-gradient(var(--accent) calc(var(--p) * 1%), color-mix(in srgb, var(--ink) 10%, transparent) 0) !important; }
+:is([data-style=standard], :root:not([data-style])) .hero .rh-mine b { color: var(--ink) !important; }
+:is([data-style=standard], :root:not([data-style])) .hero .rchip { background: var(--ok-soft) !important; }
+
+/* ---------- smooth, light animations (Einstellungen → Animationen) ---------- */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+#view.enter > * { animation: fadeUp .28s cubic-bezier(.2,.8,.2,1) both; }
+#view.enter > :nth-child(2) { animation-delay: .03s; }
+#view.enter > :nth-child(3) { animation-delay: .06s; }
+#view.enter > :nth-child(4) { animation-delay: .09s; }
+#view.enter > :nth-child(n+5) { animation-delay: .12s; }
+.tabs button { transition: color .18s ease, background-color .18s ease, border-color .18s ease; }
+.card, .lesson, .wday, .rchip, .gtile, .btn, .icon, .stile { transition: transform .16s ease, box-shadow .2s ease, background-color .2s ease, opacity .2s ease; }
+.lesson:hover, .xrow:hover { transform: translateY(-1px); }
+.btn:active, .wday:active, .rchip:active, .icon:active { transform: scale(.97); }
+details > :not(summary) { animation: fadeUp .22s ease both; }
+.sheet { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+:root[data-motion=off] *, :root[data-motion=off] *::before, :root[data-motion=off] *::after { animation: none !important; transition: none !important; }
+@media (prefers-reduced-motion: reduce) { #view.enter > *, details > :not(summary) { animation: none !important; } }
+
+/* ---------- full screen ---------- */
+body.full .top, body.full .tabs { padding-left: max(20px, calc((100vw - 1320px) / 2)); padding-right: max(20px, calc((100vw - 1320px) / 2)); }
+body.full #view { padding: 0 max(20px, calc((100vw - 1320px) / 2)) 40px; }
+body.full .top { padding-top: 16px; padding-bottom: 12px; }
+body.full h1 { font-size: 20px; }
+body.full .logo { width: 36px; height: 36px; }
+body.full .tabs button { font-size: 13.5px; padding: 10px 14px 12px; }
+/* lists stay readable instead of stretching over the whole screen */
+body.full:is([data-tab=exams], [data-tab=absences], [data-tab=grades]) #view > * { max-width: 920px; margin-left: auto; margin-right: auto; }
+body.full[data-tab=grades] #view > .ggrid { max-width: 920px; }
+.fwrap { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 24px; align-items: start; }
+.fside { position: sticky; top: 0; padding-top: 12px; }
+.fside .nowcard { margin-top: 0; }
+.fside .section-title:first-child { margin-top: 4px; }
+.fmain { min-width: 0; }
+/* styles with a picture behind everything: no solid bars in full screen */
+[data-style=apple] body.full .top, [data-style=apple] body.full .tabs,
+[data-style=pastel] body.full .top, [data-style=pastel] body.full .tabs,
+[data-style=neon] body.full .top, [data-style=neon] body.full .tabs,
+[data-style=paper] body.full .top, [data-style=paper] body.full .tabs,
+[data-style=nothing] body.full .top, [data-style=nothing] body.full .tabs { background: transparent; }
+[data-style=apple] body.full .tabs { border-bottom: .5px solid var(--glass-edge); }
+[data-style=samsung] body.full .tabs { justify-content: center; }
+[data-style=samsung] body.full .tabs { max-width: none; }
+[data-style=samsung] body.full .tabs button { flex: 0 1 160px; }

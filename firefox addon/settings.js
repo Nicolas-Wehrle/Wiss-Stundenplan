@@ -25,6 +25,7 @@ function applyLook() {
     r.style.setProperty('--accent-soft', `color-mix(in srgb, ${acc} ${r.dataset.mode === 'dark' ? 22 : 13}%, var(--surface))`);
   } else ['--accent', '--now', '--accent-soft'].forEach((k) => r.style.removeProperty(k));
   if (P('mono')) r.dataset.mono = '1'; else delete r.dataset.mono;
+  if (P('motion')) delete r.dataset.motion; else r.dataset.motion = 'off';
   r.dataset.corners = P('corners');
   r.dataset.size = P('size');
   window.setLang(P('lang'));
@@ -62,7 +63,7 @@ const STYLES = [
 function stylePreview(id, name, desc) {
   const on = P('style') === id;
   return `<button class="stile ${on ? 'on' : ''}" data-act="pref" data-k="style" data-v="${id}" aria-pressed="${on}">
-    <span class="sprev" data-s="${id}" aria-hidden="true"><span class="pv-top"><i class="pv-logo">${logoSVG(id)}</i><i class="pv-h"></i></span>
+    <span class="sprev" data-s="${id}" aria-hidden="true"><span class="pv-top"><i class="pv-logo">${logoSVG(logoStyle(id))}</i><i class="pv-h"></i></span>
       <span class="pv-card"><em>10:30</em><i class="pv-t"></i><i class="pv-m"></i></span><span class="pv-card b"><em>13:15</em><i class="pv-t"></i><i class="pv-m"></i></span>
       <span class="pv-tabs"><i class="on"></i><i></i><i></i><i></i></span></span>
     <b>${name}</b></button>`;
@@ -82,6 +83,8 @@ function renderSettings({ acc, ab, zp, user }) {
       ${ACCENTS.map((c) => `<button class="swatch ${P('accent') === c ? 'on' : ''}" style="--sw:${c}" data-act="pref" data-k="accent" data-v="${c}" aria-label="${c}"></button>`).join('')}
       <label class="swatch custom ${P('accent') && !ACCENTS.includes(P('accent')) ? 'on' : ''}" style="--sw:${esc(P('accent') || '#888888')}" title="${esc(tr('Eigene Farbe'))}"><input type="color" id="prefAccent" value="${esc(P('accent') || '#b52a33')}"><span>+</span></label></div></div>`,
     row(tr('Modulfarben'), '', seg('mono', [[false, tr('Bunt')], [true, tr('Einfarbig')]])),
+    row(tr('Logo'), '', seg('themeLogo', [[true, tr('Passend zum Stil')], [false, tr('Immer rot')]])),
+    row(tr('Animationen'), '', sw('motion')),
     row(tr('Ecken'), '', seg('corners', [['round', tr('Rund')], ['square', tr('Eckig')]])),
     row(tr('Textgrösse'), '', seg('size', [['s', 'S'], ['m', 'M'], ['l', 'L']]))
   ].join('');
@@ -127,7 +130,7 @@ function renderSettings({ acc, ab, zp, user }) {
   const ver = hasChrome && browser.runtime.getManifest ? browser.runtime.getManifest().version : '';
   const ui = S.updateInfo;
   const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr('Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
-  const about = `<div class="about"><span class="logo">${logoSVG(P('style'))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
+  const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
     ${row(tr('Updates'), updText, updateAvailable() ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
     ${row(tr('Datenschutz'), '', `<button class="btn ghost" data-act="privacy-show">${tr('Lesen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}

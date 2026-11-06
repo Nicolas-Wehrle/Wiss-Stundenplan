@@ -14,15 +14,18 @@ Works as a Chrome/Edge add-on, a Firefox add-on, an Android app and on iPhone (S
 - Absences with the 7-day deadline and attendance per module
 - Free rooms at any time, with floor plans for WISS Zürich
 - Notes per lesson
-- Deutsch / English, three styles (Standard, Nothing, GitHub), light and dark
+- Deutsch / English, nine styles, each in light and dark
 - Android: reminders and a home-screen widget
 
 ## Download
-Get the latest version from the **[Releases](../../releases/latest)** page. Under "Assets", download the file for your device:
+
+**Chrome, Edge, Brave:** install it from the **[Chrome Web Store](https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc)**. It updates itself.
+
+For everything else, get the latest version from the **[Releases](../../releases/latest)** page. Under "Assets", download the file for your device:
 
 | Device | Download this | Guide |
 |---|---|---|
-| Chrome, Edge, Brave | `WISS-Stundenplan-Chrome.zip` | [chrome addon/README.md](chrome%20addon/README.md) |
+| Chrome, Edge, Brave | [Chrome Web Store](https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc) (or `WISS-Stundenplan-Chrome.zip` to load it yourself) | [chrome addon/README.md](chrome%20addon/README.md) |
 | Firefox (computer and Android) | `WISS-Stundenplan-Firefox.xpi` | [firefox addon/README.md](firefox%20addon/README.md) |
 | Android app | `WISS-Stundenplan.apk` | [android app/README.md](android%20app/README.md) |
 | iPhone | `WISS-Stundenplan.user.js` | [iphone/README.md](iphone/README.md) |
@@ -79,7 +82,7 @@ Never attach or commit `wiss-stundenplan.jks` or `keystore.properties`.
 - **Android:** the app checks GitHub twice a day. When there's a new release it shows "Installieren", downloads the APK and opens Android's install screen.
 - **iPhone:** the Userscripts app updates the script on its own from `iphone/WISS-Stundenplan.user.js` in this repo.
 - **Firefox:** updates on its own through `updates.json`. This only works if the release has the signed `WISS-Stundenplan-Firefox.xpi` and `updates.json` is pushed.
-- **Chrome / Edge:** Chrome doesn't allow auto-updates for add-ons loaded with "Load unpacked". The add-on shows a banner with the download link instead.
+- **Chrome / Edge:** the Chrome Web Store version updates itself. Add-ons loaded with "Load unpacked" can't update themselves; they show a banner with the download link instead.
 
 ## Credits
 - Module descriptions and the list of apprenticeships come from [modulbaukasten.ch](https://www.modulbaukasten.ch) (ICT-Berufsbildung Schweiz). A copy is included in `modules.js` and `catalog.js` so the app also works offline. All rights to that text stay with them.

@@ -23,6 +23,12 @@
   } catch (e) {}
 
   const EN = {
+    "Passend zum Stil": "Match the style",
+    "Immer rot": "Always red",
+    "Logo": "Logo",
+    "Nächste Prüfungen": "Next exams",
+    "Keine Prüfungen in Sicht.": "No exams coming up.",
+    "Animationen": "Animations",
     'Demokonto · ausschliesslich fiktive Daten': 'Demo account · fictional data only',
     'Demo beenden': 'Exit demo',
     'Ohne WISS-Login mit fiktiven Daten ausprobieren.': 'Try fictional data without a WISS login.',

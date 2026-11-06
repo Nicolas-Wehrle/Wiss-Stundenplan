@@ -277,8 +277,11 @@ function learnTeachers(tabId = null) {
 
 // Opens a page out of the way: a minimized window on desktop, a background tab where
 // windows aren't available (Firefox for Android). Returns { tabId, close() }.
+// Firefox can't really minimize a new window (on Linux it pops up in front),
+// so there the page opens as a background tab in the current window instead.
+const IS_FIREFOX = typeof navigator !== 'undefined' && /firefox/i.test(navigator.userAgent || '');
 async function openHidden(url) {
-  if (browser.windows && browser.windows.create) {
+  if (browser.windows && browser.windows.create && !IS_FIREFOX) {
     for (const opts of [{ url, state: 'minimized' }, { url }]) {
       try {
         const win = await browser.windows.create(opts);
@@ -739,7 +742,8 @@ browser.runtime.onInstalled.addListener(async (details) => {
 browser.runtime.onStartup.addListener(() => {
   resetKeepalive();
   scheduleNotifications().catch(() => {});
-  refresh({ force: true, allowLogin: true });
+  // Firefox: no sign-in page right when the browser opens. It happens once you open the timetable.
+  refresh({ force: true, allowLogin: !IS_FIREFOX });
 });
 browser.alarms.onAlarm.addListener((a) => {
   if (a.name === 'keepalive') refresh({ force: true, allowLogin: false });
@@ -760,7 +764,8 @@ const TOOLBAR_LOGOS = {
 async function paintToolbarIcon() {
   if (!browser.action || !browser.action.setIcon || typeof OffscreenCanvas === 'undefined') return;
   const { prefs } = await browser.storage.local.get('prefs');
-  const L = TOOLBAR_LOGOS[(prefs && prefs.style) || 'standard'] || TOOLBAR_LOGOS.standard;
+  const red = prefs && prefs.themeLogo === false;
+  const L = TOOLBAR_LOGOS[(!red && prefs && prefs.style) || 'standard'] || TOOLBAR_LOGOS.standard;
   const imageData = {};
   for (const size of [16, 32, 48]) {
     const cv = new OffscreenCanvas(size, size), g = cv.getContext('2d'), k = size / 100;
@@ -779,7 +784,7 @@ async function paintToolbarIcon() {
 }
 paintToolbarIcon().catch(() => {});
 browser.storage.onChanged.addListener((ch, area) => {
-  if (area === 'local' && ch.prefs && (ch.prefs.oldValue || {}).style !== (ch.prefs.newValue || {}).style) paintToolbarIcon().catch(() => {});
+  if (area === 'local' && ch.prefs && ['style', 'themeLogo'].some((k) => (ch.prefs.oldValue || {})[k] !== (ch.prefs.newValue || {})[k])) paintToolbarIcon().catch(() => {});
 });
 // settings changed in the popup → re-plan reminders / sync interval
 browser.storage.onChanged.addListener((ch, area) => {

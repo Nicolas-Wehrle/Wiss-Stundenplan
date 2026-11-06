@@ -4,7 +4,7 @@
 (() => {
   'use strict';
   const H = window.AndroidHost, ST = window.AndroidStore;
-  const VERSION = '1.12.1';
+  const VERSION = '1.12.2';
   const L = { msg: [], changed: [], installed: [], startup: [], alarm: [] };
 
   // ---------- messaging (popup ⇄ background run in the same page here) ----------
