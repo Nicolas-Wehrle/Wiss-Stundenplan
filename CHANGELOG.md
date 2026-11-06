@@ -9,6 +9,7 @@
 - Rooms: new time picker. Big slider that no longer jumps while you drag, hour marks, and quick buttons for now and your lesson start times.
 - Faster: screens that didn't change aren't redrawn, and long lists off screen are skipped until you scroll to them.
 - Tab bars with icons (Pastell, Apple) use the full width again.
+- Smoother scrolling: the blinking "now" dot and the Apple glass are much cheaper to draw, no fixed backgrounds.
 - Settings: no more dark strip behind the section buttons.
 - Readme links to the Chrome Web Store.
 
