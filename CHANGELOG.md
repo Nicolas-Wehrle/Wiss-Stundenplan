@@ -6,6 +6,10 @@
 - New setting for the logo: matching the style, or always the red one.
 - The card at the top of the week looks calmer in the Standard style: no glow, the room in plain colours.
 - Firefox: no more window with the WISS page when the browser starts (it popped up on Linux). Firefox now signs in only when you open the timetable, in a background tab.
+- Rooms: new time picker. Big slider that no longer jumps while you drag, hour marks, and quick buttons for now and your lesson start times.
+- Faster: screens that didn't change aren't redrawn, and long lists off screen are skipped until you scroll to them.
+- Tab bars with icons (Pastell, Apple) use the full width again.
+- Settings: no more dark strip behind the section buttons.
 - Readme links to the Chrome Web Store.
 
 ## 1.12.1 – Demokonto auf allen Plattformen

@@ -23,6 +23,7 @@
   } catch (e) {}
 
   const EN = {
+    "Uhrzeit": "Time",
     "Passend zum Stil": "Match the style",
     "Immer rot": "Always red",
     "Logo": "Logo",

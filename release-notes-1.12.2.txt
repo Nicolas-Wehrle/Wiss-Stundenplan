@@ -4,6 +4,8 @@ WISS Stundenplan 1.12.2
 - No more black bars in full screen with some styles.
 - Soft animations, can be turned off in the settings.
 - Logo setting: matching the style or always red.
+- Rooms: a much easier time slider with quick times.
+- Faster.
 - Calmer card at the top of the week in the Standard style.
 - Firefox: no more WISS window popping up when the browser starts.
 - Chrome: now in the Chrome Web Store, with automatic updates.

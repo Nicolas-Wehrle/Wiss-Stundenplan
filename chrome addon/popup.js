@@ -11,6 +11,10 @@ const $ = (id) => document.getElementById(id);
 // assigning it to the element directly. Parsed nodes never run scripts.
 const parser = new DOMParser();
 function setHTML(el, html) {
+  // nothing changed (a refresh with the same data): keep the page as it is, no parsing, no layout
+  const key = (document.documentElement.lang || '') + '|' + html;
+  if (el.__html === key && el.childNodes.length) return;
+  el.__html = key;
   const doc = parser.parseFromString('<!doctype html><body>' + html, 'text/html');
   el.replaceChildren(...doc.body.childNodes);
   if (window.translateDom) translateDom(el);
@@ -1154,6 +1158,17 @@ function renderFloorPlan(fp, list, bookings, atMs) {
   return svg + `</svg>`;
 }
 
+// time picker for the rooms: quick times (now + when your lessons start) and a big slider
+function timePicker(k, hhmm) {
+  const nowMin = Math.min(18 * 60, Math.max(7 * 60, Math.round(mod(new Date()) / 15) * 15));
+  const starts = [...new Set(D.lessons.map((l) => mod(new Date(l.start))).filter((m) => m >= 420 && m <= 1080))].sort((a, b) => a - b).slice(0, 5);
+  const lab = (m) => `${p2(Math.floor(m / 60))}:${p2(m % 60)}`;
+  const chip = (m, text) => `<button class="tchip ${roomState.minute === m ? 'on' : ''}" data-act="rtime" data-m="${m}">${text}</button>`;
+  const pct = ((roomState.minute - 420) / (1080 - 420)) * 100;
+  return `<div class="tpick"><div class="tp-top"><b id="rTimeLab">${hhmm}</b><div class="tchips">${k === todayKey() ? chip(nowMin, tr('Jetzt')) : ''}${starts.map((m) => chip(m, lab(m))).join('')}</div></div>
+    <div class="tp-track" style="--p:${pct}%"><input type="range" id="rTime" min="420" max="1080" step="15" value="${roomState.minute}" aria-label="${esc(tr('Uhrzeit'))}"></div>
+    <div class="tp-ticks" aria-hidden="true">${[7, 9, 11, 13, 15, 17].map((h) => `<span style="left:${((h * 60 - 420) / 660) * 100}%">${h}</span>`).join('')}</div></div>`;
+}
 function renderRooms() {
   if (!roomState.date) {
     roomState.date = todayKey();
@@ -1182,7 +1197,7 @@ function renderRooms() {
     <select id="rBuilding">${buildings.map((b) => `<option ${b === roomState.building ? 'selected' : ''}>${esc(b)}</option>`).join('')}</select>
     <button class="chip" data-act="rreload">${roomState.loading ? 'Lade…' : 'Neu laden'}</button>
   </div>
-  <div class="slider"><span class="muted">${esc(fmtDay(k))}</span><input type="range" id="rTime" min="420" max="1080" step="15" value="${roomState.minute}"><b>${hhmm}</b></div>`;
+  ${timePicker(k, hhmm)}<div id="roomsBody">`;
 
   if (roomState.err) h += `<div class="banner" style="margin:10px 0 0"><p>Räume konnten nicht geladen werden: ${esc(roomState.err)}</p></div>`;
   if (!cache) return h + `<div class="empty">${roomState.loading ? 'Lade Raumbelegung…' : ''}</div>`;
@@ -1555,7 +1570,7 @@ function render() {
   const setup = hasChrome && (!S.setupDone || S.showSetup);
   $('tabs').hidden = setup;
   if (setup) setHTML($('banner'), '');
-  setHTML(v, setup ? ((!S.setupDone && !S.privacyOk) || S.showPrivacy ? renderPrivacy() : renderSetup()) : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms());
+  setHTML(v, setup ? ((!S.setupDone && !S.privacyOk) || S.showPrivacy ? renderPrivacy() : renderSetup()) : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms() + '</div>');
   document.body.dataset.tab = setup ? 'settings' : S.tab;
   // a short fade-in when the screen really changes (another tab, week or the settings), not on every refresh
   const viewKey = setup ? 'set' + (S.showPrivacy ? 'p' : '') : S.tab + '|' + weekOffset;
@@ -1599,6 +1614,7 @@ document.addEventListener('click', (ev) => {
   if (a) {
     const act = a.dataset.act;
     if (act === 'reveal') { const on = a.classList.toggle('shown'); a.title = on ? '' : tr('Antippen zum Anzeigen'); return; }
+    if (act === 'rtime') { roomState.minute = +a.dataset.m; render(); return; }
     if (act === 'hide-nextexam') { setPref('showNextExam', false); toast(tr('Ausgeblendet. In den Einstellungen wieder einschalten.')); render(); return; }
     if (act === 'jumpday') {
       const go = () => { const el = document.getElementById('day-' + a.dataset.k); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
@@ -1684,11 +1700,23 @@ document.addEventListener('change', (ev) => {
 });
 document.addEventListener('input', (ev) => {
   if (ev.target.id === 'rTime') {
+    // while dragging only the label and the rooms below change; the slider itself is never replaced
     roomState.minute = +ev.target.value;
-    clearTimeout(ev.target._t);
-    ev.target._t = setTimeout(render, 60);
+    const lab = $('rTimeLab'); if (lab) lab.textContent = `${p2(Math.floor(roomState.minute / 60))}:${p2(roomState.minute % 60)}`;
+    ev.target.parentElement.style.setProperty('--p', ((roomState.minute - 420) / 660) * 100 + '%');
+    for (const c of document.querySelectorAll('.tchip')) c.classList.toggle('on', +c.dataset.m === roomState.minute);
+    if (!roomBodyQueued) { roomBodyQueued = true; requestAnimationFrame(() => { roomBodyQueued = false; updateRoomsBody(); }); }
   }
 });
+let roomBodyQueued = false;
+function updateRoomsBody() {
+  const body = $('roomsBody'); if (!body || S.tab !== 'rooms') return;
+  const doc = parser.parseFromString('<!doctype html><body>' + renderRooms() + '</div>', 'text/html');
+  const fresh = doc.getElementById('roomsBody'); if (!fresh) return;
+  body.replaceChildren(...fresh.childNodes);
+  if (window.translateDom) translateDom(body);
+  $('view').__html = '';   // the next full render must draw again
+}
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
   if (e.key === 'Escape' && !$('sheetWrap').hidden) closeSheet();

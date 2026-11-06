@@ -1652,7 +1652,7 @@ body:not(.full):not(.mobile) .tabs { min-width: 0; }
 [data-style=terminal] body:not(.full):not(.mobile) .tabs button { padding-left: 5px; padding-right: 5px; letter-spacing: 0; }
 body:not(.full):not(.mobile) .tabs { overflow-x: auto; scrollbar-width: none; }
 body:not(.full):not(.mobile) .tabs::-webkit-scrollbar { display: none; }
-body:not(.full):not(.mobile) .tabs button { flex: none; white-space: nowrap; }
+body:not(.full):not(.mobile) .tabs button { white-space: nowrap; }
 [data-style=github] body:not(.full):not(.mobile) .tabs .ti { display: none !important; }
 :is([data-style=nothing], [data-style=neon]) body:not(.full):not(.mobile) .tabs { padding: 0 4px; gap: 0; }
 :is([data-style=nothing], [data-style=neon]) body:not(.full):not(.mobile) .tabs button { padding-left: 6px; padding-right: 6px; letter-spacing: .02em; }
@@ -1717,3 +1717,28 @@ body.full[data-tab=grades] #view > .ggrid { max-width: 920px; }
 [data-style=samsung] body.full .tabs { justify-content: center; }
 [data-style=samsung] body.full .tabs { max-width: none; }
 [data-style=samsung] body.full .tabs button { flex: 0 1 160px; }
+
+/* speed: the browser skips drawing long parts that are off screen */
+section.day, .floor, details.semfold, details.mgroup, .ggrid { content-visibility: auto; contain-intrinsic-size: auto 320px; }
+.card, .lesson { contain: layout style; }
+
+/* rooms: time picker */
+.tpick { margin-top: 12px; padding: 12px 14px 8px; border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
+.tp-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.tp-top b { font-family: var(--display, var(--font)); font-size: 24px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; min-width: 72px; }
+.tchips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.tchip { border: 0; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 600; background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--ink); font-variant-numeric: tabular-nums; }
+.tchip.on { background: var(--accent); color: #fff; }
+.tp-track { position: relative; margin-top: 10px; height: 32px; display: flex; align-items: center; }
+.tp-track input[type=range] { width: 100%; height: 32px; margin: 0; cursor: pointer; touch-action: none; background: transparent; }
+.tp-track input[type=range]::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(to right, var(--accent) var(--p), color-mix(in srgb, var(--ink) 12%, transparent) var(--p)); }
+.tp-track input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 26px; height: 26px; margin-top: -9px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.28); transition: transform .12s ease; }
+.tp-track input[type=range]:active::-webkit-slider-thumb { transform: scale(1.12); }
+.tp-track input[type=range]::-moz-range-track { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.tp-track input[type=range]::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--accent); }
+.tp-track input[type=range]::-moz-range-thumb { width: 26px; height: 26px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.06), 0 2px 8px rgba(0,0,0,.28); }
+.tp-ticks { position: relative; height: 14px; margin: 0 13px; font-size: 10px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.tp-ticks span { position: absolute; transform: translateX(-50%); }
+
+/* settings tabs: no solid strip behind them (it showed as a bar on styles with a picture background) */
+body:not(.full) .set-nav { background: transparent; -webkit-backdrop-filter: blur(18px) saturate(1.3); backdrop-filter: blur(18px) saturate(1.3); }
