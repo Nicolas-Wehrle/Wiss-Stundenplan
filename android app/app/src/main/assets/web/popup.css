@@ -1719,7 +1719,8 @@ body.full[data-tab=grades] #view > .ggrid { max-width: 920px; }
 [data-style=samsung] body.full .tabs button { flex: 0 1 160px; }
 
 /* speed: the browser skips drawing long parts that are off screen */
-section.day, .floor, details.semfold, details.mgroup, .ggrid { content-visibility: auto; contain-intrinsic-size: auto 320px; }
+/* (content-visibility clipped shadows and cards that reach past their section, so it's only used where nothing sticks out) */
+.floor .plan { content-visibility: auto; contain-intrinsic-size: auto 260px; }
 .card, .lesson { contain: layout style; }
 
 /* rooms: time picker */
