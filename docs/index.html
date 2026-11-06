@@ -8,7 +8,7 @@
 <meta name="description" content="Der inoffizielle Stundenplan für Lernende der WISS: Lektion, Raum, Prüfungen, Noten, Absenzen und freie Räume. Für Chrome, Firefox, Android und iPhone.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@500..700&display=swap">
 <style>
 /* Swiss poster, not a landing page: left-aligned type on a grid, hairline rules, one red,
    square corners, no glow. The middle is a scroll-driven walk through the app. */
@@ -128,8 +128,8 @@ p { margin: 0; }
 .rail-win { flex: 1; overflow: hidden; }
 .rail { display: flex; width: 500%; height: 100%; will-change: transform; }
 .view { width: 20%; padding: 14px; display: grid; gap: 10px; align-content: start; }
-.card { background: var(--a-surface); border-radius: 18px; box-shadow: inset 0 0 0 1px var(--a-line); }
-.now { position: relative; padding: 15px 16px 14px 20px; border-radius: 20px; }
+.card { background: var(--a-surface); border-radius: var(--a-r, 18px); box-shadow: inset 0 0 0 1px var(--a-line), var(--a-glow, 0 0 0 transparent); }
+.now { position: relative; padding: 15px 16px 14px 20px; border-radius: var(--a-r, 20px); }
 .now::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 0 3px 3px 0; background: var(--c); }
 .kick { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; color: var(--a-muted); text-transform: uppercase; letter-spacing: .07em; }
 .live { width: 7px; height: 7px; border-radius: 50%; background: var(--a-accent); }
@@ -151,7 +151,7 @@ p { margin: 0; }
 .tag.lb { background: var(--red-soft); color: var(--red); }
 .tag.est { background: transparent; outline: 1.5px dashed currentColor; outline-offset: -1.5px; }
 .days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-.day { border: 0; font: inherit; color: var(--a-ink); background: var(--a-surface); border-radius: 12px; padding: 6px 2px 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: inset 0 0 0 1px var(--a-line); position: relative; cursor: pointer; }
+.day { border: 0; font: inherit; color: var(--a-ink); background: var(--a-surface); border-radius: calc(var(--a-r, 18px) * .66); padding: 6px 2px 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: inset 0 0 0 1px var(--a-line); position: relative; cursor: pointer; }
 .day small { font-size: 10px; font-weight: 650; color: var(--a-muted); text-transform: uppercase; }
 .day b { font-family: var(--display); font-size: 17px; line-height: 1.1; }
 .day .dots { display: flex; gap: 2px; height: 5px; margin-top: 2px; }
@@ -160,7 +160,7 @@ p { margin: 0; }
 .day.on small { color: rgba(255,255,255,.85); }
 .day.on .dots i { box-shadow: 0 0 0 1.2px #fff; }
 .day .x { position: absolute; top: -6px; right: -2px; font-size: 8.5px; font-weight: 800; line-height: 13px; padding: 0 4px; border-radius: 6px; background: var(--red); color: #fff; }
-.les { display: grid; grid-template-columns: 50px 1fr; gap: 10px; align-items: center; padding: 9px 12px 9px 15px; position: relative; border-radius: 16px; }
+.les { display: grid; grid-template-columns: 50px 1fr; gap: 10px; align-items: center; padding: 9px 12px 9px 15px; position: relative; border-radius: var(--a-r, 16px); }
 .les::before { content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 3.5px; border-radius: 3px; background: var(--c); }
 .les .t { font-size: 12.5px; font-weight: 700; text-align: center; line-height: 1.25; }
 .les .t span { display: block; font-weight: 500; color: var(--a-muted); font-size: 11px; }
@@ -236,6 +236,90 @@ p { margin: 0; }
 .rm small { display: block; font-size: 9.5px; font-weight: 600; opacity: .85; }
 .rm.busy { background: color-mix(in srgb, var(--a-ink) 7%, transparent); color: var(--a-muted); }
 .rm.mine { box-shadow: inset 0 0 0 2px var(--red); }
+
+/* second and third scroll sections */
+.scrub { margin-top: 40px; height: 620vh; }
+#syncsec { height: 520vh; }
+.steps.compact li { padding: 9px 0; }
+.steps.compact li b { padding-top: 3px; }
+.steps.compact li h3 { font-size: clamp(22px, 2.2vw, 30px); }
+.steps.compact li.on p { margin-top: 4px; }
+.mode { position: absolute; right: 0; top: 40px; display: flex; border: 2px solid var(--ink); }
+.mode button { border: 0; background: transparent; color: var(--ink); font: 600 14px var(--body); padding: 8px 14px; cursor: pointer; }
+.mode button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.screen, .screen .card, .screen .day, .screen .a-tabs { transition: background-color .45s ease, color .45s ease, box-shadow .45s ease, border-radius .45s ease; }
+.screen { font-family: var(--body); }
+.screen.glass .card, .screen.glass .day { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+@media (max-width: 860px) {
+  .mode { top: -48px; right: 0; background: var(--bg); }
+  .mode button { padding: 6px 11px; font-size: 13px; }
+}
+
+/* sync diagram */
+.sync { position: relative; width: 100%; max-width: 640px; display: grid; grid-template-columns: minmax(0, 1fr) 120px minmax(0, 1fr); gap: 34px; align-items: center; }
+.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.wires polyline { fill: none; stroke: var(--faint); stroke-width: 1.5; stroke-dasharray: 5 6; }
+.dev, .srv { position: relative; background: var(--paper); border: 2px solid var(--ink); padding: 14px; display: grid; gap: 12px; }
+.dev .dl, .srv .dl { position: absolute; left: -2px; top: -26px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.dev { align-content: start; }
+.sync { align-items: stretch; }
+.srv { align-self: center; }
+#devB { border-radius: 28px; padding: 18px 14px; }
+.srow { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+.tog { width: 42px; height: 24px; border-radius: 12px; background: var(--line); position: relative; transition: background-color .25s ease; }
+.tog::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+.tog.on { background: var(--red); }
+.tog.on::after { transform: translateX(18px); }
+.code-show { opacity: 0; transform: translateY(6px); transition: opacity .3s ease, transform .3s ease; }
+.code-show.on { opacity: 1; transform: none; }
+.code-show small, .nbox small { display: block; font-size: 12px; color: var(--muted); }
+.code-show b { font: 700 22px "Geist Mono", ui-monospace, monospace; letter-spacing: .04em; }
+.nbox { border-top: 1px solid var(--line); padding-top: 10px; min-height: 64px; }
+.nbox p { font-size: 15px; font-weight: 550; min-height: 1.5em; }
+.nbox p.typing::after { content: ""; display: inline-block; width: 2px; height: 1.05em; background: var(--red); margin-left: 2px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
+.nbox.got { animation: got .6s ease; }
+@keyframes got { 30% { background: color-mix(in srgb, var(--red) 12%, transparent); } }
+.cells { display: flex; gap: 3px; align-items: center; }
+.cells span { flex: 1; height: 34px; border: 1.5px solid var(--line); display: grid; place-items: center; font: 700 15px "Geist Mono", ui-monospace, monospace; background: var(--bg); }
+.cells span.f { border-color: var(--ink); }
+.cells em { font-style: normal; color: var(--faint); }
+.okline { font-size: 14px; font-weight: 650; color: var(--muted); }
+.okline.on { color: #23955d; }
+.okline.on::before { content: "✓ "; }
+.srv { justify-items: center; text-align: center; padding: 16px 10px; transition: border-color .3s ease, box-shadow .3s ease; }
+.srv svg { width: 26px; height: 26px; }
+.srv code { font: 600 11.5px "Geist Mono", ui-monospace, monospace; color: var(--muted); word-break: break-all; line-height: 1.35; min-height: 2.7em; }
+.srv.hot { border-color: var(--red); box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 15%, transparent); }
+.srv.hot code { color: var(--red); }
+.packet { position: absolute; left: 0; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: var(--red); border-radius: 3px; opacity: 0; pointer-events: none; }
+@media (max-width: 860px) {
+  .sync { grid-template-columns: 1fr; gap: 30px; max-width: 360px; margin-top: 24px; }
+  .dev { min-height: 0; padding: 10px 12px; gap: 8px; }
+  #devB { border-radius: 18px; }
+  .srv { grid-template-columns: auto 1fr; justify-items: start; text-align: left; align-items: center; padding: 8px 12px; gap: 10px; }
+  .code-show b { font-size: 18px; }
+  .cells span { height: 28px; }
+  .nbox { min-height: 0; }
+}
+
+@media (min-width: 861px) {
+  .sync { max-width: 700px; grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr); }
+  .dev { padding: 20px 18px; gap: 16px; min-height: 340px; }
+  .srow { font-size: 18px; }
+  .code-show b { font-size: 26px; }
+  .nbox p { font-size: 18px; }
+  .cells span { height: 44px; font-size: 18px; }
+  .okline { font-size: 16px; }
+  .srv code { font-size: 13px; }
+}
+/* more */
+.more { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 30px; margin-top: 40px; }
+.more div { border-top: 1px solid var(--line); padding: 18px 0 30px; }
+.more b { font-family: var(--display); font-size: 14px; color: var(--red); }
+.more h3 { font-size: 24px; letter-spacing: -.025em; line-height: 1.1; margin-top: 8px; }
+.more p { color: var(--muted); font-size: 15.5px; margin-top: 6px; }
+@media (max-width: 860px) { .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .more { grid-template-columns: 1fr; } .more div { padding-bottom: 18px; } }
 
 /* plain sections after the walk-through */
 .block { padding-block: 120px 0; }
@@ -346,9 +430,98 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     <hr class="rule">
     <div class="head">
       <h2>Neun Stile.</h2>
-      <p>Jeder mit eigenem Layout und eigenem Logo, hell oder dunkel. Wenn dir die Farben gefallen, aber nicht das Logo, behältst du einfach das rote.</p>
+      <p>Nicht nur andere Farben: jeder Stil hat eigene Ecken, Schriften und ein eigenes Logo. Scroll weiter und schau sie dir an.</p>
     </div>
-    <div class="logos" id="logos"></div>
+  </section>
+</div>
+
+<section class="walk scrub" id="styles" aria-label="Die neun Stile, mit Beispieldaten">
+  <div class="sticky">
+    <div class="wrap grid">
+      <ol class="steps compact" id="styleSteps"></ol>
+      <div class="stage">
+        <div class="phonebox" id="phonebox2">
+          <div class="phone">
+            <div class="screen" id="screen2">
+              <div class="st"><span>10:43</span><span>5G</span></div>
+              <div class="a-top"><svg class="mark" id="mark2" viewBox="0 0 100 100" aria-hidden="true"></svg><div><b>Stundenplan</b><small><i></i>Aktualisiert gerade eben</small></div></div>
+              <div class="a-tabs"><span class="on">Woche</span><span>Prüfungen</span><span>Noten</span><span>Absenzen</span><span>Räume</span></div>
+              <div class="rail-win"><div class="view" id="view2" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="mode" role="group" aria-label="Hell oder dunkel">
+          <button type="button" data-mode="light" aria-pressed="true">Hell</button><button type="button" data-mode="dark" aria-pressed="false">Dunkel</button>
+        </div>
+        <div class="count" id="count2" aria-hidden="true">1<span> / 9</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="block" id="sync-head">
+    <hr class="rule">
+    <div class="head">
+      <h2>Auf allen Geräten.</h2>
+      <p>Freiwillig: Sync bringt deine Notizen vom Laptop aufs Handy und zurück. Verschlüsselt, bevor irgendetwas dein Gerät verlässt.</p>
+    </div>
+  </section>
+</div>
+
+<section class="walk scrub" id="syncsec" aria-label="So funktioniert der Sync, als Beispiel">
+  <div class="sticky">
+    <div class="wrap grid">
+      <ol class="steps" id="syncSteps">
+        <li><b>01</b><div><h3>Einschalten</h3></div><p>Sync ist aus, bis du ihn selbst einschaltest.</p></li>
+        <li><b>02</b><div><h3>Verbinden</h3></div><p>Am Handy den Code vom Laptop eingeben. Er gilt zehn Minuten und nur einmal.</p></li>
+        <li><b>03</b><div><h3>Schreiben</h3></div><p>Notizen und korrigierte Prüfungsdaten kommen auf jedem Gerät an.</p></li>
+        <li><b>04</b><div><h3>Verschlüsselt</h3></div><p>AES-256 auf deinem Gerät. Der Server speichert nur Zeichensalat. Noten und Absenzen bleiben lokal.</p></li>
+      </ol>
+      <div class="stage">
+        <div class="sync" id="sync">
+          <svg class="wires" id="wires" aria-hidden="true"><polyline id="wireP" points=""/></svg>
+          <div class="dev" id="devA">
+            <div class="dl">Laptop</div>
+            <div class="srow"><span>Sync</span><i class="tog" id="tog"></i></div>
+            <div class="code-show" id="codeShow"><small>Code für ein neues Gerät</small><b>K7QM-4XD2</b></div>
+            <div class="nbox" id="nboxA"><small>Notiz · Datenbanken abfragen</small><p id="noteA"></p></div>
+          </div>
+          <div class="srv" id="srv">
+            <div class="dl">Sync-Server</div>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            <code id="cipher">—</code>
+          </div>
+          <div class="dev" id="devB">
+            <div class="dl">Handy</div>
+            <div class="cells" id="cells"><span></span><span></span><span></span><span></span><em>-</em><span></span><span></span><span></span><span></span></div>
+            <div class="okline" id="okLine">Verbunden</div>
+            <div class="nbox" id="nboxB"><small>Notiz · Datenbanken abfragen</small><p id="noteB"></p></div>
+          </div>
+          <i class="packet" id="packet"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <section class="block" id="mehr">
+    <hr class="rule">
+    <div class="head">
+      <h2>Und sonst noch.</h2>
+      <p>Kleine Dinge, die man erst vermisst, wenn sie fehlen.</p>
+    </div>
+    <div class="more">
+      <div><b>01</b><h3>Vollbild</h3><p>Im Browser als ganze Seite, mit Seitenleiste.</p></div>
+      <div><b>02</b><h3>Widget</h3><p>Die nächste Lektion auf dem Android-Startbildschirm.</p></div>
+      <div><b>03</b><h3>Erinnerungen</h3><p>Kurz vor jeder Lektion, mit dem Raum.</p></div>
+      <div><b>04</b><h3>Neue Noten</h3><p>Eine Meldung, sobald eine Note eingetragen ist.</p></div>
+      <div><b>05</b><h3>Notizen</h3><p>Zu jeder Lektion und jedem Modul.</p></div>
+      <div><b>06</b><h3>Demokonto</h3><p>Alles ansehen, ohne dich anzumelden.</p></div>
+      <div><b>07</b><h3>Deutsch und Englisch</h3><p>Umschalten in den Einstellungen.</p></div>
+      <div><b>08</b><h3>Updates</h3><p>Jede Version holt sich die nächste selbst.</p></div>
+    </div>
   </section>
 
   <section class="block" id="datenschutz">
@@ -420,7 +593,6 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     return `<defs><linearGradient id="${id}" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${L.bg[0]}"/><stop offset="1" stop-color="${L.bg[1]}"/></linearGradient></defs><rect width="100" height="100" rx="${L.R}" fill="url(#${id})"/>${L.edge ? `<rect x="1" y="1" width="98" height="98" rx="${L.R - 1}" fill="none" stroke="${L.edge}" stroke-width="2"/>` : ''}${cells}`;
   }
   document.querySelectorAll('[data-logo]').forEach((s) => { s.innerHTML = logo('standard'); });
-  $('logos').innerHTML = Object.keys(LOGOS).map((k) => `<figure><svg viewBox="0 0 100 100" aria-hidden="true">${logo(k)}</svg><figcaption>${LOGOS[k].name}</figcaption></figure>`).join('');
 
   // ---------- example data (invented) ----------
   const C = { db: '#2fbf71', net: '#5b8def', en: '#b07cf0', web: '#f0a23b', math: '#e2556b', abu: '#14a5a0' };
@@ -546,6 +718,7 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     phonebox.style.transform = keep;
     land = { x: m.left + m.width / 2 - (s.left + s.width / 2), y: m.top + m.height / 2 - (s.top + s.height / 2), s: m.width / 220 };
     placeNotes();
+    if (typeof phonebox2 !== 'undefined') { phonebox2.style.margin = phonebox.style.margin; phonebox2.style.transformOrigin = phonebox.style.transformOrigin; }
   }
   function frame() {
     const r = walk.getBoundingClientRect();
@@ -594,12 +767,97 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
       count.innerHTML = `${Math.max(0, active) + 1}<span> / 5</span>`;
     }
   }
+
+  // ---------- nine styles, one phone ----------
+  const THEMES = {
+    standard: { d: 'Warm und ruhig, mit der roten Linie.', light: { bg: '#f5f2ed', s: '#fff', ink: '#16141d', line: '#e9e4dc', a: '#e8344e' }, dark: { bg: '#0f0e13', s: '#1a1820', ink: '#f3f1f6', line: '#2c2934', a: '#ff4d63' } },
+    apple: { d: 'Glas, weiche Ecken, wie iOS.', r: '22px', glass: 1, light: { bg: 'linear-gradient(160deg,#cfe3ff,#f6d9ea 55%,#d8f5ec)', s: 'rgba(255,255,255,.62)', ink: '#1c1c1e', line: 'rgba(255,255,255,.85)', a: '#0a84ff' }, dark: { bg: 'linear-gradient(160deg,#0d1b33,#2a1630 55%,#0c2a24)', s: 'rgba(255,255,255,.08)', ink: '#f2f2f7', line: 'rgba(255,255,255,.12)', a: '#0a84ff' } },
+    samsung: { d: 'Grosse, runde Karten wie One UI.', r: '26px', light: { bg: '#f2f3f7', s: '#fff', ink: '#111', line: '#e3e4ea', a: '#3e6cf0' }, dark: { bg: '#000', s: '#1c1c1e', ink: '#f2f2f2', line: '#2a2a2c', a: '#6e9cff' } },
+    nothing: { d: 'Punktraster, Mono-Schrift, ein roter Punkt.', r: '14px', disp: '"Geist Mono", ui-monospace, monospace', light: { bg: '#f2f2f2 radial-gradient(#cfcfcf .8px, transparent 1px) 0 0/7px 7px', s: '#fff', ink: '#000', line: '#dcdcdc', a: '#d71921' }, dark: { bg: '#000 radial-gradient(#2a2a2a .8px, transparent 1px) 0 0/7px 7px', s: '#111', ink: '#f2f2f2', line: '#262626', a: '#e8222b' } },
+    github: { d: 'Kantig und sachlich, wie ein Repo.', r: '8px', light: { bg: '#f6f8fa', s: '#fff', ink: '#1f2328', line: '#d0d7de', a: '#fd8c73' }, dark: { bg: '#0d1117', s: '#161b22', ink: '#e6edf3', line: '#30363d', a: '#f78166' } },
+    pastel: { d: 'Weich, hell und freundlich.', r: '22px', light: { bg: '#fbf3ff', s: '#fff', ink: '#3b2f55', line: '#eee3fa', a: '#a78bfa' }, dark: { bg: '#1b1626', s: '#261f35', ink: '#efe8ff', line: '#3a3050', a: '#c4b0ff' } },
+    neon: { d: 'Leuchtende Kanten für die Nacht.', r: '12px', glow: 1, light: { bg: '#0b0918 linear-gradient(rgba(255,60,172,.1) 1px, transparent 1px) 0 0/18px 18px', s: '#141029', ink: '#f4f0ff', line: '#5a3a9b', a: '#ff3cac' }, dark: { bg: '#0b0918 linear-gradient(rgba(255,60,172,.1) 1px, transparent 1px) 0 0/18px 18px', s: '#141029', ink: '#f4f0ff', line: '#5a3a9b', a: '#ff3cac' } },
+    paper: { d: 'Ein Schulheft mit Linien und Serifen.', r: '4px', disp: 'Georgia, "Times New Roman", serif', light: { bg: '#f8f3e8 repeating-linear-gradient(transparent 0 23px, rgba(53,103,214,.13) 23px 24px)', s: '#fffdf7', ink: '#2b2620', line: '#e3d8c3', a: '#8e3523' }, dark: { bg: '#23201b repeating-linear-gradient(transparent 0 23px, rgba(140,170,255,.08) 23px 24px)', s: '#2b2721', ink: '#ece3d2', line: '#3a342b', a: '#e07a55' } },
+    terminal: { d: 'Grün auf Schwarz, alles in Mono.', r: '0px', disp: '"Geist Mono", ui-monospace, monospace', font: '"Geist Mono", ui-monospace, monospace', light: { bg: '#050805', s: '#0a120a', ink: '#b6ffc8', line: '#1d4d27', a: '#39ff6a' }, dark: { bg: '#050805', s: '#0a120a', ink: '#b6ffc8', line: '#1d4d27', a: '#39ff6a' } },
+  };
+  const tKeys = Object.keys(THEMES), screen2 = $('screen2');
+  $('styleSteps').innerHTML = tKeys.map((k, i) => `<li><b>${String(i + 1).padStart(2, '0')}</b><div><h3>${LOGOS[k].name}</h3></div><p>${THEMES[k].d}</p></li>`).join('');
+  $('view2').innerHTML = VIEWS[0];
+  const styleSteps = [...$('styleSteps').children];
+  let tCur = -1, tMode = 'light';
+  function setTheme(i) {
+    const k = tKeys[i], T = THEMES[k], c = T[tMode];
+    const st = screen2.style;
+    st.setProperty('--a-bg', c.bg); st.setProperty('--a-surface', c.s); st.setProperty('--a-ink', c.ink); st.setProperty('--a-line', c.line); st.setProperty('--a-accent', c.a);
+    st.setProperty('--a-muted', `color-mix(in srgb, ${c.ink} 58%, transparent)`);
+    st.setProperty('--red', c.a); st.setProperty('--a-r', T.r || '18px');
+    st.setProperty('--display', T.disp || '"Bricolage Grotesque", "Geist", system-ui, sans-serif');
+    st.setProperty('--body', T.font || '"Geist", system-ui, sans-serif');
+    st.setProperty('--a-glow', T.glow ? `0 0 14px -2px ${c.a}` : '0 0 0 transparent');
+    screen2.classList.toggle('glass', !!T.glass);
+    $('mark2').innerHTML = logo(k);
+    styleSteps.forEach((s, j) => s.classList.toggle('on', j === i));
+    $('count2').innerHTML = `${i + 1}<span> / 9</span>`;
+  }
+  document.querySelectorAll('.mode button').forEach((b) => b.addEventListener('click', () => {
+    tMode = b.dataset.mode;
+    document.querySelectorAll('.mode button').forEach((x) => x.setAttribute('aria-pressed', x === b));
+    setTheme(Math.max(0, tCur));
+  }));
+  const stylesSec = $('styles'), phonebox2 = $('phonebox2');
+  function frameStyles() {
+    const r = stylesSec.getBoundingClientRect(), p = clamp(-r.top / (stylesSec.offsetHeight - innerHeight));
+    const i = Math.min(8, Math.floor(p * 9));
+    if (i !== tCur) { tCur = i; setTheme(i); }
+    const f = p * 9 - i, bump = i > 0 && f < .12 ? 1 - f / .12 : 0;
+    phonebox2.style.transform = `scale(${fit * (1 - bump * .025)})`;
+  }
+
+  // ---------- sync, step by step ----------
+  const syncSec = $('syncsec'), syncSteps = [...$('syncSteps').children], syncBox = $('sync');
+  const cells = [...$('cells').querySelectorAll('span')], CODE = 'K7QM4XD2', NOTE = 'Laptop mitnehmen, Projekt zeigen';
+  let pts = [];
+  function measureSync() {
+    const b = syncBox.getBoundingClientRect();
+    const c = (el) => { const q = el.getBoundingClientRect(); return [q.left + q.width / 2 - b.left, q.top + q.height / 2 - b.top]; };
+    pts = [c($('nboxA')), c($('srv')), c($('nboxB'))];
+    $('wireP').setAttribute('points', pts.map((q) => q.join(',')).join(' '));
+  }
+  const scramble = (n, seed) => { const s = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789+/'; let o = ''; for (let i = 0; i < n; i++) o += s[Math.floor(Math.abs(Math.sin((i + 1) * 91.7 + seed * 13.1)) * 1e4) % s.length]; return o; };
+  let lastSync = '';
+  function frameSync() {
+    const r = syncSec.getBoundingClientRect(), p = clamp(-r.top / (syncSec.offsetHeight - innerHeight));
+    const step = p < .22 ? 0 : p < .48 ? 1 : p < .76 ? 2 : 3;
+    $('tog').classList.toggle('on', p > .06);
+    $('codeShow').classList.toggle('on', p > .14);
+    const n = Math.floor(seg(p, .25, .42) * 8.99);
+    cells.forEach((c, i) => { c.textContent = i < n ? CODE[i] : ''; c.classList.toggle('f', i < n); });
+    $('okLine').classList.toggle('on', p > .44);
+    const t = Math.floor(seg(p, .5, .62) * NOTE.length);
+    const noteA = $('noteA'); noteA.textContent = NOTE.slice(0, t); noteA.classList.toggle('typing', p > .48 && p < .64);
+    const travel = seg(p, .63, .74), arrived = p >= .74;
+    const pk = $('packet');
+    if (pts.length && travel > 0 && !arrived) {
+      const u = travel * 2, [a, b] = u < 1 ? [pts[0], pts[1]] : [pts[1], pts[2]], v = u < 1 ? u : u - 1;
+      pk.style.opacity = 1; pk.style.transform = `translate(${a[0] + (b[0] - a[0]) * v}px, ${a[1] + (b[1] - a[1]) * v}px) rotate(${travel * 180}deg)`;
+    } else pk.style.opacity = 0;
+    const key = step + '|' + arrived + '|' + Math.floor(p * 60);
+    if (key !== lastSync) {
+      const wasArrived = lastSync.split('|')[1] === 'true';
+      lastSync = key;
+      $('noteB').textContent = arrived ? NOTE : '';
+      if (arrived && !wasArrived) { const nb = $('nboxB'); nb.classList.remove('got'); void nb.offsetWidth; nb.classList.add('got'); }
+      $('cipher').textContent = p < .63 ? '—' : scramble(26, p > .78 ? 7 : Math.floor(p * 60));
+      $('srv').classList.toggle('hot', p > .78);
+      syncSteps.forEach((s, k) => s.classList.toggle('on', k === step));
+    }
+  }
   let ticking = false;
-  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; frame(); }); } };
+  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; frame(); frameStyles(); frameSync(); }); } };
   addEventListener('scroll', req, { passive: true });
-  addEventListener('resize', () => { measure(); lastCur = -2; req(); });
-  measure(); frame();
-  if (document.fonts) document.fonts.ready.then(() => { measure(); frame(); });
+  addEventListener('resize', () => { measure(); measureSync(); lastCur = -2; lastSync = ''; req(); });
+  measure(); measureSync(); frame(); frameStyles(); frameSync();
+  if (document.fonts) document.fonts.ready.then(() => { measure(); measureSync(); frame(); frameStyles(); frameSync(); });
 
   // ---------- the hero timetable counts down ----------
   let left = 47;
