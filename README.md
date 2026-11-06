@@ -21,7 +21,9 @@ Works as a Chrome/Edge add-on, a Firefox add-on, an Android app and on iPhone (S
 
 **Chrome, Edge, Brave:** install it from the **[Chrome Web Store](https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc)**. It updates itself.
 
-For everything else, get the latest version from the **[Releases](../../releases/latest)** page. Under "Assets", download the file for your device:
+For everything else, get the latest version from the **[Releases](../../releases/latest)** page.
+
+The project website lives in [`docs/index.html`](docs/index.html). To put it online: GitHub › Settings › Pages › Deploy from a branch › `main` / `docs`. Under "Assets", download the file for your device:
 
 | Device | Download this | Guide |
 |---|---|---|

@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<title>WISS Stundenplan</title>
+<meta name="description" content="Der inoffizielle Stundenplan für WISS-Lernende: Lektion, Raum, Prüfungen, Noten, Absenzen und freie Räume. Für Chrome, Firefox, Android und iPhone.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Geist:wght@400..700&family=Geist+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: one strong live app on top (it ticks like a real school day), then each feature as a
+   working miniature next to two lines of text. Brand: ink, signal red, the gold "now" dot. */
+:root {
+  --bg: #f5f2ed;
+  --bg-2: #ece7df;
+  --surface: #ffffff;
+  --ink: #16141d;
+  --muted: #6b6772;
+  --faint: #a29eaa;
+  --line: #e4ded4;
+  --red: #e8344e;
+  --red-soft: #fde8eb;
+  --gold: #ffc857;
+  --ok: #23955d;
+  --ok-soft: #e1f3e8;
+  --warn: #c47f06;
+  --zp: #3567d6;
+  --pj: #7a4cc9;
+  --shadow: 0 1px 0 rgba(22,20,29,.04), 0 10px 30px -14px rgba(22,20,29,.22);
+  --display: "Bricolage Grotesque", "Geist", "Segoe UI", system-ui, sans-serif;
+  --body: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --r: 18px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f0e13; --bg-2: #16141c; --surface: #1a1820; --ink: #f3f1f6; --muted: #9d98a8; --faint: #6b6676; --line: #2c2934;
+    --red: #ff4d63; --red-soft: #3a1820; --ok: #4cc386; --ok-soft: #15301f; --warn: #f0b443; --zp: #7aa2ff; --pj: #b28cff;
+    --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 14px 34px -16px rgba(0,0,0,.8);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f0e13; --bg-2: #16141c; --surface: #1a1820; --ink: #f3f1f6; --muted: #9d98a8; --faint: #6b6676; --line: #2c2934;
+  --red: #ff4d63; --red-soft: #3a1820; --ok: #4cc386; --ok-soft: #15301f; --warn: #f0b443; --zp: #7aa2ff; --pj: #b28cff;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 14px 34px -16px rgba(0,0,0,.8);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+h1, h2, h3 { font-family: var(--display); letter-spacing: -.025em; line-height: 1.04; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.wrap { max-width: 1160px; margin: 0 auto; padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+:focus-visible { outline: 2.5px solid var(--red); outline-offset: 3px; border-radius: 8px; }
+
+/* ---------- logo ---------- */
+.mark { width: 34px; height: 34px; flex: none; display: block; }
+.mark rect.c { transition: fill-opacity .4s ease; }
+
+/* ---------- nav ---------- */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--bg); }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 82%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4); border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+.nav .wrap { display: flex; align-items: center; gap: 14px; height: 64px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; font-family: var(--display); font-weight: 750; font-size: 18px; letter-spacing: -.02em; }
+.nav nav { display: flex; gap: 4px; margin-left: auto; }
+.nav nav a { text-decoration: none; color: var(--muted); font-weight: 550; font-size: 14.5px; padding: 8px 12px; border-radius: 999px; transition: color .15s ease, background-color .15s ease; }
+.nav nav a:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 6%, transparent); }
+.btn { display: inline-flex; align-items: center; gap: 9px; border: 0; cursor: pointer; text-decoration: none; font: 600 15px/1 var(--body); padding: 13px 18px; border-radius: 14px; background: var(--ink); color: var(--bg); transition: transform .15s ease, box-shadow .2s ease, background-color .2s ease; white-space: nowrap; }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 22px -10px color-mix(in srgb, var(--ink) 60%, transparent); }
+.btn:active { transform: translateY(0) scale(.98); }
+.btn.red { background: var(--red); color: #fff; }
+.btn.red:hover { box-shadow: 0 12px 24px -10px var(--red); }
+.btn.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px var(--line); }
+.btn.ghost:hover { box-shadow: inset 0 0 0 1.5px var(--ink); }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.btn.small { padding: 10px 14px; font-size: 14px; border-radius: 12px; }
+@media (max-width: 760px) { .nav nav { display: none; } .nav .btn { margin-left: auto; } }
+
+/* ---------- hero ---------- */
+.hero { padding-block: 64px 40px; position: relative; }
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 56px; align-items: center; }
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: var(--muted); padding: 6px 12px 6px 8px; border-radius: 999px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.eyebrow i { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 28%, transparent); }
+.hero h1 { font-size: clamp(46px, 7.2vw, 92px); font-weight: 800; margin-top: 22px; }
+.hero h1 em { font-style: normal; color: var(--red); }
+.hero .lead { font-size: clamp(17px, 1.6vw, 20px); color: var(--muted); max-width: 31em; margin-top: 22px; }
+.ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.ctas-note { margin-top: 14px; font-size: 13.5px; color: var(--faint); }
+.ctas-note a { color: var(--muted); }
+@media (max-width: 920px) { .hero .wrap { grid-template-columns: 1fr; gap: 44px; } .hero { padding-block: 40px 24px; } }
+
+/* ---------- the live app ---------- */
+.stage { position: relative; display: grid; place-items: center; }
+.stage::before { content: ""; position: absolute; inset: 8% 4% 6%; border-radius: 40px; background:
+  radial-gradient(60% 60% at 30% 25%, color-mix(in srgb, var(--red) 22%, transparent), transparent 70%),
+  radial-gradient(50% 50% at 80% 80%, color-mix(in srgb, var(--gold) 26%, transparent), transparent 70%); filter: blur(30px); opacity: .9; }
+.app { --a-bg: #f5f2ed; --a-surface: #fff; --a-ink: #16141d; --a-muted: #6e6a76; --a-line: #e9e4dc; --a-accent: #e8344e; --a-soft: #fde8eb; --a-font: var(--body); --a-disp: var(--display); --a-r: 16px; --a-tab: var(--a-accent);
+  position: relative; width: min(390px, 100%); border-radius: 30px; background: var(--a-bg); color: var(--a-ink); font-family: var(--a-font);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent), 0 40px 80px -30px rgba(22,20,29,.45), 0 12px 24px -12px rgba(22,20,29,.25);
+  overflow: hidden; transition: background-color .45s ease, color .45s ease; }
+.app * { transition: background-color .45s ease, color .45s ease, border-color .45s ease; }
+.a-top { display: flex; align-items: center; gap: 10px; padding: 16px 18px 10px; }
+.a-top .mark { width: 30px; height: 30px; }
+.a-top b { font-family: var(--a-disp); font-size: 17px; letter-spacing: -.02em; }
+.a-top small { display: block; color: var(--a-muted); font-size: 11.5px; }
+.a-top small i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2fbf71; margin-right: 5px; vertical-align: 1px; }
+.a-tabs { display: flex; justify-content: space-between; padding: 0 14px; border-bottom: 1px solid var(--a-line); font-size: 12.5px; font-weight: 600; color: var(--a-muted); }
+.a-tabs span { padding: 8px 6px 10px; position: relative; }
+.a-tabs span.on { color: var(--a-ink); }
+.a-tabs span.on::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--a-tab); }
+.a-body { padding: 14px 14px 18px; display: grid; gap: 10px; }
+.now { position: relative; background: var(--a-surface); border-radius: calc(var(--a-r) + 4px); padding: 15px 16px 14px 20px; box-shadow: inset 0 0 0 1px var(--a-line), 0 8px 20px -14px rgba(22,20,29,.3); }
+.now::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 0 3px 3px 0; background: var(--c, #2fbf71); }
+.kick { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700; color: var(--a-muted); text-transform: uppercase; letter-spacing: .06em; }
+.live { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--a-accent); }
+.live::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--a-accent); animation: ping 2s ease-out infinite; }
+@keyframes ping { from { transform: scale(1); opacity: .55; } to { transform: scale(3); opacity: 0; } }
+.now-row { display: flex; gap: 12px; align-items: flex-start; margin-top: 6px; }
+.now-row > div:first-child { flex: 1; min-width: 0; }
+.now h4 { margin: 0; font-family: var(--a-disp); font-size: 20px; letter-spacing: -.02em; line-height: 1.15; }
+.now .meta { font-size: 12.5px; color: var(--a-muted); margin-top: 2px; }
+.room { flex: none; border-left: 1px solid var(--a-line); padding: 1px 0 2px 14px; }
+.room small { display: block; font-size: 9.5px; font-weight: 700; color: var(--a-muted); letter-spacing: .08em; }
+.room b { display: block; font-family: var(--a-disp); font-size: 28px; line-height: 1.05; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.room b span { font-size: 13px; opacity: .5; }
+.strip { position: relative; height: 8px; margin-top: 14px; border-radius: 4px; background: color-mix(in srgb, var(--a-ink) 7%, transparent); }
+.strip i { position: absolute; top: 0; bottom: 0; border-radius: 4px; box-shadow: 0 0 0 1.5px var(--a-surface); }
+.strip i.done { opacity: .35; }
+.strip b { position: absolute; top: -4px; bottom: -4px; width: 3px; margin-left: -1.5px; border-radius: 2px; background: var(--a-ink); transition: left .9s linear; }
+.strip-l { display: flex; justify-content: space-between; font-size: 10.5px; color: var(--a-muted); margin-top: 5px; font-variant-numeric: tabular-nums; }
+.foot { display: flex; align-items: center; gap: 6px; margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--a-line); font-size: 12px; color: var(--a-muted); }
+.tag { display: inline-flex; font-size: 10.5px; font-weight: 750; padding: 1px 6px; border-radius: 5px; background: color-mix(in srgb, var(--pj) 14%, transparent); color: var(--pj); }
+.tag.zp { background: color-mix(in srgb, var(--zp) 14%, transparent); color: var(--zp); }
+.tag.lb { background: var(--red-soft); color: var(--red); }
+.tag.est { background: transparent; outline: 1.5px dashed currentColor; outline-offset: -1.5px; }
+.days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.day { border: 0; font: inherit; color: var(--a-ink); background: var(--a-surface); border-radius: 12px; padding: 6px 2px 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: inset 0 0 0 1px var(--a-line); position: relative; cursor: pointer; }
+.day small { font-size: 10px; font-weight: 650; color: var(--a-muted); text-transform: uppercase; letter-spacing: .04em; }
+.day b { font-family: var(--a-disp); font-size: 17px; line-height: 1.1; }
+.day .dots { display: flex; gap: 2px; height: 5px; margin-top: 2px; }
+.day .dots i { width: 5px; height: 5px; border-radius: 50%; }
+.day.on { background: var(--a-accent); color: #fff; box-shadow: none; }
+.day.on small { color: rgba(255,255,255,.85); }
+.day.on .dots i { box-shadow: 0 0 0 1.2px #fff; }
+.day .x { position: absolute; top: -6px; right: -2px; font-size: 8.5px; font-weight: 800; line-height: 13px; padding: 0 4px; border-radius: 6px; background: var(--red); color: #fff; }
+.les { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; background: var(--a-surface); border-radius: var(--a-r); padding: 9px 12px 9px 14px; box-shadow: inset 0 0 0 1px var(--a-line); position: relative; }
+.les::before { content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 3.5px; border-radius: 3px; background: var(--c); }
+.les .t { font-variant-numeric: tabular-nums; font-size: 12.5px; font-weight: 700; text-align: center; line-height: 1.25; }
+.les .t span { display: block; font-weight: 500; color: var(--a-muted); font-size: 11px; }
+.les h5 { margin: 0; font-size: 13.5px; font-weight: 650; }
+.les .m { display: flex; gap: 8px; align-items: center; font-size: 11.5px; color: var(--a-muted); margin-top: 2px; }
+.chip-room { font-weight: 700; color: var(--a-ink); background: color-mix(in srgb, var(--a-ink) 7%, transparent); padding: 0 6px; border-radius: 5px; }
+.list-fade { animation: fadeIn .35s ease both; }
+@keyframes fadeIn { from { opacity: .2; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+/* style picker under the live app */
+.picker { margin-top: 22px; display: flex; flex-direction: column; align-items: center; gap: 10px; position: relative; }
+.picker small { font-size: 12.5px; color: var(--muted); font-weight: 550; }
+.swatches { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.sw { width: 38px; height: 38px; padding: 0; border: 0; border-radius: 11px; cursor: pointer; background: none; transition: transform .15s ease; position: relative; }
+.sw svg { width: 100%; height: 100%; display: block; }
+.sw:hover { transform: translateY(-2px); }
+@media (max-width: 440px) { .swatches { gap: 5px; } .sw { width: 33px; height: 33px; border-radius: 9px; } }
+.sw[aria-pressed="true"]::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--ink); }
+
+/* app themes (the nine styles, simplified) */
+.app[data-s=apple] { --a-bg: linear-gradient(160deg, #cfe3ff, #f6d9ea 60%, #d8f5ec); --a-surface: rgba(255,255,255,.62); --a-line: rgba(255,255,255,.75); --a-ink: #1c1c1e; --a-muted: #6c6c70; --a-accent: #0a84ff; --a-font: -apple-system, "SF Pro Text", "Geist", system-ui, sans-serif; --a-disp: -apple-system, "SF Pro Display", "Geist", system-ui, sans-serif; --a-r: 18px; background: linear-gradient(160deg, #cfe3ff, #f6d9ea 60%, #d8f5ec); }
+.app[data-s=samsung] { --a-bg: #f2f3f7; --a-surface: #fff; --a-ink: #111; --a-muted: #707176; --a-line: #e3e4ea; --a-accent: #3e6cf0; --a-r: 24px; }
+.app[data-s=nothing] { --a-bg: #000; --a-surface: #111; --a-ink: #f2f2f2; --a-muted: #8a8a8a; --a-line: #262626; --a-accent: #e8222b; --a-disp: "Geist Mono", ui-monospace, monospace; --a-r: 14px; background-image: radial-gradient(#2a2a2a .8px, transparent 1px); background-size: 7px 7px; }
+.app[data-s=github] { --a-bg: #0d1117; --a-surface: #161b22; --a-ink: #e6edf3; --a-muted: #8b949e; --a-line: #30363d; --a-accent: #2f81f7; --a-tab: #f78166; --a-r: 8px; --a-disp: var(--body); }
+.app[data-s=pastel] { --a-bg: #fbf3ff; --a-surface: #fff; --a-ink: #3b2f55; --a-muted: #8b7fa6; --a-line: #eee3fa; --a-accent: #a78bfa; --a-r: 22px; --a-font: ui-rounded, "Geist", system-ui, sans-serif; }
+.app[data-s=neon] { --a-bg: #0b0918; --a-surface: #141029; --a-ink: #f4f0ff; --a-muted: #9a8fc7; --a-line: #2b2150; --a-accent: #ff3cac; --a-r: 12px; background-image: linear-gradient(rgba(255,60,172,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(45,226,230,.07) 1px, transparent 1px); background-size: 22px 22px; }
+.app[data-s=paper] { --a-bg: #f8f3e8; --a-surface: #fffdf7; --a-ink: #2b2620; --a-muted: #7d7263; --a-line: #e3d8c3; --a-accent: #8e3523; --a-disp: Georgia, "Times New Roman", serif; --a-r: 6px; background-image: repeating-linear-gradient(transparent 0 23px, rgba(53,103,214,.12) 23px 24px); }
+.app[data-s=terminal] { --a-bg: #050805; --a-surface: #0a120a; --a-ink: #b6ffc8; --a-muted: #4c9a5e; --a-line: #1d4d27; --a-accent: #39ff6a; --a-font: var(--mono); --a-disp: var(--mono); --a-r: 0px; }
+.app[data-s=terminal] .now, .app[data-s=terminal] .les, .app[data-s=terminal] .day { box-shadow: inset 0 0 0 1px var(--a-line); }
+.app[data-s=terminal] .day.on, .app[data-s=nothing] .day.on, .app[data-s=neon] .day.on { color: #000; }
+.app[data-s=apple] .now, .app[data-s=apple] .les, .app[data-s=apple] .day { -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+
+/* ---------- sections ---------- */
+section { padding-block: 56px; }
+.sec-head { max-width: 640px; }
+.sec-head h2 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 800; }
+.sec-head p { color: var(--muted); font-size: 18px; margin-top: 14px; }
+.kicker { font-family: var(--mono); font-size: 12.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--red); margin-bottom: 14px; display: block; }
+
+.feat { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 48px; align-items: center; padding-block: 44px; border-top: 1px solid var(--line); }
+.feat:nth-of-type(even) .copy { order: 2; }
+.feat h3 { font-size: clamp(28px, 3.4vw, 40px); font-weight: 780; }
+.feat .copy p { color: var(--muted); margin-top: 12px; max-width: 30em; }
+.feat ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 8px; }
+.feat li { display: flex; gap: 10px; align-items: baseline; font-size: 15px; }
+.feat li::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 2px; background: var(--red); transform: translateY(-1px); }
+@media (max-width: 860px) { .feat { grid-template-columns: 1fr; gap: 26px; } .feat:nth-of-type(even) .copy { order: 0; } }
+
+.panel { background: var(--surface); border-radius: 26px; padding: 22px; box-shadow: var(--shadow), inset 0 0 0 1px var(--line); position: relative; overflow: hidden; }
+
+/* exams */
+.countdown { display: flex; gap: 16px; align-items: center; }
+.count { width: 92px; height: 92px; border-radius: 24px; background: var(--red-soft); color: var(--red); display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; }
+.count b { font-family: var(--display); font-size: 46px; line-height: .95; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.count small { font-size: 12px; font-weight: 650; }
+.xlist { margin-top: 18px; display: grid; gap: 8px; }
+.xmonth { font-family: var(--display); font-weight: 700; font-size: 15px; margin-top: 8px; display: flex; gap: 8px; align-items: baseline; }
+.xmonth small { color: var(--faint); font-family: var(--body); font-weight: 500; font-size: 12.5px; }
+.xrow { display: grid; grid-template-columns: 54px 1fr auto; gap: 12px; align-items: center; padding: 10px 12px; border-radius: 14px; background: var(--bg); }
+.xd { text-align: center; line-height: 1.1; }
+.xd b { display: block; font-family: var(--display); font-size: 19px; }
+.xd small { font-size: 11px; color: var(--muted); font-weight: 600; }
+.xrow .n { font-weight: 600; font-size: 14.5px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.xrow .in { font-size: 13px; font-weight: 650; color: var(--muted); }
+.xrow.soon .in { color: var(--red); }
+
+/* grades */
+.gtop { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.avg-l small { display: block; color: var(--muted); font-weight: 600; font-size: 13px; }
+.avg-l b { font-family: var(--display); font-size: 64px; line-height: 1; letter-spacing: -.04em; color: var(--ok); font-variant-numeric: tabular-nums; }
+.ring { --p: 0; width: 104px; height: 104px; position: relative; display: grid; place-items: center; flex: none; }
+.ring::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--red) calc(var(--p) * 1%), color-mix(in srgb, var(--ink) 9%, transparent) 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px)); mask: radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px)); transition: --p 1s; }
+.ring div { text-align: center; line-height: 1.05; }
+.ring b { font-family: var(--display); font-size: 26px; }
+.ring b small { font-size: 13px; color: var(--muted); }
+.ring span { display: block; font-size: 10.5px; color: var(--muted); font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
+.calc { margin-top: 20px; padding: 16px; border-radius: 18px; background: var(--bg); }
+.calc-h { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.calc-h b { font-size: 15px; }
+.parts { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.part { font-size: 12.5px; padding: 4px 9px; border-radius: 8px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.part b { font-variant-numeric: tabular-nums; }
+.targets { display: flex; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
+.targets button { border: 0; font: 650 14px var(--body); padding: 8px 13px; border-radius: 10px; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); cursor: pointer; font-variant-numeric: tabular-nums; transition: background-color .15s ease, color .15s ease; }
+.targets button[aria-pressed="true"] { background: var(--ink); color: var(--bg); box-shadow: none; }
+.need { margin-top: 14px; font-size: 16px; }
+.need b { font-family: var(--display); font-size: 26px; font-variant-numeric: tabular-nums; }
+.need .bad { color: var(--red); }
+.need .good { color: var(--ok); }
+
+/* absences */
+.todo { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 16px; background: var(--red-soft); }
+.todo b { font-size: 14.5px; }
+.todo small { display: block; color: var(--muted); font-size: 12.5px; }
+.todo .days-left { margin-left: auto; font-family: var(--display); font-weight: 750; color: var(--red); font-size: 18px; white-space: nowrap; }
+.budget { margin-top: 16px; display: grid; gap: 14px; }
+.brow .bh { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: 14px; }
+.brow .bh span:last-child { font-variant-numeric: tabular-nums; }
+.bbar { height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 8%, transparent); margin-top: 7px; overflow: hidden; }
+.bbar i { display: block; height: 100%; border-radius: 4px; width: var(--w); transition: width 1.2s cubic-bezier(.2,.8,.2,1); }
+.js .panel:not(.in) .bbar i { width: 0; }
+.heat { display: grid; grid-template-columns: repeat(26, 1fr); gap: 3px; margin-top: 18px; }
+.heat i { aspect-ratio: 1; border-radius: 3px; background: color-mix(in srgb, var(--ink) 7%, transparent); }
+.heat i.a { background: var(--warn); }
+.heat i.u { background: var(--red); }
+.heat i.p { background: color-mix(in srgb, var(--ok) 55%, transparent); }
+
+/* rooms */
+.rtop { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; }
+.rtop .free b { font-family: var(--display); font-size: 52px; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.rtop .free b small { font-size: 20px; color: var(--muted); }
+.rtop .free .fl { display: block; color: var(--muted); font-size: 13px; font-weight: 600; }
+.rtop .free em { font-style: normal; }
+.rtime { font-family: var(--display); font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.slider { margin-top: 16px; }
+.slider input { width: 100%; height: 32px; margin: 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; --p: 50%; }
+.slider input::-webkit-slider-runnable-track { height: 8px; border-radius: 999px; background: linear-gradient(to right, var(--red) var(--p), color-mix(in srgb, var(--ink) 12%, transparent) var(--p)); }
+.slider input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -9px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 3px 10px rgba(0,0,0,.3); }
+.slider input::-moz-range-track { height: 8px; border-radius: 999px; background: color-mix(in srgb, var(--ink) 12%, transparent); }
+.slider input::-moz-range-progress { height: 8px; border-radius: 999px; background: var(--red); }
+.slider input::-moz-range-thumb { width: 26px; height: 26px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 3px 10px rgba(0,0,0,.3); }
+.ticks { display: flex; justify-content: space-between; margin: 2px 13px 0; font-size: 11px; color: var(--faint); font-variant-numeric: tabular-nums; }
+.floor { margin-top: 16px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.rm { border-radius: 10px; padding: 8px 6px; text-align: center; font-size: 12.5px; font-weight: 700; background: var(--ok-soft); color: var(--ok); transition: background-color .3s ease, color .3s ease; font-variant-numeric: tabular-nums; }
+.rm small { display: block; font-size: 10px; font-weight: 600; opacity: .85; }
+.rm.busy { background: color-mix(in srgb, var(--ink) 7%, transparent); color: var(--muted); }
+.rm.mine { box-shadow: inset 0 0 0 2px var(--red); }
+@media (max-width: 480px) { .floor { grid-template-columns: repeat(4, 1fr); } }
+
+/* styles grid */
+.styles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 32px; }
+.style-card { border: 0; font: inherit; text-align: left; cursor: pointer; padding: 14px; border-radius: 20px; background: var(--surface); color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); display: grid; gap: 10px; transition: transform .18s ease, box-shadow .2s ease; }
+.style-card:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--line), var(--shadow); }
+.style-card svg { width: 46px; height: 46px; }
+.style-card b { font-family: var(--display); font-size: 17px; }
+.style-card small { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+
+/* sync */
+.code { display: flex; gap: 6px; justify-content: center; margin-top: 6px; }
+.code span { width: 40px; height: 52px; border-radius: 12px; display: grid; place-items: center; font: 600 24px var(--mono); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
+.code span.dash { width: 14px; background: none; box-shadow: none; color: var(--faint); }
+.code span.filled { animation: pop .25s ease both; }
+@keyframes pop { from { transform: scale(.85); } to { transform: none; } }
+.devices { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 20px; color: var(--muted); }
+.devices svg { width: 44px; height: 44px; }
+.wire { flex: 1; max-width: 140px; height: 2px; position: relative; background: repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 10px); }
+.wire i { position: absolute; top: -4px; width: 10px; height: 10px; border-radius: 3px; background: var(--red); animation: travel 2.4s ease-in-out infinite; }
+.wire i svg { width: 10px; height: 10px; }
+@keyframes travel { from { left: 0; } to { left: calc(100% - 10px); } }
+.facts { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 10px; font-size: 14px; color: var(--muted); }
+.facts li { padding-left: 16px; position: relative; }
+.facts li::before { content: ""; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 2px; background: var(--red); }
+.facts li b { color: var(--ink); }
+
+/* everywhere */
+.plat { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 32px; }
+.pcard { padding: 20px; border-radius: 22px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.pcard svg.pi { width: 30px; height: 30px; color: var(--ink); }
+.pcard h4 { margin: 0; font-family: var(--display); font-size: 20px; letter-spacing: -.02em; }
+.pcard p { color: var(--muted); font-size: 14px; }
+.pcard ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 5px; font-size: 13.5px; }
+.pcard li::before { content: "·"; margin-right: 6px; color: var(--red); font-weight: 800; }
+.pcard .btn { margin-top: auto; align-self: flex-start; }
+@media (max-width: 980px) { .plat { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .plat { grid-template-columns: 1fr; } }
+
+.widget { width: 170px; border-radius: 24px; padding: 14px; background: #fff; color: #16141d; box-shadow: 0 16px 30px -16px rgba(0,0,0,.4); font-size: 12px; }
+.widget b { font-family: var(--display); font-size: 15px; display: block; }
+.widget .wt { font-family: var(--display); font-size: 28px; font-weight: 800; letter-spacing: -.03em; }
+
+/* privacy */
+.priv { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 32px; }
+.priv div { padding: 20px; border-radius: 22px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); }
+.priv svg { width: 26px; height: 26px; color: var(--red); }
+.priv h4 { margin: 10px 0 6px; font-family: var(--display); font-size: 19px; letter-spacing: -.02em; }
+.priv p { color: var(--muted); font-size: 14.5px; }
+@media (max-width: 860px) { .priv { grid-template-columns: 1fr; } }
+
+/* download band */
+.dl { background: var(--ink); color: var(--bg); border-radius: 36px; padding: 48px clamp(20px, 5vw, 56px); margin-block: 40px; position: relative; overflow: hidden; }
+.dl::after { content: ""; position: absolute; right: -60px; top: -60px; width: 260px; height: 260px; border-radius: 60px; background: var(--red); opacity: .9; transform: rotate(14deg); }
+.dl > * { position: relative; z-index: 1; }
+.dl h2 { font-size: clamp(34px, 4.6vw, 56px); font-weight: 800; max-width: 12em; }
+.dl p { color: color-mix(in srgb, var(--bg) 70%, transparent); margin-top: 12px; max-width: 34em; }
+.dl-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 30px; }
+.dl-grid a { text-decoration: none; border-radius: 20px; padding: 18px; background: color-mix(in srgb, var(--bg) 8%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bg) 14%, transparent); display: grid; gap: 4px; transition: background-color .18s ease, transform .18s ease; }
+.dl-grid a:hover { background: color-mix(in srgb, var(--bg) 14%, transparent); transform: translateY(-2px); }
+.dl-grid b { font-family: var(--display); font-size: 19px; }
+.dl-grid small { color: color-mix(in srgb, var(--bg) 62%, transparent); font-size: 13px; }
+.dl-grid .arrow { font-family: var(--mono); font-size: 13px; color: var(--gold); margin-top: 8px; }
+@media (max-width: 900px) { .dl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { .dl-grid { grid-template-columns: 1fr; } }
+
+footer { padding-block: 30px 50px; color: var(--muted); font-size: 13.5px; border-top: 1px solid var(--line); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: center; justify-content: space-between; }
+footer .brand { font-size: 15px; color: var(--ink); }
+
+/* entrance: visible at rest, a small lift once it scrolls in */
+.rise { transition: transform .7s cubic-bezier(.2,.8,.2,1); }
+.js .rise:not(.in) { transform: translateY(18px); }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .js .rise:not(.in) { transform: none; }
+  .panel .bbar i { width: var(--w); }
+}
+</style>
+
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="WISS Stundenplan">
+      <svg class="mark" data-logo="standard" viewBox="0 0 100 100" aria-hidden="true"></svg>
+      Stundenplan
+    </a>
+    <nav aria-label="Seiten">
+      <a href="#funktionen">Funktionen</a>
+      <a href="#stile">Stile</a>
+      <a href="#datenschutz">Datenschutz</a>
+    </nav>
+    <a class="btn small red" href="#download">Herunterladen</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow"><i></i>Inoffiziell, für WISS-Lernende</span>
+        <h1>Wo ist die nächste Lektion? <em>Weisst du sofort.</em></h1>
+        <p class="lead">Stundenplan, Raum, Prüfungen, Noten und Absenzen aus dem WISS-Extranet. Ohne Warten, ohne Klicken, direkt im Browser und auf dem Handy.</p>
+        <div class="ctas">
+          <a class="btn red" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M8.9 13.8 4.8 6.7M15.1 13.8 11 21"/></svg>
+            Für Chrome holen
+          </a>
+          <a class="btn" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.apk">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+            Android-App
+          </a>
+          <a class="btn ghost" href="#download">Firefox und iPhone</a>
+        </div>
+        <p class="ctas-note">Kostenlos. Keine Werbung, kein Tracking. Code offen auf <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a>.</p>
+      </div>
+
+      <div class="stage">
+        <div class="app" id="app" data-s="standard" aria-label="Vorschau der App mit Beispieldaten">
+          <div class="a-top">
+            <svg class="mark" data-logo-app viewBox="0 0 100 100" aria-hidden="true"></svg>
+            <div><b>Stundenplan</b><small><i></i>Aktualisiert gerade eben</small></div>
+          </div>
+          <div class="a-tabs"><span class="on">Woche</span><span>Prüfungen</span><span>Noten</span><span>Absenzen</span><span>Räume</span></div>
+          <div class="a-body">
+            <div class="now" style="--c:#2fbf71">
+              <div class="kick"><span class="live"></span><span id="nowKick">Jetzt · noch 47 min</span></div>
+              <div class="now-row">
+                <div><h4>Datenbanken abfragen</h4><div class="meta">10:30–12:00 · B. Keller</div></div>
+                <div class="room"><small>RAUM</small><b><span>ZH-</span>404</b></div>
+              </div>
+              <div class="strip" id="strip" aria-hidden="true">
+                <i class="done" style="left:0;width:24%;background:#5b8def"></i>
+                <i style="left:27%;width:24%;background:#2fbf71"></i>
+                <i style="left:62%;width:17%;background:#b07cf0"></i>
+                <i style="left:82%;width:18%;background:#f0a23b"></i>
+                <b id="nowMark" style="left:36%"></b>
+              </div>
+              <div class="strip-l"><span>08:30</span><span>16:30</span></div>
+              <div class="foot"><span class="tag">Projekt</span><span><b style="color:var(--a-ink)">Web-App entwickeln</b> · in 5 Tagen</span></div>
+            </div>
+            <div class="days" id="days" role="group" aria-label="Wochentage"></div>
+            <div id="dayList" style="display:grid;gap:8px"></div>
+          </div>
+        </div>
+        <div class="picker">
+          <small id="styleName">Stil: Standard</small>
+          <div class="swatches" id="swatches" role="group" aria-label="Stil wählen"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="funktionen">
+    <section style="padding-bottom:10px">
+      <div class="sec-head">
+        <span class="kicker">Funktionen</span>
+        <h2>Alles, wofür du sonst das Extranet öffnest.</h2>
+        <p>Jeder Tab beginnt mit dem, was jetzt zählt. Der Rest ist eine Zeile tiefer.</p>
+      </div>
+    </section>
+
+    <div class="feat">
+      <div class="copy rise">
+        <span class="kicker">Woche</span>
+        <h3>Die aktuelle Lektion, gross. Der Raum, grösser.</h3>
+        <p>Oben steht, was gerade läuft oder als Nächstes kommt, mit Raum, Lehrperson und dem ganzen Tag als Streifen. Darunter Montag bis Freitag auf einen Blick.</p>
+        <ul>
+          <li>Ferien und Feiertage sind markiert</li>
+          <li>Prüfungen direkt bei der Lektion</li>
+          <li>Notizen zu jeder Lektion</li>
+          <li>Wochenraster im Vollbild</li>
+        </ul>
+      </div>
+      <div class="panel rise" aria-label="Beispiel: die Woche">
+        <div class="days" id="days2" style="--a-surface:var(--bg);--a-line:var(--line);--a-ink:var(--ink);--a-muted:var(--muted);--a-accent:var(--red);--a-disp:var(--display);--a-r:16px"></div>
+        <div id="dayList2" style="display:grid;gap:8px;margin-top:12px;--a-surface:var(--bg);--a-line:transparent;--a-ink:var(--ink);--a-muted:var(--muted);--a-r:14px"></div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div class="copy rise">
+        <span class="kicker">Prüfungen</span>
+        <h3>Wie viele Tage noch?</h3>
+        <p>Die nächste Prüfung als Countdown, der Rest nach Monat. Fehlt ein Termin im Extranet, schätzt die App ihn aus dem Modulplan. Gestrichelt heisst geschätzt, ein Klick korrigiert ihn.</p>
+        <ul>
+          <li>Zwischenprüfungen, LB und Projekte</li>
+          <li>Die nächste Prüfung auch oben in der Woche</li>
+        </ul>
+      </div>
+      <div class="panel rise" aria-label="Beispiel: Prüfungen">
+        <div class="countdown">
+          <div class="count"><b id="cd">5</b><small>Tage</small></div>
+          <div>
+            <div class="kick" style="color:var(--muted)">Nächste Prüfung <span class="tag">Projekt</span></div>
+            <div style="font-family:var(--display);font-weight:750;font-size:21px;margin-top:4px;letter-spacing:-.02em">Web-App entwickeln</div>
+            <div style="color:var(--muted);font-size:13.5px">Mo, 16. Nov · 08:30 · ZH-404</div>
+          </div>
+        </div>
+        <div class="xlist">
+          <div class="xmonth">November 2026 <small>2</small></div>
+          <div class="xrow soon"><div class="xd"><b>19</b><small>DO</small></div><div class="n"><span class="tag zp">ZP</span>Netzwerke planen</div><div class="in">in 8 Tagen</div></div>
+          <div class="xrow"><div class="xd"><b>27</b><small>FR</small></div><div class="n"><span class="tag lb">LB 2</span>Englisch</div><div class="in">in 16 Tagen</div></div>
+          <div class="xmonth">Dezember 2026 <small>1</small></div>
+          <div class="xrow"><div class="xd"><b>09</b><small>MI</small></div><div class="n"><span class="tag zp est" title="geschätzt">ZP</span>Daten modellieren</div><div class="in">in 28 Tagen</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div class="copy rise">
+        <span class="kicker">Noten</span>
+        <h3>Welche Note brauchst du noch?</h3>
+        <p>Dein Schnitt, wie viele Module schon fertig sind, und für jedes laufende Modul die Note, die du in den restlichen Teilen brauchst. Tipp eine Zielnote an.</p>
+        <ul>
+          <li>Verlauf deiner Noten als Kurve</li>
+          <li>Alle Module der Lehre mit Status</li>
+          <li>Rechnet mit Gewichtung und Rundung</li>
+        </ul>
+      </div>
+      <div class="panel rise" aria-label="Beispiel: Noten">
+        <div class="gtop">
+          <div class="avg-l"><small>Schnitt</small><b>5.12</b></div>
+          <div class="ring" id="ring" style="--p:37"><div><b>14<small>/38</small></b><span>Module</span></div></div>
+        </div>
+        <div class="calc">
+          <div class="calc-h"><b>Applikationen testen</b><span style="color:var(--muted);font-size:13px">Modul 450</span></div>
+          <div class="parts"><span class="part">ZP <b>4.5</b> · 30 %</span><span class="part">Projekt <b>5.5</b> · 30 %</span><span class="part" style="opacity:.7">LB offen · 40 %</span></div>
+          <div class="targets" id="targets" role="group" aria-label="Zielnote"></div>
+          <p class="need" id="need"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div class="copy rise">
+        <span class="kicker">Absenzen</span>
+        <h3>Was du noch entschuldigen musst. Und wie oft du noch fehlen darfst.</h3>
+        <p>Offene Absenzen stehen ganz oben, mit den Tagen bis zur Frist. Darunter pro Modul, wie viele Lektionen du dir noch leisten kannst, bevor du unter die Mindestanwesenheit fällst.</p>
+        <ul>
+          <li>Jahresübersicht als Raster</li>
+          <li>Erinnerung, bevor die Frist abläuft (Android)</li>
+        </ul>
+      </div>
+      <div class="panel rise" id="absPanel" aria-label="Beispiel: Absenzen">
+        <div class="todo"><div><b>Mo, 2. Nov · 2 Lektionen</b><small>Englisch · noch nicht entschuldigt</small></div><span class="days-left">noch 3 Tage</span></div>
+        <div class="budget">
+          <div class="brow"><div class="bh"><span>Netzwerke planen</span><span style="color:var(--warn)">noch 1</span></div><div class="bbar"><i style="--w:86%;background:var(--warn)"></i></div></div>
+          <div class="brow"><div class="bh"><span>Englisch</span><span style="color:var(--ok)">noch 3</span></div><div class="bbar"><i style="--w:52%;background:var(--ok)"></i></div></div>
+          <div class="brow"><div class="bh"><span>Datenbanken abfragen</span><span style="color:var(--ok)">noch 5</span></div><div class="bbar"><i style="--w:24%;background:var(--ok)"></i></div></div>
+        </div>
+        <div class="heat" id="heat" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <div class="feat">
+      <div class="copy rise">
+        <span class="kicker">Räume</span>
+        <h3>Ein freier Raum zum Lernen, in zwei Sekunden.</h3>
+        <p>Schieb die Zeit, und die App zeigt, welche Räume frei sind und wie lange. Mit Stockwerkplänen für WISS Zürich und deiner Klasse markiert.</p>
+        <ul>
+          <li>Schnellwahl für jetzt und deine Lektionszeiten</li>
+          <li>Jeder Tag, auch die nächste Woche</li>
+        </ul>
+      </div>
+      <div class="panel rise" aria-label="Beispiel: freie Räume">
+        <div class="rtop">
+          <div class="free"><span class="fl">Frei um <em id="rTimeSmall">10:45</em></span><b><em id="freeN">9</em><small> / 12</small></b></div>
+          <div class="rtime" id="rTime">10:45</div>
+        </div>
+        <div class="slider"><input type="range" id="rSlider" min="480" max="1020" step="15" value="645" aria-label="Uhrzeit"></div>
+        <div class="ticks" aria-hidden="true"><span>8</span><span>10</span><span>12</span><span>14</span><span>16</span></div>
+        <div class="floor" id="floor"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap" id="stile">
+    <section>
+      <div class="sec-head">
+        <span class="kicker">9 Stile</span>
+        <h2>Sieht aus, wie du willst.</h2>
+        <p>Jeder Stil hat sein eigenes Layout, nicht nur andere Farben, jeweils hell und dunkel. Das Logo passt sich an, oder bleibt rot. Tipp einen Stil an, und die App oben zieht sich um.</p>
+      </div>
+      <div class="styles" id="styleCards"></div>
+    </section>
+  </div>
+
+  <div class="wrap">
+    <div class="feat" style="border-top:1px solid var(--line)">
+      <div class="copy rise">
+        <span class="kicker">Sync, freiwillig</span>
+        <h3>Deine Notizen auf allen Geräten. Verschlüsselt.</h3>
+        <p>Auf dem Laptop eine Notiz schreiben, auf dem Handy lesen. Ein neues Gerät verbindest du mit einem Code, der zehn Minuten gilt und nur einmal. Der Server sieht nie, was drin steht.</p>
+      </div>
+      <div class="panel rise" aria-label="Beispiel: Gerät verbinden">
+        <div style="text-align:center;color:var(--muted);font-size:13.5px;font-weight:600">Auf dem neuen Gerät eingeben</div>
+        <div class="code" id="code" aria-label="Beispielcode K7QM-4XD2"><span>K</span><span>7</span><span>Q</span><span>M</span><span class="dash">–</span><span>4</span><span>X</span><span>D</span><span>2</span></div>
+        <div class="devices" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="5" width="18" height="11" rx="2"/><path d="M2 19h20"/></svg>
+          <div class="wire"><i></i></div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+        </div>
+        <ul class="facts">
+          <li><b>AES-256</b> Ende-zu-Ende, der Schlüssel bleibt auf deinen Geräten</li>
+          <li><b>Nur Notizen,</b> Prüfungskorrekturen und ein paar Einstellungen. Nie Noten oder Absenzen</li>
+          <li><b>Aus,</b> bis du es einschaltest</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <section>
+      <div class="sec-head">
+        <span class="kicker">Überall</span>
+        <h2>Im Browser, auf Android und auf dem iPhone.</h2>
+        <p>Dieselbe App überall. Jede Version holt sich Updates selbst.</p>
+      </div>
+      <div class="plat">
+        <div class="pcard rise">
+          <svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M8.9 13.8 4.8 6.7M15.1 13.8 11 21"/></svg>
+          <h4>Chrome, Edge, Brave</h4>
+          <ul><li>Ein Klick auf das Symbol</li><li>Vollbild als eigene Seite</li><li>Aktualisiert sich still</li></ul>
+          <a class="btn small" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">Chrome Web Store</a>
+        </div>
+        <div class="pcard rise">
+          <svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-6.5-7.9"/><path d="M13.5 4.1c2 1.4 1.3 3.7-.4 4.4 2.7-.2 4.9 2 4.9 4.6"/></svg>
+          <h4>Firefox</h4>
+          <ul><li>Computer und Android</li><li>Anmeldung unsichtbar im Hintergrund</li><li>Updates automatisch</li></ul>
+          <a class="btn small" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Firefox.xpi">Firefox-Add-on</a>
+        </div>
+        <div class="pcard rise">
+          <svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+          <h4>Android</h4>
+          <ul><li>Widget für den Startbildschirm</li><li>Erinnerung vor jeder Lektion</li><li>Meldung bei neuen Noten</li></ul>
+          <a class="btn small" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.apk">APK laden</a>
+        </div>
+        <div class="pcard rise">
+          <svg class="pi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M16 3c-1.5.2-3 1.4-3 3.2 1.6.1 3-1.3 3-3.2Z"/><path d="M19 16.5c-.7 1.6-1.9 4.5-3.7 4.5-1.4 0-1.8-.8-3.3-.8s-2 .8-3.3.8C6.9 21 4 17.3 4 13.4 4 10.1 6.1 8 8.4 8c1.4 0 2.4.9 3.6.9S14 8 15.6 8c1.4 0 2.8.7 3.6 2-2.6 1.5-2.2 5.3-.2 6.5Z"/></svg>
+          <h4>iPhone</h4>
+          <ul><li>In Safari mit der App «Userscripts»</li><li>Die Seite wird zur App</li><li>Updates automatisch</li></ul>
+          <a class="btn small" href="https://raw.githubusercontent.com/Nicolas-Wehrle/Wiss-Stundenplan/main/iphone/WISS-Stundenplan.user.js" target="_blank" rel="noopener">Skript öffnen</a>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap" id="datenschutz">
+    <section>
+      <div class="sec-head">
+        <span class="kicker">Datenschutz</span>
+        <h2>Deine Daten bleiben bei dir.</h2>
+        <p>Die App ist kein Dienst mit Konto. Sie liest mit deinem eigenen Login, was du im Extranet ohnehin siehst, und speichert es auf deinem Gerät.</p>
+      </div>
+      <div class="priv">
+        <div class="rise">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>
+          <h4>Nur auf deinem Gerät</h4>
+          <p>Stundenplan, Noten und Absenzen gehen an keinen Server. Keine Werbung, kein Tracking.</p>
+        </div>
+        <div class="rise">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3"/></svg>
+          <h4>Kein Passwort</h4>
+          <p>Du meldest dich selbst bei Microsoft an. Die App tippt nie ein Passwort ein und speichert keins.</p>
+        </div>
+        <div class="rise">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+          <h4>Jederzeit löschen</h4>
+          <p>Ein Knopf in den Einstellungen löscht alles. Wer zuerst schauen will, startet mit dem Demokonto.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="wrap" id="download">
+    <div class="dl">
+      <h2>Hol dir deinen Stundenplan.</h2>
+      <p>Wähl dein Gerät. Beim ersten Start meldest du dich einmal mit deinem WISS-Konto an, oder probierst das Demokonto aus.</p>
+      <div class="dl-grid">
+        <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener"><b>Chrome</b><small>Auch Edge und Brave</small><span class="arrow">Chrome Web Store →</span></a>
+        <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Firefox.xpi"><b>Firefox</b><small>Datei öffnen, «Hinzufügen»</small><span class="arrow">.xpi laden →</span></a>
+        <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.apk"><b>Android</b><small>Installation erlauben, öffnen</small><span class="arrow">.apk laden →</span></a>
+        <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan#readme" target="_blank" rel="noopener"><b>iPhone</b><small>Mit «Userscripts» in Safari</small><span class="arrow">Anleitung →</span></a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span class="brand"><svg class="mark" data-logo="standard" viewBox="0 0 100 100" aria-hidden="true" style="width:24px;height:24px"></svg>Stundenplan</span>
+    <span>Inoffizielles Schülerprojekt. Nicht von der WISS oder Tocco. Massgeblich ist immer das offizielle Extranet.</span>
+    <span><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a> · MIT-Lizenz</span>
+  </div>
+</footer>
+
+<script>
+(() => {
+  document.documentElement.classList.add('js');
+  const $ = (id) => document.getElementById(id);
+
+  // ---------- logos: the same 3x3 grid in every style ----------
+  const LOGOS = {
+    standard: { name: 'Standard', note: 'Ruhig und klar, mit dem roten Punkt', bg: ['#ff6478', '#d81f3c'], c: '#fff', o: .3, t: '#fff', g: '#ffc857', r: 4.5, R: 27 },
+    apple: { name: 'Apple', note: 'Glas, grosser Titel, Tab-Leiste unten', bg: ['#5ab0ff', '#0a6cff'], c: '#fff', o: .32, t: '#fff', g: '#ffd60a', r: 4.5, R: 27 },
+    samsung: { name: 'Samsung', note: 'One UI, grosse runde Karten', bg: ['#2c2c31', '#0d0d0f'], c: '#6e9cff', o: .35, t: '#6e9cff', g: '#fff', r: 7.5, R: 34 },
+    nothing: { name: 'Nothing', note: 'Punktraster und Pixelschrift', bg: ['#1c1c1c', '#000'], c: '#fff', o: .3, t: '#e8222b', g: '#fff', r: 7.5, R: 27, edge: '#3a3a3a' },
+    github: { name: 'GitHub', note: 'Kästen, Monospace-Zeiten', bg: ['#1b222c', '#0d1117'], cs: ['#0e4429', '#006d32', '#39d353', '#006d32', '#39d353', '#26a641', '#26a641', '#0e4429', '#006d32'], r: 3, R: 22, edge: '#30363d' },
+    pastel: { name: 'Pastell', note: 'Weich, rund, schwebende Leiste', bg: ['#a78bfa', '#f490b5'], c: '#fff', o: .4, t: '#fff', g: '#ffe08a', r: 6, R: 32 },
+    neon: { name: 'Neon', note: 'Leuchtendes Raster, Verläufe', bg: ['#22174a', '#0b0918'], c: '#ff3cac', o: .4, t: '#2de2e6', g: '#ff3cac', r: 4.5, R: 27, edge: '#ff3cac' },
+    paper: { name: 'Papier', note: 'Liniertes Heft mit Randlinie', bg: ['#f8f3e8', '#e9e1cf'], c: '#2b2620', o: .16, t: '#8e3523', g: '#c9a227', r: 3, R: 24, edge: '#cdbfa3' },
+    terminal: { name: 'Terminal', note: 'Grün auf schwarz, mit Cursor', bg: ['#0b140b', '#030603'], c: '#39ff6a', o: .22, t: '#39ff6a', g: '#b6ffc8', r: 0, R: 14, edge: '#1d4d27' },
+  };
+  let gid = 0;
+  function logo(style) {
+    const L = LOGOS[style], id = 'g' + (++gid);
+    let cells = '';
+    for (let i = 0; i < 9; i++) {
+      const x = 23 + (i % 3) * 19, y = 23 + Math.floor(i / 3) * 19;
+      const fill = L.cs ? L.cs[i] : i === 4 ? L.t : i === 2 ? L.g : L.c;
+      const op = L.cs || i === 4 || i === 2 ? 1 : L.o;
+      cells += `<rect class="c" x="${x}" y="${y}" width="15" height="15" rx="${L.r}" fill="${fill}" fill-opacity="${op}"/>`;
+    }
+    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${L.bg[0]}"/><stop offset="1" stop-color="${L.bg[1]}"/></linearGradient></defs>`
+      + `<rect width="100" height="100" rx="${L.R}" fill="url(#${id})"/>${L.edge ? `<rect x="1" y="1" width="98" height="98" rx="${L.R - 1}" fill="none" stroke="${L.edge}" stroke-width="2"/>` : ''}${cells}`;
+  }
+  document.querySelectorAll('[data-logo]').forEach((s) => { s.innerHTML = logo(s.dataset.logo); });
+
+  // ---------- example week (invented data) ----------
+  const C = { db: '#2fbf71', net: '#5b8def', en: '#b07cf0', web: '#f0a23b', math: '#e2556b', abu: '#14a5a0' };
+  const WEEK = [
+    { d: 'Mo', n: 9, x: null, l: [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', 'A. Meier', C.net], ['13:00', '16:30', 'Web-App entwickeln', 'ZH-404', 'B. Keller', C.web]] },
+    { d: 'Di', n: 10, x: null, l: [['08:30', '12:00', 'Allgemeinbildung', 'ZH-302', 'C. Rossi', C.abu], ['13:00', '14:30', 'Mathematik', 'ZH-404', 'D. Huber', C.math]] },
+    { d: 'Mi', n: 11, x: null, l: [['08:30', '10:00', 'Netzwerke planen', 'ZH-411', 'A. Meier', C.net], ['10:30', '12:00', 'Datenbanken abfragen', 'ZH-404', 'B. Keller', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', 'E. Smith', C.en], ['14:45', '16:30', 'Web-App entwickeln', 'ZH-404', 'B. Keller', C.web]] },
+    { d: 'Do', n: 12, x: 'ZP', l: [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', 'A. Meier', C.net]] },
+    { d: 'Fr', n: 13, x: null, l: [['08:30', '12:00', 'Datenbanken abfragen', 'ZH-404', 'B. Keller', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', 'E. Smith', C.en]] },
+  ];
+  function daysHTML(sel) {
+    return WEEK.map((w, i) => `<button class="day ${i === sel ? 'on' : ''}" data-i="${i}" aria-pressed="${i === sel}"><small>${w.d}</small><b>${w.n}</b><span class="dots">${w.l.map((l) => `<i style="background:${l[5]}"></i>`).join('')}</span>${w.x ? `<span class="x">${w.x}</span>` : ''}</button>`).join('');
+  }
+  function listHTML(i, max) {
+    return WEEK[i].l.slice(0, max).map((l) => `<div class="les list-fade" style="--c:${l[5]}"><div class="t">${l[0]}<span>${l[1]}</span></div><div><h5>${l[2]}</h5><div class="m"><span class="chip-room">${l[3]}</span><span>${l[4]}</span></div></div></div>`).join('');
+  }
+  function bindWeek(daysEl, listEl, max, start) {
+    let sel = start;
+    const draw = () => { daysEl.innerHTML = daysHTML(sel); listEl.innerHTML = listHTML(sel, max); };
+    daysEl.addEventListener('click', (e) => { const b = e.target.closest('.day'); if (!b) return; sel = +b.dataset.i; draw(); });
+    draw();
+  }
+  bindWeek($('days'), $('dayList'), 2, 2);
+  bindWeek($('days2'), $('dayList2'), 4, 2);
+
+  // ---------- the live "now" card: a school day running a little faster ----------
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let minute = 10 * 60 + 43; // 10:43
+  const day0 = 8 * 60 + 30, day1 = 16 * 60 + 30;
+  function tick() {
+    const left = 12 * 60 - minute;
+    $('nowKick').textContent = left > 0 ? `Jetzt · noch ${left} min` : 'Jetzt · gleich fertig';
+    $('nowMark').style.left = ((minute - day0) / (day1 - day0)) * 100 + '%';
+  }
+  tick();
+  if (!reduce) setInterval(() => { minute = minute >= 11 * 60 + 55 ? 10 * 60 + 43 : minute + 1; tick(); }, 1600);
+
+  // ---------- style switcher: re-dresses the live app ----------
+  const app = $('app'), appLogo = document.querySelector('[data-logo-app]');
+  function setStyle(s) {
+    app.dataset.s = s; gid++; appLogo.innerHTML = logo(s);
+    $('styleName').textContent = 'Stil: ' + LOGOS[s].name;
+    document.querySelectorAll('.sw').forEach((b) => b.setAttribute('aria-pressed', b.dataset.s === s));
+  }
+  $('swatches').innerHTML = Object.keys(LOGOS).map((s) => `<button class="sw" data-s="${s}" aria-pressed="${s === 'standard'}" aria-label="${LOGOS[s].name}" title="${LOGOS[s].name}"><svg viewBox="0 0 100 100">${logo(s)}</svg></button>`).join('');
+  $('swatches').addEventListener('click', (e) => { const b = e.target.closest('.sw'); if (b) setStyle(b.dataset.s); });
+  $('styleCards').innerHTML = Object.keys(LOGOS).map((s) => `<button class="style-card" data-s="${s}"><svg viewBox="0 0 100 100" aria-hidden="true">${logo(s)}</svg><b>${LOGOS[s].name}</b><small>${LOGOS[s].note}</small></button>`).join('');
+  $('styleCards').addEventListener('click', (e) => { const b = e.target.closest('.style-card'); if (!b) return; setStyle(b.dataset.s); $('top').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' }); });
+  appLogo.innerHTML = logo('standard');
+
+  // ---------- grades: needed grade for the remaining 40 % ----------
+  const have = 4.5 * .3 + 5.5 * .3, rest = .4;
+  $('targets').innerHTML = [4, 4.5, 5, 5.5, 6].map((t) => `<button data-t="${t}" aria-pressed="${t === 5}">${t.toFixed(1)}</button>`).join('');
+  function need(t) {
+    const n = (t - 0.25 - have) / rest;   // a module grade from t - 0.25 rounds to t
+    const v = Math.max(1, Math.ceil(n * 10) / 10);
+    $('need').innerHTML = v > 6 ? `Eine <b>${t.toFixed(1)}</b> geht nicht mehr.` : `Für eine ${t.toFixed(1)} brauchst du in der LB noch <b class="${v > 5.5 ? 'bad' : 'good'}">${v.toFixed(1)}</b>`;
+    document.querySelectorAll('#targets button').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.t === t));
+  }
+  $('targets').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) need(+b.dataset.t); });
+  need(5);
+
+  // ---------- absences: a school year as a grid ----------
+  const heat = [];
+  for (let i = 0; i < 26 * 5; i++) {
+    const r = (Math.sin(i * 12.9898) * 43758.5453) % 1;
+    heat.push(`<i class="${i > 78 ? '' : Math.abs(r) < .05 ? 'u' : Math.abs(r) < .12 ? 'a' : 'p'}"></i>`);
+  }
+  $('heat').innerHTML = heat.join('');
+
+  // ---------- rooms: bookings for one invented floor ----------
+  const ROOMS = [
+    ['4.01', [[510, 720], [780, 870]]], ['4.02', [[510, 600]]], ['4.03', []], ['4.04', [[510, 720], [780, 990]]],
+    ['4.05', [[630, 720]]], ['4.06', [[780, 990]]], ['4.07', []], ['4.08', [[510, 870]]],
+    ['4.09', [[510, 720]]], ['4.10', [[780, 870]]], ['4.11', [[630, 720], [780, 990]]], ['4.12', []],
+  ];
+  const hm = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
+  function rooms(m) {
+    let free = 0;
+    $('floor').innerHTML = ROOMS.map(([n, b]) => {
+      const busy = b.some(([a, z]) => m >= a && m < z);
+      const next = b.filter(([a]) => a > m).map(([a]) => a).sort((x, y) => x - y)[0];
+      if (!busy) free++;
+      return `<div class="rm ${busy ? 'busy' : ''} ${n === '4.04' ? 'mine' : ''}">${n}<small>${busy ? 'belegt' : next ? 'bis ' + hm(next) : 'frei'}</small></div>`;
+    }).join('');
+    $('freeN').textContent = free; $('rTime').textContent = hm(m); $('rTimeSmall').textContent = hm(m);
+    const s = $('rSlider'); s.style.setProperty('--p', ((m - +s.min) / (+s.max - +s.min)) * 100 + '%');
+  }
+  $('rSlider').addEventListener('input', (e) => rooms(+e.target.value));
+  rooms(645);
+
+  // ---------- sync code typing ----------
+  const CODE = 'K7QM-4XD2';
+  function typeCode() {
+    const el = $('code'); el.innerHTML = CODE.split('').map((ch) => `<span class="${ch === '-' ? 'dash' : ''}">${ch === '-' ? '–' : ''}</span>`).join('');
+    if (reduce) { [...el.children].forEach((s, i) => { if (CODE[i] !== '-') s.textContent = CODE[i]; }); return; }
+    let i = 0;
+    const step = () => { if (i >= CODE.length) { setTimeout(typeCode, 4200); return; } const s = el.children[i]; if (CODE[i] !== '-') { s.textContent = CODE[i]; s.classList.add('filled'); } i++; setTimeout(step, 140); };
+    step();
+  }
+
+  // ---------- small things when sections scroll in ----------
+  let typed = false;
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    e.target.classList.add('in');
+    if (e.target.id === 'absPanel') e.target.classList.add('in');
+    if (e.target.querySelector && e.target.querySelector('#ring')) animateRing();
+    if (e.target.querySelector && e.target.querySelector('#code') && !typed) { typed = true; typeCode(); }
+    if (e.target.querySelector && e.target.querySelector('#cd')) countDown();
+    io.unobserve(e.target);
+  }), { threshold: .25 }) : null;
+  document.querySelectorAll('.rise, .panel').forEach((el) => io ? io.observe(el) : el.classList.add('in'));
+  if (!io) { animateRing(); typeCode(); }
+
+  function animateRing() {
+    const r = $('ring'), target = Math.round(14 / 38 * 100);
+    if (reduce) { r.style.setProperty('--p', target); return; }
+    let p = 0; const t = setInterval(() => { p += 1; r.style.setProperty('--p', p); if (p >= target) clearInterval(t); }, 18);
+  }
+  function countDown() {
+    if (reduce) return;
+    let n = 30; const el = $('cd');
+    const t = setInterval(() => { n -= 1; el.textContent = Math.max(5, n); if (n <= 5) clearInterval(t); }, 45);
+  }
+})();
+</script>
+
+</body>
+</html>
