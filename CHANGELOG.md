@@ -2,7 +2,7 @@
 
 - Full screen: today and your next exams on the left, the week on the right. Lists stay at a readable width, and the header is bigger.
 - No more black bars behind the header in full screen (Apple, Pastell, Neon, Papier, Nothing).
-- Soft fade when you switch tabs or weeks, on buttons and on fold-outs. Can be turned off under Einstellungen › Darstellung › Animationen.
+- Light animations on buttons, cards and fold-outs. Switching tabs is instant, without a fade. Can be turned off under Einstellungen › Darstellung › Animationen.
 - New setting for the logo: matching the style, or always the red one.
 - The card at the top of the week looks calmer in the Standard style: no glow, the room in plain colours.
 - Firefox: no more window with the WISS page when the browser starts (it popped up on Linux). Firefox now signs in only when you open the timetable, in a background tab.

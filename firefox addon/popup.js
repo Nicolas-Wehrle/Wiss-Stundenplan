@@ -1559,7 +1559,6 @@ function renderSetup() {
 // =====================================================================
 // Render + events
 // =====================================================================
-let lastViewKey = '', enterT = 0;
 function render() {
   if (!D) derive();
   renderStatus();
@@ -1572,12 +1571,7 @@ function render() {
   if (setup) setHTML($('banner'), '');
   setHTML(v, setup ? ((!S.setupDone && !S.privacyOk) || S.showPrivacy ? renderPrivacy() : renderSetup()) : S.tab === 'week' ? renderWeek() : S.tab === 'exams' ? renderExams() : S.tab === 'grades' ? renderGrades() : S.tab === 'absences' ? renderAbsences() : renderRooms() + '</div>');
   document.body.dataset.tab = setup ? 'settings' : S.tab;
-  // a short fade-in when the screen really changes (another tab, week or the settings), not on every refresh
-  const viewKey = setup ? 'set' + (S.showPrivacy ? 'p' : '') : S.tab + '|' + weekOffset;
-  if (viewKey !== lastViewKey) {
-    if (lastViewKey) { v.classList.remove('enter'); void v.offsetWidth; v.classList.add('enter'); clearTimeout(enterT); enterT = setTimeout(() => v.classList.remove('enter'), 600); }
-    lastViewKey = viewKey;
-  }
+
   v.scrollTop = scroll;
   // horizontal strips keep their position; the first time, the selected item is brought into view
   for (const id of ['stiles']) {

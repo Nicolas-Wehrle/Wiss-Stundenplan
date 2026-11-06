@@ -2,7 +2,7 @@ WISS Stundenplan 1.12.2
 
 - Better full screen: today and your next exams on the left, the week on the right.
 - No more black bars in full screen with some styles.
-- Soft animations, can be turned off in the settings.
+- Light animations, can be turned off in the settings.
 - Logo setting: matching the style or always red.
 - Rooms: a much easier time slider with quick times.
 - Faster.
