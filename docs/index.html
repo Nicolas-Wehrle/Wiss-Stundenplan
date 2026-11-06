@@ -55,6 +55,27 @@ p { margin: 0; }
 .go.line:hover { background: var(--ink); color: var(--bg); }
 .hero .side { display: grid; gap: 8px; }
 @media (max-width: 860px) { .hero .row { grid-template-columns: 1fr; gap: 20px; } .go { min-width: 0; width: 100%; } }
+.hero-top { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 40px; align-items: end; }
+.today { padding-bottom: 34px; font-variant-numeric: tabular-nums; }
+.today .h { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--muted); padding-bottom: 8px; border-bottom: 2px solid var(--rule); }
+.today ol { list-style: none; margin: 0; padding: 0; }
+.today li { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--faint); position: relative; }
+.today li .r { font-weight: 600; }
+.today li.now { color: var(--ink); font-weight: 650; }
+.today li.now .r { color: var(--red); }
+.today li.now::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 2px; width: var(--done, 40%); background: var(--red); transition: width 1s linear; }
+.today li.next { color: var(--ink); }
+.today .left { font-size: 13px; color: var(--red); font-weight: 600; padding-top: 8px; display: flex; align-items: center; gap: 7px; }
+.today .left i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: blink 1.6s ease-in-out infinite; }
+@keyframes blink { 50% { opacity: .25; } }
+@media (max-width: 960px) { .hero-top { grid-template-columns: 1fr; } .today { display: none; } }
+
+/* labels that point at the phone, like a technical drawing */
+.notes { position: absolute; inset: 0; pointer-events: none; }
+.note { position: absolute; height: 0; border-top: 1.5px solid var(--ink); transform-origin: 0 0; }
+.note::before { content: ""; position: absolute; left: -5px; top: -5.75px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); background: var(--bg); box-sizing: border-box; }
+.note span { position: absolute; left: 100%; top: 0; transform: translateY(-50%); padding-left: 10px; white-space: nowrap; font: 650 17px var(--body); }
+@media (max-width: 860px) { .notes { display: none; } }
 
 /* the walk-through, driven by scroll */
 .walk { height: 760vh; position: relative; margin-top: 12vh; }
@@ -68,10 +89,10 @@ p { margin: 0; }
 .steps li.on { color: var(--ink); }
 .steps li.on b { color: var(--red); }
 .steps li.on p { max-height: 4.6em; opacity: 1; margin-top: 8px; }
-.stage { position: relative; height: 100%; display: grid; place-items: center; }
-.phonebox { width: 400px; height: 714px; will-change: transform, opacity; }
+.stage { position: relative; height: 100%; display: grid; place-items: center start; }
+.phonebox { width: 400px; height: 714px; will-change: transform, opacity; position: relative; }
 .build { position: absolute; left: 50%; top: 50%; width: 220px; height: 220px; margin: -110px 0 0 -110px; pointer-events: none; will-change: transform, opacity; }
-.build .tile { position: absolute; inset: 0; border-radius: 58px; background: var(--red); }
+.build .tile { position: absolute; inset: 0; border-radius: 59px; background: linear-gradient(160deg, #ff6478, #d81f3c); }
 .build .sq { position: absolute; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.32); will-change: transform; }
 .build .sq.c { background: #fff; }
 .build .sq.g { background: #ffc857; }
@@ -83,7 +104,7 @@ p { margin: 0; }
   .steps li { position: absolute; inset: 0 0 auto; border: 0; opacity: 0; color: var(--ink); transition: opacity .3s ease; }
   .steps li.on { opacity: 1; }
   .steps li h3 { font-size: 30px; }
-  .stage { align-items: start; }
+  .stage { align-items: start; justify-items: center; }
   .count { display: none; }
 }
 
@@ -262,7 +283,19 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     <section class="hero">
       <hr class="rule">
       <div class="meta label" style="padding-top:12px"><span>Für Lernende der WISS</span><span>Inoffiziell · Kostenlos</span></div>
-      <h1>Wo ist meine nächste <em>Lektion?</em></h1>
+      <div class="hero-top">
+        <h1>Wo ist meine nächste <em>Lektion?</em></h1>
+        <aside class="today" aria-label="Beispiel: heutiger Stundenplan">
+          <div class="h"><span>Heute, Mittwoch</span><span>Beispiel</span></div>
+          <ol>
+            <li><span>08:30</span><span>Netzwerke planen</span><span class="r">ZH-411</span></li>
+            <li class="now" id="nowRow"><span>10:30</span><span>Datenbanken abfragen</span><span class="r">ZH-404</span></li>
+            <li class="next"><span>13:00</span><span>Englisch</span><span class="r">ZH-206</span></li>
+            <li><span>14:45</span><span>Web-App entwickeln</span><span class="r">ZH-404</span></li>
+          </ol>
+          <div class="left"><i></i><span id="leftTxt">Jetzt, noch 47 min</span></div>
+        </aside>
+      </div>
       <hr class="rule">
       <div class="row">
         <p>Diese App zeigt es dir sofort. Dazu Prüfungen, Noten, Absenzen und freie Räume, direkt aus dem Extranet und ohne Herumklicken.</p>
@@ -299,6 +332,7 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
               <div class="rail-win"><div class="rail" id="rail"></div></div>
             </div>
           </div>
+          <div class="notes" id="notes" aria-hidden="true"></div>
         </div>
         <div class="build" id="build" aria-hidden="true"><div class="tile"></div></div>
         <div class="count" id="count" aria-hidden="true">1<span> / 5</span></div>
@@ -412,7 +446,7 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
       <div class="xrow card soon"><div class="xd"><b>19</b><small>DO</small></div><div class="nm"><span class="tag zp">ZP</span>Netzwerke planen</div><div class="in">in 8 Tagen</div></div>
       <div class="xrow card"><div class="xd"><b>27</b><small>FR</small></div><div class="nm"><span class="tag lb">LB 2</span>Englisch</div><div class="in">in 16 Tagen</div></div>
       <div class="sect">Dezember 2026 <small>1</small></div>
-      <div class="xrow card"><div class="xd"><b>09</b><small>MI</small></div><div class="nm"><span class="tag zp est">ZP</span>Daten modellieren</div><div class="in">in 28 Tagen</div></div>`,
+      <div class="xrow card"><div class="xd"><b>09</b><small>MI</small></div><div class="nm"><span class="tag zp est">ZP</span>Daten modellieren</div><div class="in" data-n="est">in 28 Tagen</div></div>`,
     `<div class="ghero card"><div><small>Schnitt</small><div class="avg">5.12</div><small>2 Module über 5.5</small></div><div class="ring"><div><b>14<small>/38</small></b><span>Module</span></div></div></div>
       <div class="trend card"><svg viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"><path class="a" d="M0 44 L40 36 L80 40 L120 26 L160 30 L200 18 L240 22 L300 10 L300 60 L0 60 Z"/><path class="l" id="trendLine" d="M0 44 L40 36 L80 40 L120 26 L160 30 L200 18 L240 22 L300 10"/></svg></div>
       <div class="calc card"><div class="ttl">Applikationen testen<span>Modul 450</span></div><div class="parts"><span class="part">ZP <b>4.5</b> · 30 %</span><span class="part">Projekt <b>5.5</b> · 30 %</span><span class="part" style="opacity:.6">LB offen · 40 %</span></div>
@@ -473,7 +507,31 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
   // ---------- scroll drives the walk-through ----------
   const walk = $('app'), phonebox = $('phonebox'), steps = [...$('steps').children], count = $('count');
   const tabs = [...$('atabs').querySelectorAll('span')], dot = $('adot'), trend = $('trendLine'), grows = [...rail.querySelectorAll('[data-grow]')];
-  let fit = 1, mobile = false, lastCur = -1;
+  let fit = 1, mobile = false, lastCur = -1, land = { x: 0, y: 0, s: .14 };
+  const appIcon = phonebox.querySelector('.a-top .mark'), stage = phonebox.parentElement;
+
+  // labels: [tab, element, text]
+  const NOTES = [
+    [0, '.room', 'Der Raum'], [0, '.day .x', 'Prüfung am Donnerstag'],
+    [1, '.cd','Tage bis dahin'], [1, '[data-n=est]', 'Datum geschätzt'],
+    [2, '.ring', 'Module fertig'], [2, '[data-targets]', 'Zielnote antippen'],
+    [3, '.todo .left', 'Frist'], [3, '.bh span:last-child', 'Darfst noch fehlen'],
+    [4, '.rh .t', 'Uhrzeit'], [4, '.rm.mine', 'Dein Raum'],
+  ];
+  const phoneEl = phonebox.querySelector('.phone');
+  const offs = (el) => { let x = 0, y = 0; while (el && el !== phoneEl) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; } return { x, y }; };
+  const notes = NOTES.map(([v, sel, text]) => {
+    const n = document.createElement('div'); n.className = 'note'; n.innerHTML = `<span>${text}</span>`;
+    $('notes').appendChild(n); return { v, sel, n };
+  });
+  function placeNotes() {
+    notes.forEach((o) => {
+      const view = rail.children[o.v], el = view.querySelector(o.sel); if (!el) return;
+      const a = offs(el), b = offs(view);
+      const x = a.x - b.x + el.offsetWidth + 6, y = a.y + el.offsetHeight / 2;
+      o.n.style.left = x + 'px'; o.n.style.top = y + 'px'; o.n.style.width = (400 - x + 48) + 'px';
+    });
+  }
   function measure() {
     mobile = innerWidth <= 860;
     const availH = innerHeight - (mobile ? 70 + 150 + 30 : 90), availW = mobile ? innerWidth - 40 : Math.min(600, (innerWidth - 80) * 6 / 11);
@@ -481,6 +539,13 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     const dw = -(400 * (1 - fit)) / 2, dh = -(714 * (1 - fit));
     phonebox.style.margin = mobile ? `0 ${dw}px ${dh}px` : `${dh / 2}px ${dw}px`;
     phonebox.style.transformOrigin = mobile ? '50% 0' : '50% 50%';
+    // where the app icon sits once the phone has arrived: the logo flies exactly there
+    const keep = phonebox.style.transform;
+    phonebox.style.transform = `scale(${fit})`;
+    const m = appIcon.getBoundingClientRect(), s = stage.getBoundingClientRect();
+    phonebox.style.transform = keep;
+    land = { x: m.left + m.width / 2 - (s.left + s.width / 2), y: m.top + m.height / 2 - (s.top + s.height / 2), s: m.width / 220 };
+    placeNotes();
   }
   function frame() {
     const r = walk.getBoundingClientRect();
@@ -494,14 +559,15 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     });
     tile.style.opacity = seg(p, .06, .12);
     tile.style.transform = `scale(${.7 + .3 * out(seg(p, .06, .12))})`;
-    // 2. it lifts away while the phone comes up
-    const lift = ease(seg(p, .14, .24));
-    build.style.transform = `translateY(${-lift * 46}vh) scale(${fit * (1 - lift * .55)})`;
-    build.style.opacity = 1 - seg(p, .18, .24);
-    build.style.visibility = p > .25 ? 'hidden' : 'visible';
-    const c = out(seg(p, .15, .3));
-    phonebox.style.opacity = seg(p, .15, .22);
-    phonebox.style.transform = `translateY(${(1 - c) * 70}vh) rotate(${(1 - c) * 6}deg) scale(${fit})`;
+    // 2. the phone comes up and the logo lands exactly on its app icon
+    const c = out(seg(p, .14, .29)), L = ease(seg(p, .14, .29));
+    const rise = (1 - c) * .7 * innerHeight;
+    phonebox.style.opacity = seg(p, .14, .2);
+    phonebox.style.transform = `translateY(${rise}px) scale(${fit})`;
+    build.style.transform = `translate(${land.x * L}px, ${(land.y + rise) * L}px) scale(${1 + (land.s - 1) * L})`;
+    const landed = p >= .29;
+    build.style.visibility = landed ? 'hidden' : 'visible';
+    appIcon.style.opacity = landed ? 1 : 0;
 
     // 3. five tabs: each one stays for a moment, then slides to the next
     const x = seg(p, .3, .97) * 4.9;
@@ -514,6 +580,10 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
     dot.style.transform = `translateX(${cx(lo) + (cx(hi) - cx(lo)) * fr - 2.5}px)`;
     trend.style.strokeDashoffset = 420 * (1 - out(clamp(1 - Math.abs(pos - 2) * 1.6)));
     grows.forEach((g) => { g.style.transform = `scaleX(${out(clamp(1 - Math.abs(pos - 3) * 1.6))})`; });
+    notes.forEach((o) => {
+      const v = p < .3 ? 0 : clamp(1 - Math.abs(pos - o.v) * 3.2);
+      o.n.style.opacity = v; o.n.style.transform = `translateX(${(1 - v) * 14}px)`;
+    });
     if (!sl.dataset.touched) { const m = Math.round((510 + clamp(pos - 3.4, 0, .6) / .6 * 300) / 15) * 15; if (+sl.value !== m) { sl.value = m; drawRooms(m); } }
 
     const active = p < .26 ? -1 : cur;
@@ -529,6 +599,16 @@ footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18
   addEventListener('scroll', req, { passive: true });
   addEventListener('resize', () => { measure(); lastCur = -2; req(); });
   measure(); frame();
+  if (document.fonts) document.fonts.ready.then(() => { measure(); frame(); });
+
+  // ---------- the hero timetable counts down ----------
+  let left = 47;
+  const tickToday = () => {
+    $('leftTxt').textContent = `Jetzt, noch ${left} min`;
+    $('nowRow').style.setProperty('--done', ((90 - left) / 90 * 100) + '%');
+  };
+  tickToday();
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => { left = left <= 38 ? 47 : left - 1; tickToday(); }, 3000);
 })();
 </script>
 </body>
