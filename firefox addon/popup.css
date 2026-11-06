@@ -1741,3 +1741,11 @@ body.full[data-tab=grades] #view > .ggrid { max-width: 920px; }
 
 /* smooth scrolling: the list scrolls on its own layer */
 #view { will-change: scroll-position; -webkit-overflow-scrolling: touch; }
+
+/* scrollbar: thin, in the page colours, and its space is always kept, so switching between a long
+   and a short tab doesn't make a bar pop in and out at the side */
+#view { scrollbar-gutter: stable; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 22%, transparent) transparent; }
+#view::-webkit-scrollbar { width: 8px; }
+#view::-webkit-scrollbar-track { background: transparent; }
+#view::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 22%, transparent); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+body.mobile #view { scrollbar-gutter: auto; }
