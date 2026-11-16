@@ -24,6 +24,7 @@ def zipdir(src, dst):
 runpy.run_path(str(ROOT / 'build-chrome-store.py'))
 shutil.copy2(out / 'WISS-Stundenplan-Chrome-Web-Store.zip', out / 'WISS-Stundenplan-Chrome.zip')
 zipdir(ROOT / 'firefox addon', out / 'WISS-Stundenplan-Firefox.zip')
+zipdir(ROOT / 'store-assets', out / 'Chrome-Web-Store-Assets.zip')   # store pictures + texts, checked by verify-release.py
 done = ['WISS-Stundenplan-Chrome.zip', 'WISS-Stundenplan-Firefox.zip']
 missing = []
 
