@@ -1,4 +1,17 @@
-# WISS Stundenplan
+<p align="center"><img src="docs/logo.svg" width="96" height="96" alt=""></p>
+
+<h1 align="center">WISS Stundenplan</h1>
+
+<p align="center">
+  <b><a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/">Website</a></b> ·
+  <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/#download">Download</a> ·
+  <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/#docs">Docs</a> ·
+  <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc">Chrome Web Store</a>
+</p>
+
+<p align="center"><b>→ <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/">nicolas-wehrle.github.io/Wiss-Stundenplan</a></b><br>Downloads for every platform, how everything works, and the Linux install command.</p>
+
+---
 
 A faster way to check your WISS timetable. It shows your last data right away and updates in the background, so you don't have to wait for the extranet to load.
 
