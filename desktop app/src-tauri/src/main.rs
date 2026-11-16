@@ -500,6 +500,9 @@ fn update_tray(app: &AppHandle) {
     }
 }
 
+const MINI_W: f64 = 340.0;
+const MINI_H: f64 = 100.0;
+
 fn set_mini(app: &AppHandle, on: bool) {
     let h = app.state::<Host>();
     if let Some(items) = h.tray.lock().unwrap().as_ref() {
@@ -510,14 +513,28 @@ fn set_mini(app: &AppHandle, on: bool) {
             let _ = w.show();
         }
         (true, None) => {
-            let _ = WebviewWindowBuilder::new(app, "mini", WebviewUrl::App("mini.html".into()))
+            let mut b = WebviewWindowBuilder::new(app, "mini", WebviewUrl::App("mini.html".into()))
                 .title("WISS Stundenplan")
-                .inner_size(320.0, 92.0)
-                .resizable(false)
+                .inner_size(MINI_W, MINI_H)
+                // fixed size via min = max: with resizable(false), GTK grows the window to the web view's
+                // natural height (200 px) after it appears
+                .min_inner_size(MINI_W, MINI_H)
+                .max_inner_size(MINI_W, MINI_H)
+                .maximizable(false)
+                .minimizable(false)
                 .decorations(false)
                 .always_on_top(true)
                 .skip_taskbar(true)
-                .build();
+                .focused(false);
+            // bottom right of the screen, above the taskbar (on Wayland the system decides)
+            if let Ok(Some(m)) = app.primary_monitor() {
+                let area = m.work_area();
+                let sc = m.scale_factor();
+                let x = (area.position.x as f64 + area.size.width as f64) / sc - MINI_W - 16.0;
+                let y = (area.position.y as f64 + area.size.height as f64) / sc - MINI_H - 16.0;
+                b = b.position(x, y);
+            }
+            let _ = b.build();
         }
         (false, Some(w)) => {
             let _ = w.destroy();
@@ -690,6 +707,15 @@ fn main() {
                 eprintln!("no tray icon: {e}");
             }
             update_tray(app.handle());
+            #[cfg(debug_assertions)]
+            if std::env::var_os("WISS_MINI").is_some() {
+                // for testing the mini window without a tray: WISS_MINI=1, optional example lessons
+                let now = now_ms();
+                *app.state::<Host>().widget.lock().unwrap() = json!({ "lang": "de", "accent": "", "lessons": [
+                    { "s": now - 30.0 * 60e3, "e": now + 47.0 * 60e3, "t": "Datenbanken abfragen", "r": "ZH-404", "p": "B. Keller", "sh": "10:30", "eh": "12:00", "dl": "Mi" }
+                ]});
+                set_mini(app.handle(), true);
+            }
 
             // safety net: show the window even if the page never says it is ready
             if !start_hidden {

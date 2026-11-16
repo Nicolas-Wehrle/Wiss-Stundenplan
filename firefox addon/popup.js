@@ -1566,6 +1566,13 @@ function render() {
   if (!D) derive();
   renderStatus();
   for (const b of document.querySelectorAll('#tabs button')) b.classList.toggle('on', b.dataset.tab === S.tab);
+  // narrow full page: the tab row scrolls sideways, keep the open tab in view
+  const tabsEl = $('tabs'), onTab = tabsEl.querySelector('button.on');
+  if (onTab && tabsEl.scrollWidth > tabsEl.clientWidth) {
+    const l = onTab.offsetLeft - tabsEl.offsetLeft, r = l + onTab.offsetWidth;
+    if (l < tabsEl.scrollLeft) tabsEl.scrollLeft = l - 12;
+    else if (r > tabsEl.scrollLeft + tabsEl.clientWidth) tabsEl.scrollLeft = r - tabsEl.clientWidth + 12;
+  }
   const v = $('view');
   const scroll = v.scrollTop;
   const keepX = {}; for (const id of ['stiles']) { const el = $(id); if (el) keepX[id] = el.scrollLeft; }

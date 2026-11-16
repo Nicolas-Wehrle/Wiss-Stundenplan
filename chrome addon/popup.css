@@ -877,11 +877,14 @@ body { font-family: var(--font); }
 .set-card .diag pre { margin-top: 6px; }
 
 /* big screen: categories as a side column */
-body.full .settings { display: grid; grid-template-columns: 200px minmax(0, 760px); gap: 0 28px; justify-content: center; }
-body.full .set-top { grid-column: 1 / -1; max-width: 988px; width: 100%; justify-self: center; }
-body.full .set-nav { position: sticky; top: 10px; align-self: start; flex-direction: column; gap: 2px; padding: 0; background: transparent; margin-top: 16px; }
-body.full .set-nav button { border: 0; background: transparent; text-align: left; border-radius: 8px; padding: 8px 12px; font-size: 13px; }
-body.full .set-nav button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+/* full page: section list on the left, only when there is room for it (narrow windows keep the row of chips) */
+@media (min-width: 761px) {
+  body.full .settings { display: grid; grid-template-columns: 200px minmax(0, 760px); gap: 0 28px; justify-content: center; }
+  body.full .set-top { grid-column: 1 / -1; max-width: 988px; width: 100%; justify-self: center; }
+  body.full .set-nav { position: sticky; top: 10px; align-self: start; flex-direction: column; gap: 2px; padding: 0; background: transparent; margin-top: 16px; }
+  body.full .set-nav button { border: 0; background: transparent; text-align: left; border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+  body.full .set-nav button.on { background: var(--surface); color: var(--ink); box-shadow: var(--shadow); }
+}
 body.mobile .seg.sm button { padding: 6px 11px; font-size: 13px; }
 body.mobile .srow .sc { max-width: 70%; }
 [data-style=nothing] .badge { background: var(--surface-2) !important; color: var(--ink) !important; }
@@ -1101,7 +1104,7 @@ body.mobile .srow .sc { max-width: 70%; }
 
 /* ---------- drag to scroll with the mouse ---------- */
 @media (hover: hover) and (pointer: fine) {
-  .stiles, .heat-scroll, .set-nav, .gantt { cursor: grab; }
+  .stiles, .heat-scroll, .set-nav, .gantt, body.full .tabs { cursor: grab; }
 }
 .dragging { cursor: grabbing !important; scroll-snap-type: none !important; user-select: none; -webkit-user-select: none; }
 .dragging * { pointer-events: none; }
@@ -1740,7 +1743,17 @@ body.full[data-tab=grades] #view > .ggrid { max-width: 920px; }
 :is([data-style=apple], [data-style=pastel], [data-style=neon], [data-style=paper], [data-style=nothing]) body:not(.full) .set-nav { position: static; background: transparent; }
 
 /* smooth scrolling: the list scrolls on its own layer */
-#view { will-change: scroll-position; -webkit-overflow-scrolling: touch; }
+#view { will-change: scroll-position; -webkit-overflow-scrolling: touch; overscroll-behavior: contain; }
+/* the page itself never scrolls or bounces, only the content area does */
+html, body.full { overscroll-behavior: none; }
+body.full { overflow: hidden; }
+/* full page in a narrow window: tabs that don't fit can be scrolled sideways (or dragged with the mouse) */
+body.full .tabs { overflow-x: auto; scrollbar-width: none; }
+body.full .tabs::-webkit-scrollbar { display: none; }
+body.full .tabs button { flex: none; white-space: nowrap; }
+@media (max-width: 760px) {
+  :is([data-style=apple], [data-style=pastel], [data-style=neon], [data-style=paper], [data-style=nothing]) body.full .set-nav { position: static; background: transparent; }
+}
 
 /* scrollbar: thin, in the page colours, and its space is always kept, so switching between a long
    and a short tab doesn't make a bar pop in and out at the side */
