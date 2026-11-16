@@ -10,7 +10,8 @@ import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const src = path.join(here, '..', 'chrome addon');
 const web = path.join(here, 'web');
-const read = (p) => fs.readFileSync(p, 'utf8');
+// Windows checkouts can have CRLF line endings: work with \n everywhere
+const read = (p) => fs.readFileSync(p, 'utf8').replace(/\r\n/g, '\n');
 fs.rmSync(web, { recursive: true, force: true });
 fs.mkdirSync(web, { recursive: true });
 

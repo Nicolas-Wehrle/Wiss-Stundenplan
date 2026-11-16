@@ -1,6 +1,7 @@
 # Builds the desktop app (Windows, macOS, Linux) and adds it to the GitHub release.
 # Runs by itself when a release is published (publish-release.ps1), or by hand under
-# Actions › Desktop app › Run workflow (then the files are only kept as workflow artifacts).
+# Actions › Desktop app › Run workflow: with a tag (e.g. v1.12.3) it adds the apps to that
+# release, without one it only keeps the files as workflow artifacts.
 #
 # Needs one repository secret: TAURI_SIGNING_PRIVATE_KEY (the content of wiss-desktop-updater.key).
 # It signs the updates, so the app only ever installs updates that come from you.
@@ -10,6 +11,11 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Add the apps to this existing release (for example v1.12.3). Empty: only build, keep the files under the run.'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -61,5 +67,6 @@ jobs:
           projectPath: desktop app
           args: ${{ matrix.args }}
           releaseId: ${{ github.event.release.id }}
+          tagName: ${{ inputs.tag }}
           updaterJsonPreferNsis: true
-          uploadWorkflowArtifacts: ${{ github.event_name == 'workflow_dispatch' }}
+          uploadWorkflowArtifacts: ${{ github.event_name == 'workflow_dispatch' && inputs.tag == '' }}
