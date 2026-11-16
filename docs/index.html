@@ -5,869 +5,895 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WISS Stundenplan</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Der inoffizielle Stundenplan für Lernende der WISS: Lektion, Raum, Prüfungen, Noten, Absenzen und freie Räume. Für Chrome, Firefox, Android und iPhone.">
+<meta name="description" content="Stundenplan, Prüfungen, Noten, Absenzen und freie Räume aus dem WISS-Extranet. Lokal gespeichert, kostenlos, Open Source. Für Windows, macOS, Linux, Android, iPhone, Chrome und Firefox.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Geist:wght@400..700&family=Geist+Mono:wght@500..700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
 <style>
-/* Swiss poster, not a landing page: left-aligned type on a grid, hairline rules, one red,
-   square corners, no glow. The middle is a scroll-driven walk through the app. */
 :root {
-  --bg: #f3f0ea; --paper: #fbfaf7; --ink: #16141d; --muted: #67636e; --faint: #b3aeb8; --rule: #16141d; --line: #d9d3c8;
-  --red: #e2283f;
+  --bg: #f7f5f1; --bg2: #efece6; --panel: #ffffff; --ink: #16141d; --muted: #66626d; --faint: #9a96a2; --line: #e2ddd4; --line2: #d3cdc2;
+  --red: #e2283f; --red-soft: #fde8eb; --code: #f1eee8; --ok: #1f8a55;
   --display: "Bricolage Grotesque", "Geist", system-ui, sans-serif;
   --body: "Geist", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) { --bg: #121116; --paper: #1a1920; --ink: #efece6; --muted: #9a95a3; --faint: #4f4b57; --rule: #efece6; --line: #2e2b35; --red: #ff4d63; color-scheme: dark; }
+  :root:not([data-theme="light"]) { --bg: #0e0d12; --bg2: #131219; --panel: #17161d; --ink: #ecebef; --muted: #9a97a3; --faint: #6c6876; --line: #25232c; --line2: #33303b; --red: #ff4d63; --red-soft: #33161c; --code: #1b1a22; --ok: #4cc386; color-scheme: dark; }
 }
-:root[data-theme="dark"] { --bg: #121116; --paper: #1a1920; --ink: #efece6; --muted: #9a95a3; --faint: #4f4b57; --rule: #efece6; --line: #2e2b35; --red: #ff4d63; color-scheme: dark; }
+:root[data-theme="dark"] { --bg: #0e0d12; --bg2: #131219; --panel: #17161d; --ink: #ecebef; --muted: #9a97a3; --faint: #6c6876; --line: #25232c; --line2: #33303b; --red: #ff4d63; --red-soft: #33161c; --code: #1b1a22; --ok: #4cc386; color-scheme: dark; }
 
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.5 var(--body); -webkit-font-smoothing: antialiased; overflow-x: clip; }
-a { color: inherit; text-underline-offset: 3px; text-decoration-thickness: 1.5px; }
-a:hover { color: var(--red); }
-h1, h2, h3 { font-family: var(--display); font-weight: 750; letter-spacing: -.04em; line-height: .95; margin: 0; }
+html { scroll-padding-top: 76px; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+a { color: inherit; text-decoration-color: var(--line2); text-underline-offset: 3px; }
+a:hover { color: var(--red); text-decoration-color: currentColor; }
+h1, h2, h3 { font-family: var(--display); letter-spacing: -.03em; line-height: 1.08; margin: 0; }
 p { margin: 0; }
-:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
-.wrap { max-width: 1240px; margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px)); }
-.mark { display: block; flex: none; }
-.rule { border: 0; border-top: 2px solid var(--rule); margin: 0; }
-.label { font-size: 13px; font-weight: 600; color: var(--muted); }
+code, kbd, pre { font-family: var(--mono); font-size: .88em; }
+:not(pre) > code { background: var(--code); border: 1px solid var(--line); border-radius: 5px; padding: 1px 5px; white-space: nowrap; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-inline: max(20px, env(safe-area-inset-left, 0px)) max(20px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--mono); }
+.muted { color: var(--muted); }
 
-/* top line */
-.top { display: flex; align-items: center; justify-content: space-between; height: 64px; font-size: 15px; font-weight: 600; padding-top: env(safe-area-inset-top, 0px); }
-.top .name { display: flex; align-items: center; gap: 10px; text-decoration: none; }
-.top nav { display: flex; gap: 22px; }
-.top nav a { text-decoration: none; }
-@media (max-width: 600px) { .top nav a:not(:last-child) { display: none; } }
+/* nav */
+.nav { position: sticky; top: 0; z-index: 20; background: color-mix(in srgb, var(--bg) 88%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); padding-top: env(safe-area-inset-top, 0px); }
+.nav .wrap { display: flex; align-items: center; gap: 22px; height: 58px; }
+.brand { display: flex; align-items: center; gap: 9px; text-decoration: none; font-weight: 650; font-size: 15px; white-space: nowrap; }
+.brand svg { width: 24px; height: 24px; }
+.nav nav { display: flex; gap: 4px; margin-left: auto; }
+.nav nav a { text-decoration: none; font-size: 14px; color: var(--muted); padding: 6px 10px; border-radius: 7px; }
+.nav nav a:hover { color: var(--ink); background: var(--bg2); }
+.nav nav a.on { color: var(--ink); font-weight: 600; }
+.nav .gh { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px; color: var(--muted); }
+.nav .gh:hover { color: var(--ink); background: var(--bg2); }
+.nav .gh svg { width: 19px; height: 19px; }
+@media (max-width: 640px) { .nav nav a.opt { display: none; } .nav .wrap { gap: 10px; } }
 
-/* hero: a poster */
-.hero { padding-block: 9vh 0; }
-.hero .meta { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding-bottom: 14px; }
-.hero h1 { font-size: clamp(54px, 11.5vw, 168px); font-weight: 800; letter-spacing: -.055em; line-height: .86; padding-block: 24px 30px; }
-.hero h1 em { font-style: normal; color: var(--red); }
-.hero .row { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 30px; padding-block: 22px 0; align-items: start; }
-.hero .row p { font-size: clamp(18px, 1.8vw, 22px); max-width: 26em; }
-.go { display: inline-flex; align-items: center; justify-content: space-between; gap: 18px; text-decoration: none; background: var(--ink); color: var(--bg); padding: 14px 16px; font-weight: 600; min-width: 220px; transition: background-color .15s ease; }
-.go:hover { background: var(--red); color: #fff; }
-.go.line { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 2px var(--ink); }
-.go.line:hover { background: var(--ink); color: var(--bg); }
-.hero .side { display: grid; gap: 8px; }
-@media (max-width: 860px) { .hero .row { grid-template-columns: 1fr; gap: 20px; } .go { min-width: 0; width: 100%; } }
-.hero-top { display: grid; grid-template-columns: minmax(0, 1fr) 330px; gap: 40px; align-items: end; }
-.today { padding-bottom: 34px; font-variant-numeric: tabular-nums; }
-.today .h { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--muted); padding-bottom: 8px; border-bottom: 2px solid var(--rule); }
-.today ol { list-style: none; margin: 0; padding: 0; }
-.today li { display: grid; grid-template-columns: 50px 1fr auto; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; color: var(--faint); position: relative; }
-.today li .r { font-weight: 600; }
-.today li.now { color: var(--ink); font-weight: 650; }
-.today li.now .r { color: var(--red); }
-.today li.now::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 2px; width: var(--done, 40%); background: var(--red); transition: width 1s linear; }
-.today li.next { color: var(--ink); }
-.today .left { font-size: 13px; color: var(--red); font-weight: 600; padding-top: 8px; display: flex; align-items: center; gap: 7px; }
-.today .left i { width: 7px; height: 7px; border-radius: 50%; background: var(--red); animation: blink 1.6s ease-in-out infinite; }
-@keyframes blink { 50% { opacity: .25; } }
-@media (max-width: 960px) { .hero-top { grid-template-columns: 1fr; } .today { display: none; } }
+/* buttons */
+.btn { display: inline-flex; align-items: center; gap: 8px; font: 600 14.5px/1 var(--body); padding: 11px 16px; border-radius: 9px; text-decoration: none; border: 1px solid transparent; cursor: pointer; white-space: nowrap; transition: background-color .15s ease, border-color .15s ease, color .15s ease; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn.primary:hover { background: var(--red); color: #fff; }
+.btn.ghost { border-color: var(--line2); color: var(--ink); background: var(--panel); }
+.btn.ghost:hover { border-color: var(--ink); color: var(--ink); }
+.btn small { font: 500 12px var(--mono); opacity: .65; }
 
-/* labels that point at the phone, like a technical drawing */
-.notes { position: absolute; inset: 0; pointer-events: none; }
-.note { position: absolute; height: 0; border-top: 1.5px solid var(--ink); transform-origin: 0 0; }
-.note::before { content: ""; position: absolute; left: -5px; top: -5.75px; width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--ink); background: var(--bg); box-sizing: border-box; }
-.note span { position: absolute; left: 100%; top: 0; transform: translateY(-50%); padding-left: 10px; white-space: nowrap; font: 650 17px var(--body); }
-@media (max-width: 860px) { .notes { display: none; } }
+/* pages */
+[data-page] { display: none; }
+[data-page].on { display: block; }
 
-/* the walk-through, driven by scroll */
-.walk { height: 760vh; position: relative; margin-top: 12vh; }
-.walk .sticky { position: sticky; top: 0; height: 100svh; overflow: hidden; }
-.walk .grid { height: 100%; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; align-items: center; }
-.steps { list-style: none; margin: 0; padding: 0; border-top: 2px solid var(--rule); position: relative; }
-.steps li { display: grid; grid-template-columns: 46px 1fr; gap: 0 10px; padding: 16px 0; border-bottom: 1px solid var(--line); color: var(--faint); transition: color .25s ease; }
-.steps li b { font-family: var(--display); font-size: 15px; font-weight: 700; padding-top: 6px; font-variant-numeric: tabular-nums; }
-.steps li h3 { font-size: clamp(26px, 2.8vw, 38px); }
-.steps li p { grid-column: 2; color: var(--muted); font-size: 16px; max-width: 24em; overflow: hidden; max-height: 0; opacity: 0; transition: max-height .35s ease, opacity .3s ease, margin .35s ease; }
-.steps li.on { color: var(--ink); }
-.steps li.on b { color: var(--red); }
-.steps li.on p { max-height: 4.6em; opacity: 1; margin-top: 8px; }
-.stage { position: relative; height: 100%; display: grid; place-items: center start; }
-.phonebox { width: 400px; height: 714px; will-change: transform, opacity; position: relative; }
-.build { position: absolute; left: 50%; top: 50%; width: 220px; height: 220px; margin: -110px 0 0 -110px; pointer-events: none; will-change: transform, opacity; }
-.build .tile { position: absolute; inset: 0; border-radius: 59px; background: linear-gradient(160deg, #ff6478, #d81f3c); }
-.build .sq { position: absolute; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.32); will-change: transform; }
-.build .sq.c { background: #fff; }
-.build .sq.g { background: #ffc857; }
-.count { position: absolute; right: 0; bottom: 26px; font-family: var(--display); font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
-.count span { color: var(--faint); }
-@media (max-width: 860px) {
-  .walk .grid { grid-template-columns: 1fr; grid-template-rows: 150px minmax(0, 1fr); gap: 8px; align-items: start; padding-top: 70px; }
-  .steps { height: 150px; border-top-width: 2px; }
-  .steps li { position: absolute; inset: 0 0 auto; border: 0; opacity: 0; color: var(--ink); transition: opacity .3s ease; }
-  .steps li.on { opacity: 1; }
-  .steps li h3 { font-size: 30px; }
-  .stage { align-items: start; justify-items: center; }
-  .count { display: none; }
+/* hero */
+.hero { padding: 72px 0 0; text-align: center; }
+.release { display: inline-flex; align-items: center; gap: 8px; font: 500 12.5px var(--mono); color: var(--muted); text-decoration: none; border: 1px solid var(--line); background: var(--panel); border-radius: 999px; padding: 4px 12px 4px 6px; }
+.release b { font-weight: 600; color: var(--bg); background: var(--red); border-radius: 999px; padding: 1px 8px; }
+.hero h1 { font-size: clamp(40px, 6.4vw, 72px); font-weight: 800; margin: 22px auto 0; max-width: 15ch; }
+.hero .sub { font-size: clamp(17px, 1.8vw, 19.5px); color: var(--muted); max-width: 34em; margin: 18px auto 0; }
+.hero .ctas { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+.hero .meta { margin-top: 14px; font: 12.5px var(--mono); color: var(--faint); }
+
+/* app window mockup (example data) */
+.shot { margin: 52px auto 0; max-width: 1060px; border-radius: 12px; border: 1px solid var(--line2); background: #f5f2ed; color: #16141d; overflow: hidden; box-shadow: 0 30px 70px -40px rgba(0,0,0,.45); text-align: left; font-size: 13px; line-height: 1.35; }
+.shot.dark { background: #0f0e13; color: #f3f1f6; }
+.tb { display: flex; align-items: center; height: 34px; padding: 0 12px; background: color-mix(in srgb, currentColor 5%, transparent); border-bottom: 1px solid color-mix(in srgb, currentColor 9%, transparent); font: 12px var(--body); gap: 10px; }
+.tb .t { flex: 1; text-align: center; opacity: .6; }
+.tb .ctl { display: flex; gap: 14px; opacity: .45; font-family: var(--mono); font-size: 11px; }
+.ah { display: flex; align-items: center; gap: 10px; padding: 14px 22px 8px; }
+.ah svg { width: 30px; height: 30px; }
+.ah b { font: 700 17px var(--display); letter-spacing: -.02em; display: block; }
+.ah small { font-size: 11.5px; opacity: .6; }
+.ah small i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2fbf71; margin-right: 5px; vertical-align: 1px; }
+.at { display: flex; gap: 6px; padding: 0 16px; border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent); font-weight: 600; font-size: 13px; }
+.at span { padding: 8px 10px 10px; opacity: .55; position: relative; }
+.at span.on { opacity: 1; }
+.at span.on::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #e8344e; }
+.at em { font-style: normal; font-size: 10px; background: #e8344e; color: #fff; border-radius: 999px; padding: 0 5px; margin-left: 4px; vertical-align: 1px; }
+.ab { display: grid; grid-template-columns: 300px 1fr; gap: 18px; padding: 18px 22px 22px; }
+.cardx { background: color-mix(in srgb, #fff 92%, transparent); border-radius: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.07); }
+.shot.dark .cardx { background: #1a1820; box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
+.now { padding: 14px 16px 13px 19px; position: relative; }
+.now::before { content: ""; position: absolute; left: 0; top: 15px; bottom: 15px; width: 4px; border-radius: 0 3px 3px 0; background: #2fbf71; }
+.kick { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; opacity: .6; display: flex; gap: 6px; align-items: center; }
+.kick i { width: 6px; height: 6px; border-radius: 50%; background: #e8344e; }
+.nr { display: flex; gap: 12px; margin-top: 6px; }
+.nr > div:first-child { flex: 1; }
+.nr h4 { margin: 0; font: 700 18px/1.15 var(--display); letter-spacing: -.02em; }
+.nr p { font-size: 12px; opacity: .6; margin-top: 3px; }
+.room { border-left: 1px solid color-mix(in srgb, currentColor 12%, transparent); padding-left: 12px; }
+.room small { font-size: 9px; font-weight: 700; letter-spacing: .08em; opacity: .55; display: block; }
+.room b { font: 800 26px/1.05 var(--display); letter-spacing: -.02em; }
+.room b span { font-size: 12px; opacity: .45; }
+.bar { position: relative; height: 7px; border-radius: 4px; background: color-mix(in srgb, currentColor 8%, transparent); margin-top: 13px; }
+.bar i { position: absolute; top: 0; bottom: 0; border-radius: 4px; }
+.bar b { position: absolute; top: -4px; bottom: -4px; left: 30%; width: 3px; border-radius: 2px; background: currentColor; }
+.xs { margin-top: 14px; display: grid; gap: 7px; }
+.xs h5 { margin: 4px 2px 0; font: 700 13px var(--display); }
+.xr { display: grid; grid-template-columns: 38px 1fr auto; gap: 10px; align-items: center; padding: 8px 11px; }
+.xr .d { text-align: center; line-height: 1.05; }
+.xr .d b { font: 700 16px var(--display); display: block; }
+.xr .d small { font-size: 9.5px; opacity: .55; font-weight: 600; }
+.xr .n { font-weight: 600; font-size: 12.5px; }
+.xr .in { font-size: 11px; opacity: .6; font-weight: 600; }
+.xr .in.soon { color: #e8344e; opacity: 1; }
+.tag { font-size: 9.5px; font-weight: 750; padding: 1px 5px; border-radius: 4px; background: rgba(53,103,214,.14); color: #3567d6; margin-right: 6px; }
+.tag.pj { background: rgba(122,76,201,.14); color: #7a4cc9; }
+.wk { display: grid; grid-template-columns: 38px repeat(5, 1fr); gap: 0; padding: 12px 12px 14px 8px; }
+.wk .h { text-align: center; font-size: 11.5px; font-weight: 650; padding-bottom: 8px; }
+.wk .h small { display: block; font-weight: 500; opacity: .5; font-size: 10.5px; }
+.wk .h.today { color: #e8344e; }
+.wk .times { position: relative; }
+.wk .times span { position: absolute; right: 6px; font: 10px var(--mono); opacity: .45; transform: translateY(-50%); }
+.wk .col { position: relative; height: 330px; border-left: 1px solid color-mix(in srgb, currentColor 7%, transparent); }
+.wk .col.today { background: color-mix(in srgb, #e8344e 4%, transparent); }
+.wk .l { position: absolute; left: 4px; right: 4px; border-radius: 8px; padding: 5px 7px; font-size: 10.5px; line-height: 1.25; overflow: hidden; background: color-mix(in srgb, var(--c) 13%, transparent); border-left: 3px solid var(--c); }
+.wk .l b { display: block; font-size: 11px; }
+.wk .l span { opacity: .6; font-family: var(--mono); font-size: 9.5px; }
+.wk .nowline { position: absolute; left: 0; right: 0; height: 2px; background: #e8344e; z-index: 2; }
+.wk .nowline::before { content: ""; position: absolute; left: -4px; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #e8344e; }
+@media (max-width: 820px) {
+  .ab { grid-template-columns: 1fr; }
+  .wk-card { display: none; }
+  .shot { margin-top: 38px; }
 }
+.caption { text-align: center; font: 12px var(--mono); color: var(--faint); margin-top: 12px; }
 
-/* phone and app (example data) */
-.phone { width: 400px; height: 714px; border-radius: 50px; padding: 11px; background: #18161d; position: relative; box-shadow: 0 30px 60px -36px rgba(0,0,0,.6); }
-.phone::before { content: ""; position: absolute; top: 22px; left: 50%; width: 90px; height: 26px; margin-left: -45px; border-radius: 20px; background: #000; z-index: 3; }
-.screen { --a-bg: #f5f2ed; --a-surface: #fff; --a-ink: #16141d; --a-muted: #6e6a76; --a-line: #e9e4dc; --a-accent: #e8344e;
-  --red: #e8344e; --red-soft: #fde8eb; --ok: #23955d; --ok-soft: #e1f3e8; --warn: #c47f06; --zp: #3567d6; --pj: #7a4cc9;
-  border-radius: 39px; background: var(--a-bg); color: var(--a-ink); overflow: hidden; height: 100%; display: flex; flex-direction: column; font-size: 14px; line-height: 1.4; }
-.screen h4, .screen h5 { font-family: var(--display); letter-spacing: -.02em; margin: 0; line-height: 1.15; }
-.st { display: flex; justify-content: space-between; padding: 15px 30px 0; font-weight: 600; font-size: 13px; height: 42px; }
-.a-top { display: flex; align-items: center; gap: 10px; padding: 10px 18px 8px; }
-.a-top .mark { width: 30px; height: 30px; }
-.a-top b { font-family: var(--display); font-size: 17px; letter-spacing: -.02em; }
-.a-top small { display: block; color: var(--a-muted); font-size: 11.5px; }
-.a-top small i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2fbf71; margin-right: 5px; vertical-align: 1px; }
-.a-tabs { display: flex; justify-content: space-between; padding: 0 12px; border-bottom: 1px solid var(--a-line); font-size: 12px; font-weight: 600; color: var(--a-muted); position: relative; }
-.a-tabs span { padding: 8px 6px 11px; }
-.a-tabs span.on { color: var(--a-ink); }
-.a-tabs .dot { position: absolute; bottom: 3px; left: 0; width: 5px; height: 5px; border-radius: 50%; background: var(--a-accent); }
-.rail-win { flex: 1; overflow: hidden; }
-.rail { display: flex; width: 500%; height: 100%; will-change: transform; }
-.view { width: 20%; padding: 14px; display: grid; gap: 10px; align-content: start; }
-.card { background: var(--a-surface); border-radius: var(--a-r, 18px); box-shadow: inset 0 0 0 1px var(--a-line), var(--a-glow, 0 0 0 transparent); }
-.now { position: relative; padding: 15px 16px 14px 20px; border-radius: var(--a-r, 20px); }
-.now::before { content: ""; position: absolute; left: 0; top: 16px; bottom: 16px; width: 4px; border-radius: 0 3px 3px 0; background: var(--c); }
-.kick { display: flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; color: var(--a-muted); text-transform: uppercase; letter-spacing: .07em; }
-.live { width: 7px; height: 7px; border-radius: 50%; background: var(--a-accent); }
-.now-row { display: flex; gap: 12px; align-items: flex-start; margin-top: 6px; }
-.now-row > div:first-child { flex: 1; min-width: 0; }
-.now h4 { font-size: 20px; }
-.m2 { font-size: 12.5px; color: var(--a-muted); margin-top: 2px; }
-.room { flex: none; border-left: 1px solid var(--a-line); padding: 1px 0 2px 14px; }
-.room small { display: block; font-size: 9.5px; font-weight: 700; color: var(--a-muted); letter-spacing: .08em; }
-.room b { display: block; font-family: var(--display); font-size: 28px; line-height: 1.05; }
-.room b span { font-size: 13px; opacity: .5; }
-.daybar { position: relative; height: 8px; margin-top: 14px; border-radius: 4px; background: color-mix(in srgb, var(--a-ink) 7%, transparent); }
-.daybar i { position: absolute; top: 0; bottom: 0; border-radius: 4px; box-shadow: 0 0 0 1.5px var(--a-surface); }
-.daybar i.done { opacity: .35; }
-.daybar b { position: absolute; top: -4px; bottom: -4px; left: 27%; width: 3px; border-radius: 2px; background: var(--a-ink); }
-.foot { display: flex; align-items: center; gap: 6px; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--a-line); font-size: 12px; color: var(--a-muted); }
-.tag { display: inline-flex; font-size: 10.5px; font-weight: 750; padding: 1px 6px; border-radius: 5px; background: color-mix(in srgb, var(--pj) 14%, transparent); color: var(--pj); white-space: nowrap; }
-.tag.zp { background: color-mix(in srgb, var(--zp) 14%, transparent); color: var(--zp); }
-.tag.lb { background: var(--red-soft); color: var(--red); }
-.tag.est { background: transparent; outline: 1.5px dashed currentColor; outline-offset: -1.5px; }
-.days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-.day { border: 0; font: inherit; color: var(--a-ink); background: var(--a-surface); border-radius: calc(var(--a-r, 18px) * .66); padding: 6px 2px 7px; display: flex; flex-direction: column; align-items: center; gap: 1px; box-shadow: inset 0 0 0 1px var(--a-line); position: relative; cursor: pointer; }
-.day small { font-size: 10px; font-weight: 650; color: var(--a-muted); text-transform: uppercase; }
-.day b { font-family: var(--display); font-size: 17px; line-height: 1.1; }
-.day .dots { display: flex; gap: 2px; height: 5px; margin-top: 2px; }
-.day .dots i { width: 5px; height: 5px; border-radius: 50%; }
-.day.on { background: var(--a-accent); color: #fff; box-shadow: none; }
-.day.on small { color: rgba(255,255,255,.85); }
-.day.on .dots i { box-shadow: 0 0 0 1.2px #fff; }
-.day .x { position: absolute; top: -6px; right: -2px; font-size: 8.5px; font-weight: 800; line-height: 13px; padding: 0 4px; border-radius: 6px; background: var(--red); color: #fff; }
-.les { display: grid; grid-template-columns: 50px 1fr; gap: 10px; align-items: center; padding: 9px 12px 9px 15px; position: relative; border-radius: var(--a-r, 16px); }
-.les::before { content: ""; position: absolute; left: 5px; top: 10px; bottom: 10px; width: 3.5px; border-radius: 3px; background: var(--c); }
-.les .t { font-size: 12.5px; font-weight: 700; text-align: center; line-height: 1.25; }
-.les .t span { display: block; font-weight: 500; color: var(--a-muted); font-size: 11px; }
-.les h5 { font: 650 13.5px var(--body); letter-spacing: 0; }
-.les .m { display: flex; gap: 8px; align-items: center; font-size: 11.5px; color: var(--a-muted); margin-top: 2px; }
-.chip-room { font-weight: 700; color: var(--a-ink); background: color-mix(in srgb, var(--a-ink) 7%, transparent); padding: 0 6px; border-radius: 5px; }
-.sect { font-family: var(--display); font-weight: 700; font-size: 14px; margin: 6px 2px 0; display: flex; gap: 6px; align-items: baseline; }
-.sect small { color: var(--a-muted); font-family: var(--body); font-weight: 500; font-size: 11.5px; }
-.xhero { display: flex; gap: 14px; align-items: center; padding: 14px; border-radius: 20px; }
-.cd { width: 72px; height: 72px; border-radius: 20px; background: var(--red-soft); color: var(--red); display: flex; flex-direction: column; align-items: center; justify-content: center; flex: none; }
-.cd b { font-family: var(--display); font-size: 34px; line-height: .95; }
-.cd small { font-size: 10.5px; font-weight: 650; }
-.xrow { display: grid; grid-template-columns: 42px 1fr auto; gap: 10px; align-items: center; padding: 9px 12px; border-radius: 14px; }
-.xd { text-align: center; line-height: 1.1; }
-.xd b { display: block; font-family: var(--display); font-size: 17px; }
-.xd small { font-size: 10px; color: var(--a-muted); font-weight: 650; }
-.xrow .nm { font-weight: 600; font-size: 13px; display: flex; gap: 6px; align-items: center; }
-.xrow .in { font-size: 11.5px; font-weight: 650; color: var(--a-muted); white-space: nowrap; }
-.xrow.soon .in { color: var(--red); }
-.ghero { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-radius: 20px; }
-.ghero small { display: block; font-size: 11.5px; color: var(--a-muted); font-weight: 600; }
-.ghero .avg { font-family: var(--display); font-size: 44px; line-height: 1; letter-spacing: -.04em; color: var(--ok); }
-.ring { width: 82px; height: 82px; position: relative; display: grid; place-items: center; }
-.ring::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--a-accent) 37%, color-mix(in srgb, var(--a-ink) 9%, transparent) 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px)); mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px)); }
-.ring div { text-align: center; line-height: 1.05; position: relative; }
-.ring b { font-family: var(--display); font-size: 21px; }
-.ring b small { display: inline; font-size: 11px; }
-.ring span { display: block; font-size: 9px; color: var(--a-muted); font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
-.trend { height: 74px; padding: 10px 12px; border-radius: 16px; }
-.trend svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.trend path.l { fill: none; stroke: var(--ok); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 420; }
-.trend path.a { fill: color-mix(in srgb, var(--ok) 12%, transparent); }
-.calc { padding: 13px 14px; border-radius: 18px; }
-.calc .ttl { display: flex; justify-content: space-between; font-weight: 650; font-size: 13.5px; }
-.calc .ttl span { color: var(--a-muted); font-weight: 500; font-size: 12px; }
+/* sections */
+.sec { padding: 96px 0 0; }
+.eyebrow { font: 500 12.5px var(--mono); color: var(--red); letter-spacing: .02em; }
+.sec h2 { font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin-top: 8px; }
+.sec .lead { color: var(--muted); font-size: 17.5px; margin-top: 12px; max-width: 38em; }
+
+.steps { list-style: none; padding: 0; margin: 34px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; counter-reset: s; border-top: 1px solid var(--line); }
+.steps li { padding: 20px 22px 0 0; counter-increment: s; }
+.steps li::before { content: counter(s, decimal-leading-zero); font: 500 12.5px var(--mono); color: var(--faint); display: block; margin-bottom: 10px; }
+.steps b { display: block; font-size: 16px; }
+.steps span { color: var(--muted); font-size: 14.5px; display: block; margin-top: 4px; }
+@media (max-width: 820px) { .steps { grid-template-columns: 1fr 1fr; row-gap: 22px; } }
+@media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+
+.feat { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 48px; align-items: center; padding: 56px 0; border-bottom: 1px solid var(--line); }
+.feat:first-of-type { padding-top: 40px; }
+.feat h3 { font-size: 26px; font-weight: 750; }
+.feat p { color: var(--muted); margin-top: 10px; max-width: 30em; }
+.feat ul { margin: 16px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; font-size: 14.5px; }
+.feat li { padding-left: 18px; position: relative; }
+.feat li::before { content: "–"; position: absolute; left: 0; color: var(--faint); }
+.feat .vis { border: 1px solid var(--line); border-radius: 14px; background: var(--bg2); padding: 22px; }
+@media (max-width: 820px) { .feat { grid-template-columns: 1fr; gap: 24px; padding: 40px 0; } }
+
+/* small demos inside the feature rows */
+.demo { background: #f5f2ed; color: #16141d; border-radius: 14px; padding: 14px; display: grid; gap: 9px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.06); font-size: 13px; line-height: 1.35; }
+.dark-ui .demo { background: #0f0e13; color: #f3f1f6; box-shadow: inset 0 0 0 1px rgba(255,255,255,.07); }
+.dark-ui .demo .cardx { background: #1a1820; }
+.calc { padding: 12px 13px; }
+.calc .ttl { display: flex; justify-content: space-between; font-weight: 650; }
+.calc .ttl span { opacity: .55; font-weight: 500; font-size: 12px; }
 .parts { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
-.part { font-size: 11.5px; padding: 3px 8px; border-radius: 7px; background: color-mix(in srgb, var(--a-ink) 5%, transparent); }
+.part { font-size: 11.5px; padding: 3px 8px; border-radius: 7px; background: color-mix(in srgb, currentColor 6%, transparent); }
 .targets { display: flex; gap: 5px; margin-top: 10px; }
-.targets button { flex: 1; border: 0; font: 650 13px var(--body); padding: 7px 0; border-radius: 9px; background: color-mix(in srgb, var(--a-ink) 6%, transparent); color: var(--a-ink); cursor: pointer; }
-.targets button[aria-pressed="true"] { background: var(--a-ink); color: var(--a-bg); }
-.need { margin-top: 10px; font-size: 13px; color: var(--a-muted); }
-.need b { font-family: var(--display); font-size: 22px; color: var(--ok); }
-.need b.bad { color: var(--red); }
-.todo { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 18px; background: var(--red-soft); }
-.todo b { font-size: 13.5px; }
-.todo small { display: block; color: var(--a-muted); font-size: 11.5px; }
-.todo .left { margin-left: auto; font-family: var(--display); font-weight: 750; color: var(--red); font-size: 16px; white-space: nowrap; }
-.budget { padding: 4px 14px; border-radius: 18px; }
-.brow { padding: 10px 0; }
-.brow + .brow { border-top: 1px solid var(--a-line); }
-.bh { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; font-size: 13px; }
-.bbar { height: 7px; border-radius: 4px; background: color-mix(in srgb, var(--a-ink) 8%, transparent); margin-top: 7px; overflow: hidden; }
-.bbar i { display: block; height: 100%; border-radius: 4px; width: var(--w); transform-origin: left; }
-.heat { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; padding: 12px; border-radius: 18px; }
-.heat i { aspect-ratio: 1; border-radius: 2px; background: color-mix(in srgb, var(--a-ink) 7%, transparent); }
-.heat i.p { background: color-mix(in srgb, var(--ok) 60%, transparent); }
-.heat i.a { background: var(--warn); }
-.heat i.u { background: var(--red); }
-.rhero { padding: 14px; border-radius: 20px; }
-.rh { display: flex; justify-content: space-between; align-items: flex-end; }
-.rh small { display: block; font-size: 11.5px; color: var(--a-muted); font-weight: 600; }
-.rh b { font-family: var(--display); font-size: 40px; line-height: 1; letter-spacing: -.03em; }
-.rh b em { font-style: normal; font-size: 17px; color: var(--a-muted); }
-.rh .t { font-family: var(--display); font-size: 26px; font-weight: 800; }
-.slider input { width: 100%; height: 30px; margin: 12px 0 0; background: transparent; cursor: pointer; -webkit-appearance: none; appearance: none; --p: 30%; }
-.slider input::-webkit-slider-runnable-track { height: 7px; border-radius: 999px; background: linear-gradient(to right, var(--a-accent) var(--p), color-mix(in srgb, var(--a-ink) 12%, transparent) var(--p)); }
-.slider input::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; margin-top: -8.5px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 3px 10px rgba(0,0,0,.3); }
-.slider input::-moz-range-track { height: 7px; border-radius: 999px; background: color-mix(in srgb, var(--a-ink) 12%, transparent); }
-.slider input::-moz-range-progress { height: 7px; border-radius: 999px; background: var(--a-accent); }
-.slider input::-moz-range-thumb { width: 24px; height: 24px; border: 0; border-radius: 50%; background: #fff; box-shadow: 0 3px 10px rgba(0,0,0,.3); }
-.floor { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 12px; border-radius: 18px; }
-.rm { border-radius: 10px; padding: 7px 4px; text-align: center; font-size: 12px; font-weight: 700; background: var(--ok-soft); color: var(--ok); }
+.targets button { flex: 1; border: 0; font: 650 13px var(--body); padding: 7px 0; border-radius: 8px; background: color-mix(in srgb, currentColor 7%, transparent); color: inherit; cursor: pointer; }
+.targets button[aria-pressed="true"] { background: currentColor; }
+.targets button[aria-pressed="true"] span { color: #f5f2ed; }
+.dark-ui .targets button[aria-pressed="true"] span { color: #0f0e13; }
+.need { margin-top: 10px; font-size: 13px; opacity: .8; }
+.need b { font: 800 21px var(--display); color: #23955d; }
+.need b.bad { color: #e8344e; }
+.ghead { display: flex; justify-content: space-between; align-items: center; padding: 13px 14px; }
+.ghead small { display: block; font-size: 11px; opacity: .6; font-weight: 600; }
+.ghead .avg { font: 800 36px/1 var(--display); color: #23955d; letter-spacing: -.03em; }
+.floor { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 11px; }
+.rm { border-radius: 9px; padding: 6px 3px; text-align: center; font-size: 12px; font-weight: 700; background: rgba(35,149,93,.13); color: #23955d; font-variant-numeric: tabular-nums; }
 .rm small { display: block; font-size: 9.5px; font-weight: 600; opacity: .85; }
-.rm.busy { background: color-mix(in srgb, var(--a-ink) 7%, transparent); color: var(--a-muted); }
-.rm.mine { box-shadow: inset 0 0 0 2px var(--red); }
+.rm.busy { background: color-mix(in srgb, currentColor 7%, transparent); color: inherit; opacity: .55; }
+.rm.mine { box-shadow: inset 0 0 0 2px #e8344e; }
+.rtop { padding: 12px 13px; }
+.rtop .rr { display: flex; justify-content: space-between; align-items: flex-end; }
+.rtop small { font-size: 11px; opacity: .6; font-weight: 600; display: block; }
+.rtop b { font: 800 34px/1 var(--display); letter-spacing: -.03em; }
+.rtop b em { font-style: normal; font-size: 15px; opacity: .5; }
+.rtop .tt { font: 800 22px var(--display); font-variant-numeric: tabular-nums; }
+.rtop input { width: 100%; margin: 12px 0 0; accent-color: #e8344e; }
+.syncv { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
+.dev { border: 1px solid var(--line2); border-radius: 10px; padding: 12px; background: var(--panel); font-size: 13px; }
+.dev small { display: block; font: 11px var(--mono); color: var(--faint); margin-bottom: 6px; }
+.dev .c { font: 600 18px var(--mono); letter-spacing: .06em; }
+.wirex { font: 11px var(--mono); color: var(--faint); text-align: center; }
+.wirex div { width: 64px; height: 2px; margin: 6px auto; background: repeating-linear-gradient(90deg, var(--line2) 0 5px, transparent 5px 9px); }
+.cipher { margin-top: 12px; border: 1px dashed var(--line2); border-radius: 10px; padding: 10px 12px; font: 11.5px/1.5 var(--mono); color: var(--muted); word-break: break-all; }
+.cipher b { color: var(--ink); font-weight: 600; }
 
-/* second and third scroll sections */
-.scrub { margin-top: 40px; height: 620vh; }
-#syncsec { height: 520vh; }
-.steps.compact li { padding: 9px 0; }
-.steps.compact li b { padding-top: 3px; }
-.steps.compact li h3 { font-size: clamp(22px, 2.2vw, 30px); }
-.steps.compact li.on p { margin-top: 4px; }
-.mode { position: absolute; right: 0; top: 40px; display: flex; border: 2px solid var(--ink); }
-.mode button { border: 0; background: transparent; color: var(--ink); font: 600 14px var(--body); padding: 8px 14px; cursor: pointer; }
-.mode button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
-.screen, .screen .card, .screen .day, .screen .a-tabs { transition: background-color .45s ease, color .45s ease, box-shadow .45s ease, border-radius .45s ease; }
-.screen { font-family: var(--body); }
-.screen.glass .card, .screen.glass .day { -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.also { columns: 3 240px; column-gap: 34px; margin: 30px 0 0; padding: 0; list-style: none; }
+.also li { break-inside: avoid; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14.5px; }
+.also li b { font-weight: 600; }
+.also li span { color: var(--muted); }
+
+.plats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; margin-top: 30px; }
+.plats a { background: var(--panel); padding: 18px; text-decoration: none; display: grid; gap: 3px; }
+.plats a:hover { background: var(--bg2); color: var(--ink); }
+.plats b { font-size: 15px; }
+.plats span { font: 12px var(--mono); color: var(--muted); }
+@media (max-width: 820px) { .plats { grid-template-columns: 1fr 1fr; } }
+
+.cta { margin: 96px 0 0; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); padding: 36px; display: flex; gap: 20px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.cta h2 { font-size: 28px; }
+.cta p { color: var(--muted); margin-top: 6px; }
+
+/* docs */
+.docs { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; padding: 48px 0 0; }
+.toc { position: sticky; top: 82px; align-self: start; max-height: calc(100vh - 100px); overflow: auto; font-size: 14px; }
+.toc h4 { font: 500 11.5px var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .06em; margin: 18px 0 6px; }
+.toc h4:first-child { margin-top: 0; }
+.toc a { display: block; text-decoration: none; color: var(--muted); padding: 4px 10px; border-left: 2px solid var(--line); }
+.toc a:hover { color: var(--ink); }
+.toc a.on { color: var(--ink); border-left-color: var(--red); font-weight: 600; }
+.doc h1 { font-size: 38px; font-weight: 800; }
+.doc > p.lead { color: var(--muted); font-size: 17px; margin-top: 10px; }
+.doc section { padding-top: 40px; margin-top: 40px; border-top: 1px solid var(--line); }
+.doc h2 { font-size: 24px; font-weight: 750; }
+.doc h3 { font: 650 16px var(--body); letter-spacing: 0; margin-top: 22px; }
+.doc p, .doc li { color: color-mix(in srgb, var(--ink) 82%, var(--muted)); }
+.doc p { margin-top: 10px; max-width: 46em; }
+.doc ul, .doc ol { margin: 10px 0 0; padding-left: 20px; max-width: 46em; }
+.doc li { margin: 4px 0; }
+.doc table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+.doc th { text-align: left; font: 500 12px var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .04em; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line2); }
+.doc td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+.doc td:first-child { font-weight: 600; white-space: nowrap; }
+.note { margin-top: 14px; border: 1px solid var(--line); border-left: 3px solid var(--red); background: var(--panel); border-radius: 8px; padding: 11px 14px; font-size: 14.5px; max-width: 46em; }
+.note b { font-weight: 650; }
+pre.cmd { position: relative; margin: 12px 0 0; background: var(--code); border: 1px solid var(--line); border-radius: 9px; padding: 12px 46px 12px 14px; overflow-x: auto; line-height: 1.55; max-width: 46em; }
+pre.cmd .p { color: var(--faint); user-select: none; }
+.copy { position: absolute; top: 7px; right: 7px; border: 1px solid var(--line2); background: var(--panel); color: var(--muted); border-radius: 6px; padding: 4px 7px; font: 11px var(--mono); cursor: pointer; }
+.copy:hover { color: var(--ink); border-color: var(--ink); }
 @media (max-width: 860px) {
-  .mode { top: -48px; right: 0; background: var(--bg); }
-  .mode button { padding: 6px 11px; font-size: 13px; }
+  .docs { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 28px; }
+  .doc :not(pre) > code { white-space: normal; overflow-wrap: anywhere; }
+  .doc table { display: block; overflow-x: auto; }
+  .toc { position: static; max-height: none; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 26px; }
+  .toc h4 { display: none; }
+  .toc a { border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; font-size: 13px; }
+  .toc a.on { border-color: var(--red); }
+  .doc td:first-child { white-space: normal; }
 }
 
-/* sync diagram */
-.sync { position: relative; width: 100%; max-width: 640px; display: grid; grid-template-columns: minmax(0, 1fr) 120px minmax(0, 1fr); gap: 34px; align-items: center; }
-.wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.wires polyline { fill: none; stroke: var(--faint); stroke-width: 1.5; stroke-dasharray: 5 6; }
-.dev, .srv { position: relative; background: var(--paper); border: 2px solid var(--ink); padding: 14px; display: grid; gap: 12px; }
-.dev .dl, .srv .dl { position: absolute; left: -2px; top: -26px; font-size: 13px; font-weight: 600; color: var(--muted); }
-.dev { align-content: start; }
-.sync { align-items: stretch; }
-.srv { align-self: center; }
-#devB { border-radius: 28px; padding: 18px 14px; }
-.srow { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
-.tog { width: 42px; height: 24px; border-radius: 12px; background: var(--line); position: relative; transition: background-color .25s ease; }
-.tog::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: transform .25s cubic-bezier(.2,.8,.2,1); }
-.tog.on { background: var(--red); }
-.tog.on::after { transform: translateX(18px); }
-.code-show { opacity: 0; transform: translateY(6px); transition: opacity .3s ease, transform .3s ease; }
-.code-show.on { opacity: 1; transform: none; }
-.code-show small, .nbox small { display: block; font-size: 12px; color: var(--muted); }
-.code-show b { font: 700 22px "Geist Mono", ui-monospace, monospace; letter-spacing: .04em; }
-.nbox { border-top: 1px solid var(--line); padding-top: 10px; min-height: 64px; }
-.nbox p { font-size: 15px; font-weight: 550; min-height: 1.5em; }
-.nbox p.typing::after { content: ""; display: inline-block; width: 2px; height: 1.05em; background: var(--red); margin-left: 2px; vertical-align: -2px; animation: blink 1s steps(2) infinite; }
-.nbox.got { animation: got .6s ease; }
-@keyframes got { 30% { background: color-mix(in srgb, var(--red) 12%, transparent); } }
-.cells { display: flex; gap: 3px; align-items: center; }
-.cells span { flex: 1; height: 34px; border: 1.5px solid var(--line); display: grid; place-items: center; font: 700 15px "Geist Mono", ui-monospace, monospace; background: var(--bg); }
-.cells span.f { border-color: var(--ink); }
-.cells em { font-style: normal; color: var(--faint); }
-.okline { font-size: 14px; font-weight: 650; color: var(--muted); }
-.okline.on { color: #23955d; }
-.okline.on::before { content: "✓ "; }
-.srv { justify-items: center; text-align: center; padding: 16px 10px; transition: border-color .3s ease, box-shadow .3s ease; }
-.srv svg { width: 26px; height: 26px; }
-.srv code { font: 600 11.5px "Geist Mono", ui-monospace, monospace; color: var(--muted); word-break: break-all; line-height: 1.35; min-height: 2.7em; }
-.srv.hot { border-color: var(--red); box-shadow: 0 0 0 4px color-mix(in srgb, var(--red) 15%, transparent); }
-.srv.hot code { color: var(--red); }
-.packet { position: absolute; left: 0; top: 0; width: 14px; height: 14px; margin: -7px 0 0 -7px; background: var(--red); border-radius: 3px; opacity: 0; pointer-events: none; }
-@media (max-width: 860px) {
-  .sync { grid-template-columns: 1fr; gap: 30px; max-width: 360px; margin-top: 24px; }
-  .dev { min-height: 0; padding: 10px 12px; gap: 8px; }
-  #devB { border-radius: 18px; }
-  .srv { grid-template-columns: auto 1fr; justify-items: start; text-align: left; align-items: center; padding: 8px 12px; gap: 10px; }
-  .code-show b { font-size: 18px; }
-  .cells span { height: 28px; }
-  .nbox { min-height: 0; }
-}
+/* downloads */
+.dlhead { padding: 56px 0 6px; }
+.dlhead h1 { font-size: clamp(34px, 5vw, 50px); font-weight: 800; }
+.dlhead p { color: var(--muted); margin-top: 10px; font-size: 17px; }
+.dlhead .ver { font: 13px var(--mono); color: var(--faint); margin-top: 12px; }
+.plat { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 32px; padding: 34px 0; border-bottom: 1px solid var(--line); }
+.plat:first-of-type { border-top: 1px solid var(--line); margin-top: 28px; }
+.plat h2 { font-size: 22px; font-weight: 750; display: flex; align-items: center; gap: 10px; }
+.plat h2 svg { width: 22px; height: 22px; flex: none; }
+.plat .req { font: 12.5px var(--mono); color: var(--faint); margin-top: 8px; }
+.plat .btns { display: flex; flex-wrap: wrap; gap: 8px; }
+.plat .info { margin-top: 12px; font-size: 14.5px; color: var(--muted); max-width: 44em; }
+.plat .info a { color: var(--ink); }
+.plat pre.cmd { max-width: none; }
+.files { margin-top: 14px; font: 12.5px var(--mono); color: var(--faint); display: grid; gap: 3px; }
+@media (max-width: 760px) { .plat { grid-template-columns: minmax(0, 1fr); gap: 14px; } .plat .btn { white-space: normal; } :not(pre) > code { white-space: normal; overflow-wrap: anywhere; } }
 
-@media (min-width: 861px) {
-  .sync { max-width: 700px; grid-template-columns: minmax(0, 1fr) 130px minmax(0, 1fr); }
-  .dev { padding: 20px 18px; gap: 16px; min-height: 340px; }
-  .srow { font-size: 18px; }
-  .code-show b { font-size: 26px; }
-  .nbox p { font-size: 18px; }
-  .cells span { height: 44px; font-size: 18px; }
-  .okline { font-size: 16px; }
-  .srv code { font-size: 13px; }
-}
-/* more */
-.more { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 30px; margin-top: 40px; }
-.more div { border-top: 1px solid var(--line); padding: 18px 0 30px; }
-.more b { font-family: var(--display); font-size: 14px; color: var(--red); }
-.more h3 { font-size: 24px; letter-spacing: -.025em; line-height: 1.1; margin-top: 8px; }
-.more p { color: var(--muted); font-size: 15.5px; margin-top: 6px; }
-@media (max-width: 860px) { .more { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 480px) { .more { grid-template-columns: 1fr; } .more div { padding-bottom: 18px; } }
+footer { margin-top: 110px; border-top: 1px solid var(--line); padding: 28px 0 46px; font-size: 13.5px; color: var(--muted); }
+footer .wrap { display: flex; justify-content: space-between; gap: 14px 30px; flex-wrap: wrap; }
+footer nav { display: flex; gap: 18px; flex-wrap: wrap; }
+footer a { text-decoration: none; }
 
-/* plain sections after the walk-through */
-.block { padding-block: 120px 0; }
-.block .head { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; padding-top: 18px; align-items: end; }
-.block h2 { font-size: clamp(40px, 6vw, 80px); }
-.block .head p { color: var(--muted); font-size: 18px; max-width: 30em; }
-@media (max-width: 860px) { .block .head { grid-template-columns: 1fr; gap: 16px; } .block { padding-top: 90px; } }
-.logos { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); border-top: 1px solid var(--line); margin-top: 40px; }
-.logos figure { margin: 0; padding: 22px 10px 16px 0; display: grid; gap: 10px; }
-.logos svg { width: 100%; max-width: 64px; height: auto; }
-.logos figcaption { font-size: 13px; color: var(--muted); font-weight: 600; }
-@media (max-width: 760px) { .logos { grid-template-columns: repeat(3, 1fr); } }
-.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 30px; margin-top: 40px; border-top: 1px solid var(--line); padding-top: 22px; }
-.cols h3 { font-size: 22px; letter-spacing: -.02em; line-height: 1.1; }
-.cols p { color: var(--muted); font-size: 16px; margin-top: 8px; }
-@media (max-width: 760px) { .cols { grid-template-columns: 1fr; gap: 22px; } }
-table { width: 100%; border-collapse: collapse; margin-top: 40px; font-size: 17px; }
-th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 0 0 10px; border-bottom: 1px solid var(--line); }
-td { padding: 20px 16px 20px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
-td:first-child { font-family: var(--display); font-weight: 750; font-size: clamp(24px, 2.6vw, 34px); letter-spacing: -.03em; width: 28%; }
-td:nth-child(2) { color: var(--muted); }
-td:last-child { text-align: right; padding-right: 0; width: 1%; white-space: nowrap; }
-tr:first-child td:first-child::after { content: " empfohlen"; font: 600 12px var(--body); letter-spacing: 0; color: var(--red); vertical-align: middle; margin-left: 6px; }
-@media (max-width: 700px) {
-  table, tbody, tr, td { display: block; width: auto; }
-  thead { display: none; }
-  tr { padding: 18px 0; border-bottom: 1px solid var(--line); }
-  td, td:first-child, td:last-child { border: 0; padding: 0; text-align: left; width: auto; white-space: normal; }
-  td:nth-child(2) { margin: 4px 0 12px; }
-  td .go { width: 100%; }
-}
-footer { margin-top: 120px; border-top: 2px solid var(--rule); padding-block: 18px 50px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px 30px; font-size: 14px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 </style>
 </head>
 <body>
 
 
-<div class="wrap">
-  <header class="top">
-    <a class="name" href="#top"><svg class="mark" data-logo viewBox="0 0 100 100" width="28" height="28" aria-hidden="true"></svg>WISS Stundenplan</a>
-    <nav><a href="#app">Die App</a><a href="#datenschutz">Datenschutz</a><a href="#download">Download</a></nav>
-  </header>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#" data-go="home"><svg viewBox="0 0 100 100" data-logo aria-hidden="true"></svg>WISS Stundenplan</a>
+    <nav aria-label="Hauptnavigation">
+      <a href="#features" data-go="home" class="opt">Funktionen</a>
+      <a href="#docs" data-go="docs">Docs</a>
+      <a href="#download" data-go="download">Download</a>
+    </nav>
+    <a class="gh" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener" aria-label="Quellcode auf GitHub"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.28-1.69-1.28-1.69-1.05-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.42-2.7 5.39-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5Z"/></svg></a>
+  </div>
+</header>
 
-  <main id="top">
+<!-- ======================================================== HOME -->
+<main data-page="home" class="on">
+  <div class="wrap">
     <section class="hero">
-      <hr class="rule">
-      <div class="meta label" style="padding-top:12px"><span>Für Lernende der WISS</span><span>Inoffiziell · Kostenlos</span></div>
-      <div class="hero-top">
-        <h1>Wo ist meine nächste <em>Lektion?</em></h1>
-        <aside class="today" aria-label="Beispiel: heutiger Stundenplan">
-          <div class="h"><span>Heute, Mittwoch</span><span>Beispiel</span></div>
-          <ol>
-            <li><span>08:30</span><span>Netzwerke planen</span><span class="r">ZH-411</span></li>
-            <li class="now" id="nowRow"><span>10:30</span><span>Datenbanken abfragen</span><span class="r">ZH-404</span></li>
-            <li class="next"><span>13:00</span><span>Englisch</span><span class="r">ZH-206</span></li>
-            <li><span>14:45</span><span>Web-App entwickeln</span><span class="r">ZH-404</span></li>
-          </ol>
-          <div class="left"><i></i><span id="leftTxt">Jetzt, noch 47 min</span></div>
-        </aside>
+      <a class="release" href="#download" data-go="download"><b>neu</b><span>Version <span data-ver>1.12.3</span>, jetzt auch für Windows, macOS und Linux</span></a>
+      <h1>Dein Stundenplan. Ohne das Extranet.</h1>
+      <p class="sub">Lektion, Raum, Prüfungen, Noten, Absenzen und freie Räume der WISS. Startet sofort aus dem lokalen Speicher und aktualisiert im Hintergrund.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#download" data-go="download"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>Herunterladen</a>
+        <a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">Quellcode auf GitHub</a>
       </div>
-      <hr class="rule">
-      <div class="row">
-        <p>Diese App zeigt es dir sofort. Dazu Prüfungen, Noten, Absenzen und freie Räume, direkt aus dem Extranet und ohne Herumklicken.</p>
-        <div class="side">
-          <a class="go" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">Für Chrome <span>↗</span></a>
-          <span class="label">Auch Edge und Brave</span>
+      <p class="meta">Kostenlos · MIT-Lizenz · kein Konto, kein Tracking</p>
+
+      <div class="shot" id="shot" role="img" aria-label="Die App im Vollbild mit Beispieldaten: links die aktuelle Lektion mit Raum ZH-404 und die nächsten Prüfungen, rechts die Woche.">
+        <div class="tb"><span class="ctl">● ● ●</span><span class="t">WISS Stundenplan</span><span class="ctl">— ▢ ✕</span></div>
+        <div class="ah"><svg viewBox="0 0 100 100" data-logo aria-hidden="true"></svg><div><b>Stundenplan</b><small><i></i>Aktualisiert vor 2 Min.</small></div></div>
+        <div class="at"><span class="on">Woche</span><span>Prüfungen<em>2</em></span><span>Noten</span><span>Absenzen<em>1</em></span><span>Räume</span></div>
+        <div class="ab">
+          <div>
+            <div class="cardx now">
+              <div class="kick"><i></i>Jetzt · noch 47 min</div>
+              <div class="nr"><div><h4>Datenbanken abfragen</h4><p>10:30–12:00 · B. Keller</p></div><div class="room"><small>RAUM</small><b><span>ZH-</span>404</b></div></div>
+              <div class="bar"><i style="left:0;width:22%;background:#5b8def;opacity:.4"></i><i style="left:26%;width:19%;background:#2fbf71"></i><i style="left:55%;width:19%;background:#b07cf0"></i><i style="left:77%;width:23%;background:#f0a23b"></i><b></b></div>
+            </div>
+            <div class="xs">
+              <h5>Nächste Prüfungen</h5>
+              <div class="cardx xr"><div class="d"><b>19</b><small>DO</small></div><div class="n"><span class="tag">ZP</span>Netzwerke planen</div><div class="in soon">in 3 Tagen</div></div>
+              <div class="cardx xr"><div class="d"><b>24</b><small>DI</small></div><div class="n"><span class="tag pj">PROJEKT</span>Web-App entwickeln</div><div class="in">in 8 Tagen</div></div>
+              <div class="cardx xr"><div class="d"><b>02</b><small>MI</small></div><div class="n"><span class="tag">ZP</span>Daten modellieren</div><div class="in">in 16 Tagen</div></div>
+            </div>
+          </div>
+          <div class="cardx wk-card"><div class="wk" id="wk"></div></div>
         </div>
-        <div class="side">
-          <a class="go line" href="#download">Andere Geräte <span>↓</span></a>
-          <span class="label">Windows, Mac, Linux, Firefox, Android, iPhone</span>
+      </div>
+      <p class="caption">Vollbild auf dem Computer · Beispieldaten</p>
+    </section>
+
+    <section class="sec" id="how">
+      <span class="eyebrow">// so funktioniert es</span>
+      <h2>Einmal anmelden, dann einfach öffnen.</h2>
+      <ol class="steps">
+        <li><b>Installieren</b><span>Als App auf Windows, macOS, Linux und Android, als Add-on in Chrome und Firefox, oder auf dem iPhone.</span></li>
+        <li><b>Mit Microsoft anmelden</b><span>Einmal mit deinem WISS-Konto. Die App sieht dein Passwort nie.</span></li>
+        <li><b>Daten werden geholt</b><span>Stundenplan, Noten, Absenzen und Räume aus dem Extranet, alle 20 Minuten neu.</span></li>
+        <li><b>Sofort da</b><span>Beim nächsten Öffnen steht alles sofort da, auch ohne Internet.</span></li>
+      </ol>
+    </section>
+
+    <section class="sec" id="features">
+      <span class="eyebrow">// funktionen</span>
+      <h2>Fünf Tabs. Alles, wofür du sonst das Extranet öffnest.</h2>
+
+      <div class="feat">
+        <div>
+          <h3>Woche</h3>
+          <p>Oben die laufende oder nächste Lektion mit dem Raum gross daneben, darunter der ganze Tag als Streifen. Prüfungen stehen direkt bei der Lektion.</p>
+          <ul><li>Ferien und Feiertage</li><li>Notizen zu jeder Lektion</li><li>Lehrpersonen aus dem Extranet ergänzt</li></ul>
         </div>
+        <div class="vis"><div class="demo"><div class="cardx now"><div class="kick"><i></i>Nächste · 13:00</div><div class="nr"><div><h4>Englisch</h4><p>13:00–14:30 · E. Smith</p></div><div class="room"><small>RAUM</small><b><span>ZH-</span>206</b></div></div></div></div></div>
+      </div>
+
+      <div class="feat">
+        <div>
+          <h3>Noten</h3>
+          <p>Schnitt, Verlauf und wie viele Module fertig sind. Für jedes laufende Modul rechnet die App aus, welche Note du im Rest noch brauchst, mit der Gewichtung des Moduls.</p>
+          <ul><li>Zielnote antippen, Ergebnis sofort</li><li>Alle Module der Lehre</li><li>Meldung bei neuen Noten</li></ul>
+        </div>
+        <div class="vis"><div class="demo">
+          <div class="cardx ghead"><div><small>Schnitt</small><div class="avg">5.12</div></div><div style="text-align:right"><small>Module</small><b style="font:800 22px var(--display)">14<span style="font-size:12px;opacity:.5">/38</span></b></div></div>
+          <div class="cardx calc"><div class="ttl">Applikationen testen<span>Modul 450</span></div>
+            <div class="parts"><span class="part">ZP <b>4.5</b> · 30 %</span><span class="part">Projekt <b>5.5</b> · 30 %</span><span class="part" style="opacity:.6">LB offen · 40 %</span></div>
+            <div class="targets" id="targets"></div><p class="need" id="need"></p></div>
+        </div></div>
+      </div>
+
+      <div class="feat">
+        <div>
+          <h3>Räume</h3>
+          <p>Welcher Raum ist gerade frei, und bis wann? Zeit wählen, und die Stockwerkpläne der WISS Zürich zeigen es. Das Zimmer deiner Klasse ist markiert.</p>
+          <ul><li>Jede Zeit, jeder Tag</li><li>Schnellwahl für jetzt und deine Lektionen</li></ul>
+        </div>
+        <div class="vis"><div class="demo">
+          <div class="cardx rtop"><div class="rr"><div><small>Frei um <span id="rt2">10:45</span></small><b><span id="free">7</span><em> / 12</em></b></div><div class="tt" id="rt">10:45</div></div><input type="range" min="480" max="1020" step="15" value="645" id="slider" aria-label="Uhrzeit"></div>
+          <div class="cardx floor" id="floor"></div>
+        </div></div>
+      </div>
+
+      <div class="feat">
+        <div>
+          <h3>Prüfungen und Absenzen</h3>
+          <p>Die nächste Prüfung als Countdown. Fehlt im Extranet ein Datum, schätzt die App es aus dem Modulplan. Offene Absenzen stehen oben, mit den Tagen bis zur 7-Tage-Frist.</p>
+          <ul><li>ZP, LB und Projekte</li><li>Geschätzte Daten von Hand korrigierbar</li><li>Erinnerung vor der Frist</li></ul>
+        </div>
+        <div class="vis"><div class="demo">
+          <div class="cardx xr"><div class="d"><b>19</b><small>DO</small></div><div class="n"><span class="tag">ZP</span>Netzwerke planen</div><div class="in soon">in 3 Tagen</div></div>
+          <div class="cardx xr" style="outline:1.5px dashed rgba(53,103,214,.5);outline-offset:-1.5px"><div class="d"><b>02</b><small>MI</small></div><div class="n"><span class="tag">ZP</span>Daten modellieren <span style="opacity:.5;font-weight:500">· geschätzt</span></div><div class="in">in 16 Tagen</div></div>
+          <div class="cardx" style="padding:11px 13px;background:rgba(232,52,78,.1)"><b style="font-size:13px">Mo, 9. Nov · 2 Lektionen</b><div style="font-size:11.5px;opacity:.65">Englisch · noch nicht entschuldigt · <b style="color:#e8344e;opacity:1">noch 3 Tage</b></div></div>
+        </div></div>
+      </div>
+
+      <div class="feat">
+        <div>
+          <h3>Geräte-Sync, verschlüsselt</h3>
+          <p>Notizen und korrigierte Prüfungsdaten auf allen Geräten. Ende-zu-Ende verschlüsselt: der Schlüssel bleibt auf deinen Geräten, der Server speichert nur Zeichensalat. Aus, bis du es einschaltest.</p>
+          <ul><li>Neues Gerät mit einem Code verbinden</li><li>Noten, Absenzen und Stundenplan bleiben lokal</li></ul>
+        </div>
+        <div class="vis">
+          <div class="syncv"><div class="dev"><small>laptop</small>Code für neues Gerät<div class="c">K7QM-4XD2</div></div><div class="wirex">AES-256<div></div>sync</div><div class="dev"><small>handy</small>Verbunden<div class="c" style="color:var(--ok)">✓</div></div></div>
+          <div class="cipher"><b>server sieht:</b> U2FsdGVkX1+9qLmV0xk3Pn8cQe2RwZ7aHf4Ty1cK9bVd0sLp…</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:20px;margin-top:56px">Ausserdem</h3>
+      <ul class="also">
+        <li><b>9 Stile</b> <span>Standard, Apple, Samsung, Nothing, GitHub, Pastell, Neon, Papier, Terminal</span></li>
+        <li><b>Hell und dunkel</b> <span>oder wie das System</span></li>
+        <li><b>Deutsch und Englisch</b></li>
+        <li><b>Erinnerungen</b> <span>5 bis 30 Minuten vor jeder Lektion</span></li>
+        <li><b>Neue Noten</b> <span>als Benachrichtigung</span></li>
+        <li><b>Tray und Mini-Fenster</b> <span>am Computer, die nächste Lektion immer sichtbar</span></li>
+        <li><b>Android-Widget</b> <span>mit Raum und Lehrperson</span></li>
+        <li><b>Vollbild</b> <span>im Browser als ganze Seite</span></li>
+        <li><b>Modulbeschreibungen</b> <span>aus modulbaukasten.ch, auch offline</span></li>
+        <li><b>Demokonto</b> <span>alles ausprobieren ohne Login</span></li>
+        <li><b>Offline</b> <span>die letzten Daten sind immer da</span></li>
+        <li><b>Automatische Updates</b> <span>auf jeder Plattform</span></li>
+        <li><b>Akzentfarbe</b> <span>frei wählbar</span></li>
+        <li><b>Notizen exportieren</b></li>
+        <li><b>Alles löschen</b> <span>mit einem Knopf</span></li>
+      </ul>
+    </section>
+
+    <section class="sec">
+      <span class="eyebrow">// plattformen</span>
+      <h2>Läuft überall, wo du bist.</h2>
+      <p class="lead">Alle Versionen teilen denselben Code. Jede Funktion kommt überall gleichzeitig an.</p>
+      <div class="plats">
+        <a href="#download/windows" data-go="download"><b>Windows</b><span>10, 11 · .exe</span></a>
+        <a href="#download/macos" data-go="download"><b>macOS</b><span>11+ · .dmg</span></a>
+        <a href="#download/linux" data-go="download"><b>Linux</b><span>dnf · apt · AppImage</span></a>
+        <a href="#download/android" data-go="download"><b>Android</b><span>8+ · .apk</span></a>
+        <a href="#download/chrome" data-go="download"><b>Chrome, Edge</b><span>Web Store</span></a>
+        <a href="#download/firefox" data-go="download"><b>Firefox</b><span>Computer, Android · .xpi</span></a>
+        <a href="#download/iphone" data-go="download"><b>iPhone</b><span>Safari · Userscript</span></a>
+        <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener"><b>Quellcode</b><span>GitHub · MIT</span></a>
       </div>
     </section>
-  </main>
-</div>
 
-<section class="walk" id="app" aria-label="Die App in fünf Schritten, mit Beispieldaten">
-  <div class="sticky">
-    <div class="wrap grid">
-      <ol class="steps" id="steps">
-        <li><b>01</b><div><h3>Woche</h3></div><p>Die laufende Lektion steht oben, der Raum gross daneben. Darunter Montag bis Freitag.</p></li>
-        <li><b>02</b><div><h3>Prüfungen</h3></div><p>Die nächste Prüfung als Countdown. Fehlt ein Datum, schätzt die App es.</p></li>
-        <li><b>03</b><div><h3>Noten</h3></div><p>Wähl eine Zielnote, und du siehst, was du in der LB noch brauchst.</p></li>
-        <li><b>04</b><div><h3>Absenzen</h3></div><p>Was du noch entschuldigen musst, und bis wann.</p></li>
-        <li><b>05</b><div><h3>Räume</h3></div><p>Welcher Raum gerade frei ist, und wie lange noch.</p></li>
-      </ol>
-      <div class="stage">
-        <div class="phonebox" id="phonebox">
-          <div class="phone">
-            <div class="screen">
-              <div class="st"><span>10:43</span><span>5G</span></div>
-              <div class="a-top"><svg class="mark" data-logo viewBox="0 0 100 100" aria-hidden="true"></svg><div><b>Stundenplan</b><small><i></i>Aktualisiert gerade eben</small></div></div>
-              <div class="a-tabs" id="atabs"><span class="on">Woche</span><span>Prüfungen</span><span>Noten</span><span>Absenzen</span><span>Räume</span><i class="dot" id="adot"></i></div>
-              <div class="rail-win"><div class="rail" id="rail"></div></div>
-            </div>
-          </div>
-          <div class="notes" id="notes" aria-hidden="true"></div>
-        </div>
-        <div class="build" id="build" aria-hidden="true"><div class="tile"></div></div>
-        <div class="count" id="count" aria-hidden="true">1<span> / 5</span></div>
-      </div>
+    <div class="cta">
+      <div><h2>Probier es aus.</h2><p>Das Demokonto zeigt alles mit erfundenen Daten, ganz ohne WISS-Login.</p></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn primary" href="#download" data-go="download">Herunterladen</a><a class="btn ghost" href="#docs" data-go="docs">Docs lesen</a></div>
     </div>
   </div>
-</section>
+</main>
 
-<div class="wrap">
-  <section class="block" id="stile">
-    <hr class="rule">
-    <div class="head">
-      <h2>Neun Stile.</h2>
-      <p>Nicht nur andere Farben: jeder Stil hat eigene Ecken, Schriften und ein eigenes Logo. Scroll weiter und schau sie dir an.</p>
-    </div>
-  </section>
-</div>
+<!-- ======================================================== DOCS -->
+<main data-page="docs">
+  <div class="wrap docs">
+    <aside class="toc" id="toc">
+      <h4>Start</h4>
+      <a href="#docs/install">Installieren</a>
+      <a href="#docs/signin">Anmeldung</a>
+      <a href="#docs/data">Daten und Speicher</a>
+      <h4>Benutzen</h4>
+      <a href="#docs/refresh">Aktualisieren</a>
+      <a href="#docs/exams">Prüfungen schätzen</a>
+      <a href="#docs/grades">Noten-Rechner</a>
+      <a href="#docs/notify">Benachrichtigungen</a>
+      <a href="#docs/desktop">Desktop-App</a>
+      <a href="#docs/sync">Geräte-Sync</a>
+      <a href="#docs/look">Stile und Sprache</a>
+      <h4>Mehr</h4>
+      <a href="#docs/updates">Updates</a>
+      <a href="#docs/linux">Linux-Paketquellen</a>
+      <a href="#docs/trouble">Fehlerbehebung</a>
+      <a href="#docs/privacy">Datenschutz</a>
+      <a href="#docs/build">Selbst bauen</a>
+    </aside>
+    <article class="doc">
+      <h1>Docs</h1>
+      <p class="lead">Wie die App funktioniert, was sie speichert und was du tun kannst, wenn etwas nicht geht.</p>
 
-<section class="walk scrub" id="styles" aria-label="Die neun Stile, mit Beispieldaten">
-  <div class="sticky">
-    <div class="wrap grid">
-      <ol class="steps compact" id="styleSteps"></ol>
-      <div class="stage">
-        <div class="phonebox" id="phonebox2">
-          <div class="phone">
-            <div class="screen" id="screen2">
-              <div class="st"><span>10:43</span><span>5G</span></div>
-              <div class="a-top"><svg class="mark" id="mark2" viewBox="0 0 100 100" aria-hidden="true"></svg><div><b>Stundenplan</b><small><i></i>Aktualisiert gerade eben</small></div></div>
-              <div class="a-tabs"><span class="on">Woche</span><span>Prüfungen</span><span>Noten</span><span>Absenzen</span><span>Räume</span></div>
-              <div class="rail-win"><div class="view" id="view2" style="width:100%"></div></div>
-            </div>
-          </div>
-        </div>
-        <div class="mode" role="group" aria-label="Hell oder dunkel">
-          <button type="button" data-mode="light" aria-pressed="true">Hell</button><button type="button" data-mode="dark" aria-pressed="false">Dunkel</button>
-        </div>
-        <div class="count" id="count2" aria-hidden="true">1<span> / 9</span></div>
-      </div>
-    </div>
+      <section id="d-install">
+        <h2>Installieren</h2>
+        <p>Für jede Plattform gibt es eine eigene Version, alle mit denselben Funktionen. Die Dateien und Befehle stehen unter <a href="#download" data-go="download">Download</a>.</p>
+        <table>
+          <tr><th>Plattform</th><th>Form</th><th>Updates</th></tr>
+          <tr><td>Windows</td><td>App, Installer <code>.exe</code> (ohne Admin-Rechte)</td><td>in der App, ein Klick</td></tr>
+          <tr><td>macOS</td><td>App, <code>.dmg</code> (Apple Silicon und Intel)</td><td>in der App, ein Klick</td></tr>
+          <tr><td>Linux</td><td>App aus der Paketquelle (<code>dnf</code>, <code>zypper</code>, <code>apt</code>) oder AppImage</td><td>mit den Systemupdates</td></tr>
+          <tr><td>Android</td><td>App, <code>.apk</code></td><td>in der App</td></tr>
+          <tr><td>Chrome, Edge, Brave</td><td>Add-on aus dem Chrome Web Store</td><td>automatisch</td></tr>
+          <tr><td>Firefox</td><td>Add-on, <code>.xpi</code> (Computer und Android)</td><td>automatisch</td></tr>
+          <tr><td>iPhone</td><td>Userscript für Safari mit der App «Userscripts»</td><td>automatisch</td></tr>
+        </table>
+        <p>Beim ersten Start zeigt die App, was mit deinen Daten passiert. Danach meldest du dich einmal an, oder probierst zuerst das <b>Demokonto</b> mit erfundenen Daten.</p>
+      </section>
+
+      <section id="d-signin">
+        <h2>Anmeldung</h2>
+        <p>Die App benutzt deinen eigenen WISS-Login, genau wie die Extranet-Seite. Sie liest nur, was du im Extranet sowieso siehst.</p>
+        <ol>
+          <li>Beim ersten Mal öffnet sich die Seite des Extranets. Die App drückt dort «WISS Office 365».</li>
+          <li>Du meldest dich bei Microsoft an. Die App tippt nie ein Passwort ein und speichert keins.</li>
+          <li>Danach bleibt die Sitzung bestehen. Läuft sie ab, meldet die App dich unsichtbar im Hintergrund wieder an.</li>
+        </ol>
+        <p>Nur wenn Microsoft wirklich etwas von dir will (Passwort, neues Gerät, Bestätigung), siehst du das Anmeldefenster wieder.</p>
+        <table>
+          <tr><th>Version</th><th>Wo die Anmeldung im Hintergrund läuft</th></tr>
+          <tr><td>Desktop-App</td><td>in einem versteckten Fenster, nur sichtbar, wenn Microsoft dich braucht</td></tr>
+          <tr><td>Android</td><td>in einer Seite hinter der App</td></tr>
+          <tr><td>Chrome</td><td>in einem minimierten Fenster</td></tr>
+          <tr><td>Firefox</td><td>in einem versteckten Tab (Berechtigung «Tabs ausblenden»)</td></tr>
+          <tr><td>iPhone</td><td>auf der Extranet-Seite selbst</td></tr>
+        </table>
+        <div class="note">In Chrome und Firefox lässt sich die Anmeldung im Hintergrund abschalten: Einstellungen › Aktualisieren › <b>Selbst anmelden</b>. Dann tippst du auf «Anmelden», wenn die Sitzung abgelaufen ist.</div>
+      </section>
+
+      <section id="d-data">
+        <h2>Daten und Speicher</h2>
+        <p>Alles bleibt auf deinem Gerät. Es gibt keinen Server mit deinen Noten.</p>
+        <table>
+          <tr><th>Quelle</th><th>Was</th></tr>
+          <tr><td><code>wiss.tocco.ch</code></td><td>Stundenplan, Noten, Absenzen, Prüfungen, Räume, über die Schnittstelle des Extranets mit deinem Login</td></tr>
+          <tr><td><code>modulbaukasten.ch</code></td><td>Modulbeschreibungen und Lehrberufe (öffentlich)</td></tr>
+          <tr><td><code>api.github.com</code></td><td>Prüfen, ob es eine neue Version gibt</td></tr>
+          <tr><td><code>*.onrender.com</code></td><td>nur mit eingeschaltetem Sync, verschlüsselt</td></tr>
+        </table>
+        <h3>Wo die Daten liegen</h3>
+        <table>
+          <tr><th>Version</th><th>Ort</th></tr>
+          <tr><td>Windows</td><td><code>%APPDATA%\ch.wisstools.stundenplan</code></td></tr>
+          <tr><td>macOS</td><td><code>~/Library/Application Support/ch.wisstools.stundenplan</code></td></tr>
+          <tr><td>Linux</td><td><code>~/.local/share/ch.wisstools.stundenplan</code></td></tr>
+          <tr><td>Browser</td><td>im Speicher des Add-ons</td></tr>
+          <tr><td>Android</td><td>im privaten Ordner der App</td></tr>
+        </table>
+        <p>Löschen: Einstellungen › Daten › <b>Alles löschen</b>. Beim Deinstallieren verschwindet alles mit.</p>
+      </section>
+
+      <section id="d-refresh">
+        <h2>Aktualisieren</h2>
+        <p>Beim Öffnen zeigt die App sofort die letzten Daten und holt neue im Hintergrund. Danach aktualisiert sie alle 20 Minuten, solange sie läuft. Der Knopf <code>↻</code> oben rechts holt sofort neue Daten.</p>
+        <p>Unter Einstellungen › Aktualisieren › <b>Diagnose</b> steht, was bei der letzten Aktualisierung passiert ist. Das hilft, wenn etwas nicht stimmt.</p>
+      </section>
+
+      <section id="d-exams">
+        <h2>Prüfungen schätzen</h2>
+        <p>Das Extranet zeigt viele Prüfungsdaten nicht an. Die App schätzt sie aus dem Modulplan. Geschätzte Daten sind gestrichelt.</p>
+        <table>
+          <tr><th>Einstellung</th><th>Bedeutung</th></tr>
+          <tr><td>Jede 3. Lektion</td><td>ZP am 3., 6., 9. … Modultag</td></tr>
+          <tr><td>Einmal</td><td>eine ZP am 3. Modultag</td></tr>
+          <tr><td>Keine</td><td>keine ZP, nur LB und Projekt</td></tr>
+        </table>
+        <p>LB und Projekt liegen immer am letzten Modultag. Jedes Datum lässt sich bei der Lektion von Hand korrigieren. Korrekturen werden mit dem Sync übertragen.</p>
+      </section>
+
+      <section id="d-grades">
+        <h2>Noten-Rechner</h2>
+        <p>Für jedes laufende Modul rechnet die App aus, was du in den offenen Teilen noch brauchst, damit die Modulnote auf deine Zielnote gerundet wird.</p>
+        <pre class="cmd"><span class="p"># Beispiel: ZP 30 %, Projekt 30 %, LB 40 % offen, Ziel 5.0</span>
+nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
+      = 4.4   <span class="p"># aufgerundet auf eine Zehntelnote</span></pre>
+        <p>Die <code>− 0.25</code> kommt von der Rundung auf halbe Noten: ab 4.75 zählt es als 5.0. Ist die nötige Note über 6, steht «geht nicht mehr».</p>
+      </section>
+
+      <section id="d-notify">
+        <h2>Benachrichtigungen</h2>
+        <table>
+          <tr><th>Art</th><th>Wann</th></tr>
+          <tr><td>Vor jeder Lektion</td><td>5, 10, 15 oder 30 Minuten vorher, mit Raum (aus, bis du es einschaltest)</td></tr>
+          <tr><td>Absenzen-Frist</td><td>2 Tage vor Ablauf der 7-Tage-Frist</td></tr>
+          <tr><td>Neue Noten</td><td>nach der Aktualisierung, die sie findet</td></tr>
+        </table>
+        <p>Einstellungen › Benachrichtigungen › <b>Test-Benachrichtigung</b> zeigt, ob sie ankommen. Auf dem iPhone gibt es keine Benachrichtigungen.</p>
+      </section>
+
+      <section id="d-desktop">
+        <h2>Desktop-App</h2>
+        <p>Die App für Windows, macOS und Linux ist mit <a href="https://tauri.app" target="_blank" rel="noopener">Tauri</a> gebaut: ein kleines Rust-Programm, das den Web-Teil mit der Web-Engine des Systems anzeigt (WebView2, WebKit, WebKitGTK). Deshalb ist der Installer nur wenige MB gross.</p>
+        <ul>
+          <li><b>Schliessen</b> versteckt das Fenster. Die App läuft im Tray weiter, Erinnerungen kommen trotzdem. Beenden über das Tray-Menü.</li>
+          <li><b>Tray-Menü:</b> nächste Lektion und Raum, Öffnen, Aktualisieren, Mini-Fenster, Mit dem Computer starten, Beenden.</li>
+          <li><b>Mini-Fenster:</b> eine kleine Karte mit der nächsten Lektion, die immer oben bleibt. Frei verschiebbar.</li>
+          <li><b>Mit dem Computer starten:</b> startet still im Tray, ohne Fenster.</li>
+        </ul>
+      </section>
+
+      <section id="d-sync">
+        <h2>Geräte-Sync</h2>
+        <p>Freiwillig und aus, bis du ihn einschaltest. Vorher spricht die App nie mit dem Sync-Server.</p>
+        <table>
+          <tr><th>Wird synchronisiert</th><th>Bleibt nur auf dem Gerät</th></tr>
+          <tr><td style="font-weight:400;white-space:normal">Notizen, korrigierte Prüfungsdaten, einige Einstellungen</td><td>Stundenplan, Noten, Absenzen, dein Login</td></tr>
+        </table>
+        <ol>
+          <li>Auf dem ersten Gerät: Einstellungen › Sync › <b>Einschalten</b>. Bewahre den Wiederherstellungscode gut auf.</li>
+          <li>Auf dem neuen Gerät: den Code vom ersten Gerät eingeben oder den QR-Code scannen.</li>
+        </ol>
+        <p>Alles wird auf deinem Gerät mit AES-256 verschlüsselt, bevor es losgeht. Der Server bekommt nur verschlüsselte Pakete und eine zufällige ID, nie den Schlüssel.</p>
+        <div class="note"><b>Wichtig:</b> Verlierst du den Wiederherstellungscode und alle verbundenen Geräte, lassen sich die synchronisierten Daten nicht mehr entschlüsseln. Auch nicht von uns.</div>
+      </section>
+
+      <section id="d-look">
+        <h2>Stile und Sprache</h2>
+        <p>Einstellungen › Darstellung. Neun Stile mit eigenem Layout, eigenen Schriften und eigenem Logo, jeweils hell und dunkel. Wer die Farben eines Stils mag, aber das rote Logo behalten will: <b>Logo › Immer rot</b>. Animationen lassen sich ausschalten.</p>
+        <p>Die App spricht Deutsch und Englisch. Modulnamen und Daten der Schule bleiben, wie sie im Extranet stehen.</p>
+      </section>
+
+      <section id="d-updates">
+        <h2>Updates</h2>
+        <table>
+          <tr><th>Version</th><th>Wie</th></tr>
+          <tr><td>Windows, macOS</td><td>Banner «Version x ist da» › Installieren. Lädt das signierte Update, installiert, startet neu.</td></tr>
+          <tr><td>Linux (Paketquelle)</td><td>mit den Systemupdates: GNOME Software, KDE Discover, <code>dnf upgrade</code>, <code>apt upgrade</code></td></tr>
+          <tr><td>Linux (AppImage)</td><td>wie Windows, in der App</td></tr>
+          <tr><td>Android</td><td>Banner › Installieren, dann bestätigen</td></tr>
+          <tr><td>Chrome, Firefox, iPhone</td><td>automatisch durch Browser bzw. Userscripts-App</td></tr>
+        </table>
+        <p>Updates für die Desktop-App sind signiert. Die App installiert nur Updates mit der richtigen Signatur.</p>
+      </section>
+
+      <section id="d-linux">
+        <h2>Linux-Paketquellen</h2>
+        <p>Der einfachste Weg ist der Befehl unter <a href="#download/linux" data-go="download">Download › Linux</a>. Er erkennt <code>dnf</code>, <code>zypper</code> oder <code>apt</code> und richtet die Quelle ein. Von Hand geht es so:</p>
+        <h3>Fedora, Nobara, Bazzite, RHEL</h3>
+        <pre class="cmd"><span class="p">$</span> sudo curl -fsSL -o /etc/yum.repos.d/wiss-stundenplan.repo \
+    https://nicolas-wehrle.github.io/Wiss-Stundenplan/wiss-stundenplan.repo
+<span class="p">$</span> sudo dnf install wiss-stundenplan</pre>
+        <h3>openSUSE</h3>
+        <pre class="cmd"><span class="p">$</span> sudo zypper addrepo --refresh https://nicolas-wehrle.github.io/Wiss-Stundenplan/wiss-stundenplan.repo
+<span class="p">$</span> sudo zypper install wiss-stundenplan</pre>
+        <h3>Ubuntu, Debian, Mint, Pop!_OS</h3>
+        <pre class="cmd"><span class="p">$</span> sudo wget -qO /usr/share/keyrings/wiss-stundenplan.gpg \
+    https://nicolas-wehrle.github.io/Wiss-Stundenplan/wiss-stundenplan.gpg
+<span class="p">$</span> sudo wget -qO /etc/apt/sources.list.d/wiss-stundenplan.list \
+    https://nicolas-wehrle.github.io/Wiss-Stundenplan/wiss-stundenplan.list
+<span class="p">$</span> sudo apt update &amp;&amp; sudo apt install wiss-stundenplan</pre>
+        <p>Pakete und Metadaten sind signiert. Den öffentlichen Schlüssel gibt es unter <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/wiss-stundenplan.asc">wiss-stundenplan.asc</a>.</p>
+        <h3>Entfernen</h3>
+        <pre class="cmd"><span class="p">$</span> sudo dnf remove wiss-stundenplan &amp;&amp; sudo rm /etc/yum.repos.d/wiss-stundenplan.repo
+<span class="p">$</span> sudo apt remove wiss-stundenplan &amp;&amp; sudo rm /etc/apt/sources.list.d/wiss-stundenplan.list</pre>
+      </section>
+
+      <section id="d-trouble">
+        <h2>Fehlerbehebung</h2>
+        <h3>«Anmeldung nötig» bleibt stehen</h3>
+        <p>Tippe auf «Anmelden» und melde dich im Fenster bei Microsoft an. Hilft das nicht: Einstellungen › Aktualisieren › Diagnose ansehen.</p>
+        <h3>Windows: «Der Computer wurde durch Windows geschützt»</h3>
+        <p>Der Installer ist nicht mit einem kostenpflichtigen Zertifikat signiert. <b>Weitere Informationen › Trotzdem ausführen</b>.</p>
+        <h3>macOS: «kann nicht geöffnet werden»</h3>
+        <p>Die App ist nicht bei Apple notarisiert. Systemeinstellungen › Datenschutz &amp; Sicherheit › <b>Dennoch öffnen</b>. Nur beim ersten Start.</p>
+        <h3>Linux: leeres Fenster</h3>
+        <p>Kommt bei manchen Grafiktreibern mit WebKitGTK vor. Starten mit:</p>
+        <pre class="cmd"><span class="p">$</span> WEBKIT_DISABLE_DMABUF_RENDERER=1 wiss-stundenplan</pre>
+        <p>Mit NVIDIA-Treibern macht die App das schon selbst.</p>
+        <h3>Linux: kein Tray-Symbol</h3>
+        <p>Auf reinem GNOME braucht es die Erweiterung «AppIndicator». Ohne läuft die App trotzdem weiter: einfach erneut starten, dann kommt das Fenster zurück.</p>
+        <h3>Android: «Installation blockiert»</h3>
+        <p>Beim ersten Mal fragt Android, ob dein Browser Apps installieren darf. Erlauben, dann nochmals öffnen.</p>
+      </section>
+
+      <section id="d-privacy">
+        <h2>Datenschutz</h2>
+        <ul>
+          <li>Kein Konto, keine Werbung, kein Tracking, keine Analyse.</li>
+          <li>Schuldaten bleiben auf deinem Gerät. Es gibt keinen Server mit deinen Noten.</li>
+          <li>Die App tippt nie ein Passwort ein und speichert keins.</li>
+          <li>Sync nur, wenn du ihn einschaltest, und dann Ende-zu-Ende verschlüsselt.</li>
+          <li>Der ganze Code ist offen auf <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a>.</li>
+        </ul>
+        <p>Die vollständige Datenschutzerklärung steht in <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY.md" target="_blank" rel="noopener">PRIVACY.md</a>.</p>
+      </section>
+
+      <section id="d-build">
+        <h2>Selbst bauen</h2>
+        <p>Der Code der Add-ons in <code>chrome addon/</code> ist die Quelle für alle Versionen. Die anderen werden daraus gebaut.</p>
+        <pre class="cmd"><span class="p">$</span> git clone https://github.com/Nicolas-Wehrle/Wiss-Stundenplan.git
+<span class="p">$</span> cd Wiss-Stundenplan
+<span class="p">$</span> python3 build-firefox.py "chrome addon" "firefox addon"
+<span class="p">$</span> python3 iphone/build-ios.py "chrome addon" iphone</pre>
+        <h3>Desktop-App</h3>
+        <p>Braucht <a href="https://rustup.rs" target="_blank" rel="noopener">Rust</a> und Node 18+. Auf Linux zusätzlich:</p>
+        <pre class="cmd"><span class="p">$</span> sudo apt install libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev   <span class="p"># Ubuntu, Debian</span>
+<span class="p">$</span> sudo dnf install webkit2gtk4.1-devel libayatana-appindicator-gtk3-devel librsvg2-devel   <span class="p"># Fedora</span></pre>
+        <pre class="cmd"><span class="p">$</span> cd "desktop app"
+<span class="p">$</span> npm ci
+<span class="p">$</span> npm run dev     <span class="p"># zum Ausprobieren</span>
+<span class="p">$</span> npm run build   <span class="p"># Installer in src-tauri/target/release/bundle/</span></pre>
+        <h3>Android</h3>
+        <pre class="cmd"><span class="p">$</span> python3 "android app/build-android-web.py" "chrome addon" "android app"
+<span class="p">$</span> cd "android app" &amp;&amp; ./gradlew assembleRelease   <span class="p"># JDK 17+, Android SDK, eigener Signaturschlüssel</span></pre>
+      </section>
+    </article>
   </div>
-</section>
+</main>
 
-<div class="wrap">
-  <section class="block" id="sync-head">
-    <hr class="rule">
-    <div class="head">
-      <h2>Auf allen Geräten.</h2>
-      <p>Freiwillig: Sync bringt deine Notizen vom Laptop aufs Handy und zurück. Verschlüsselt, bevor irgendetwas dein Gerät verlässt.</p>
+<!-- ======================================================== DOWNLOAD -->
+<main data-page="download">
+  <div class="wrap">
+    <div class="dlhead">
+      <h1>Download</h1>
+      <p>Kostenlos, für alle Plattformen. Beim ersten Start meldest du dich einmal mit deinem WISS-Konto an.</p>
+      <p class="ver">Neueste Version <b data-ver>1.12.3</b> · <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest" target="_blank" rel="noopener">Release-Seite</a> · <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Änderungen</a></p>
     </div>
-  </section>
-</div>
 
-<section class="walk scrub" id="syncsec" aria-label="So funktioniert der Sync, als Beispiel">
-  <div class="sticky">
-    <div class="wrap grid">
-      <ol class="steps" id="syncSteps">
-        <li><b>01</b><div><h3>Einschalten</h3></div><p>Sync ist aus, bis du ihn selbst einschaltest.</p></li>
-        <li><b>02</b><div><h3>Verbinden</h3></div><p>Am Handy den Code vom Laptop eingeben. Er gilt zehn Minuten und nur einmal.</p></li>
-        <li><b>03</b><div><h3>Schreiben</h3></div><p>Notizen und korrigierte Prüfungsdaten kommen auf jedem Gerät an.</p></li>
-        <li><b>04</b><div><h3>Verschlüsselt</h3></div><p>AES-256 auf deinem Gerät. Der Server speichert nur Zeichensalat. Noten und Absenzen bleiben lokal.</p></li>
-      </ol>
-      <div class="stage">
-        <div class="sync" id="sync">
-          <svg class="wires" id="wires" aria-hidden="true"><polyline id="wireP" points=""/></svg>
-          <div class="dev" id="devA">
-            <div class="dl">Laptop</div>
-            <div class="srow"><span>Sync</span><i class="tog" id="tog"></i></div>
-            <div class="code-show" id="codeShow"><small>Code für ein neues Gerät</small><b>K7QM-4XD2</b></div>
-            <div class="nbox" id="nboxA"><small>Notiz · Datenbanken abfragen</small><p id="noteA"></p></div>
-          </div>
-          <div class="srv" id="srv">
-            <div class="dl">Sync-Server</div>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-            <code id="cipher">—</code>
-          </div>
-          <div class="dev" id="devB">
-            <div class="dl">Handy</div>
-            <div class="cells" id="cells"><span></span><span></span><span></span><span></span><em>-</em><span></span><span></span><span></span><span></span></div>
-            <div class="okline" id="okLine">Verbunden</div>
-            <div class="nbox" id="nboxB"><small>Notiz · Datenbanken abfragen</small><p id="noteB"></p></div>
-          </div>
-          <i class="packet" id="packet"></i>
-        </div>
+    <section class="plat" id="dl-windows">
+      <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.5v7H3zM11.5 4.4 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z"/></svg>Windows</h2><p class="req">Windows 10, 11 · x64</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" data-asset="exe" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest">Installer herunterladen <small data-size="exe">.exe</small></a><a class="btn ghost" data-asset="msi" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest">.msi <small data-size="msi"></small></a></div>
+        <p class="info">Installiert für dein Benutzerkonto, ohne Admin-Rechte. Updates kommen in der App. Beim ersten Start meldet Windows SmartScreen «unbekannter Herausgeber»: <a href="#docs/trouble" data-go="docs">warum, und was tun</a>.</p>
       </div>
-    </div>
+    </section>
+
+    <section class="plat" id="dl-macos">
+      <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9s-2-.9-3.3-.9c-1.7 0-3.3 1-4.2 2.5-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9-.1 0-2.8-1-2.8-4.1ZM14 5.2c.7-.8 1.2-2 1-3.2-1 .1-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3.1 1.1.1 2.2-.6 2.9-1.4Z"/></svg>macOS</h2><p class="req">macOS 11+ · Apple Silicon, Intel</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" data-asset="dmg" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest">.dmg herunterladen <small data-size="dmg">universal</small></a></div>
+        <p class="info">Eine Datei für alle Macs. Die App ist nicht bei Apple notarisiert: beim ersten Start Systemeinstellungen › Datenschutz &amp; Sicherheit › «Dennoch öffnen».</p>
+      </div>
+    </section>
+
+    <section class="plat" id="dl-linux">
+      <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 17l6-5-6-5M12 19h8"/></svg>Linux</h2><p class="req">x86_64 · Fedora, openSUSE, Ubuntu, Debian, Mint, …</p></div>
+      <div>
+        <p class="info" style="margin-top:0">Empfohlen: ein Befehl richtet die Paketquelle ein und installiert die App. Danach kommen Updates mit den Systemupdates.</p>
+        <pre class="cmd"><span class="p">$</span> wget -qO- https://nicolas-wehrle.github.io/Wiss-Stundenplan/linux.sh | sh</pre>
+        <p class="info">Lieber Schritt für Schritt? <a href="#docs/linux" data-go="docs">Paketquellen von Hand</a>. Oder direkt die Datei:</p>
+        <div class="btns" style="margin-top:12px"><a class="btn ghost" data-asset="rpm" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest">.rpm <small data-size="rpm">Fedora, openSUSE</small></a><a class="btn ghost" data-asset="deb" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest">.deb <small data-size="deb">Ubuntu, Debian</small></a><a class="btn ghost" data-asset="appimage" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest">.AppImage <small data-size="appimage">alle</small></a></div>
+        <p class="info">Einzelne <code>.rpm</code>/<code>.deb</code> bekommen keine automatischen Updates. Das AppImage aktualisiert sich selbst, ist aber grösser, weil es seine eigene Web-Engine mitbringt.</p>
+      </div>
+    </section>
+
+    <section class="plat" id="dl-android">
+      <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg>Android</h2><p class="req">Android 8+</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.apk">APK herunterladen <small>.apk</small></a></div>
+        <p class="info">Mit Widget für den Startbildschirm, Erinnerungen und Meldung bei neuen Noten. Android fragt beim ersten Mal, ob der Browser Apps installieren darf. Updates kommen in der App.</p>
+      </div>
+    </section>
+
+    <section class="plat" id="dl-chrome">
+      <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.5"/><path d="M12 8.5h8.2M8.9 13.8 4.8 6.7M15.1 13.8 11 21"/></svg>Chrome, Edge, Brave</h2><p class="req">Add-on</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">Im Chrome Web Store</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Chrome.zip">.zip <small>selbst laden</small></a></div>
+        <p class="info">Ein Klick auf das Symbol öffnet den Stundenplan, auch als ganze Seite. Updates über den Web Store.</p>
+      </div>
+    </section>
+
+    <section class="plat" id="dl-firefox">
+      <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M20 12a8 8 0 1 1-6.5-7.9"/><path d="M13.5 4.1c2 1.4 1.3 3.7-.4 4.4 2.7-.2 4.9 2 4.9 4.6"/></svg>Firefox</h2><p class="req">Computer · Android 142+</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Firefox.xpi">Add-on installieren <small>.xpi</small></a></div>
+        <p class="info">Von Mozilla signiert. Firefox fragt einmal, ob es das Add-on hinzufügen darf. Updates automatisch.</p>
+      </div>
+    </section>
+
+    <section class="plat" id="dl-iphone">
+      <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M10 5h4"/></svg>iPhone</h2><p class="req">Safari · App «Userscripts»</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/iphone/README.md" target="_blank" rel="noopener">Anleitung</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.user.js">.user.js</a></div>
+        <p class="info">Die kostenlose App «Userscripts» aus dem App Store macht aus der Extranet-Seite die App. Dauert zwei Minuten, Updates automatisch.</p>
+      </div>
+    </section>
+
+    <p class="info muted" style="margin-top:26px;font-size:14px">Prüfsummen: <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/SHA256SUMS.txt">SHA256SUMS.txt</a> · Ältere Versionen: <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases" target="_blank" rel="noopener">alle Releases</a> · Selbst bauen: <a href="#docs/build" data-go="docs">Docs</a></p>
   </div>
-</section>
+</main>
 
-<div class="wrap">
-  <section class="block" id="mehr">
-    <hr class="rule">
-    <div class="head">
-      <h2>Und sonst noch.</h2>
-      <p>Kleine Dinge, die man erst vermisst, wenn sie fehlen.</p>
-    </div>
-    <div class="more">
-      <div><b>01</b><h3>Vollbild</h3><p>Im Browser als ganze Seite, mit Seitenleiste.</p></div>
-      <div><b>02</b><h3>Widget</h3><p>Die nächste Lektion auf dem Android-Startbildschirm.</p></div>
-      <div><b>03</b><h3>Erinnerungen</h3><p>Kurz vor jeder Lektion, mit dem Raum.</p></div>
-      <div><b>04</b><h3>Neue Noten</h3><p>Eine Meldung, sobald eine Note eingetragen ist.</p></div>
-      <div><b>05</b><h3>Notizen</h3><p>Zu jeder Lektion und jedem Modul.</p></div>
-      <div><b>06</b><h3>Demokonto</h3><p>Alles ansehen, ohne dich anzumelden.</p></div>
-      <div><b>07</b><h3>Deutsch und Englisch</h3><p>Umschalten in den Einstellungen.</p></div>
-      <div><b>08</b><h3>Updates</h3><p>Jede Version holt sich die nächste selbst.</p></div>
-    </div>
-  </section>
-
-  <section class="block" id="datenschutz">
-    <hr class="rule">
-    <div class="head">
-      <h2>Deine Daten bleiben bei dir.</h2>
-      <p>Die App liest mit deinem eigenen Login nur, was du im Extranet sowieso siehst.</p>
-    </div>
-    <div class="cols">
-      <div><h3>Auf deinem Gerät</h3><p>Alles wird lokal gespeichert. Es gibt keinen Server mit deinen Noten, keine Werbung und kein Tracking.</p></div>
-      <div><h3>Kein Passwort</h3><p>Du meldest dich selbst bei Microsoft an. Die App tippt nie ein Passwort ein und speichert auch keins.</p></div>
-      <div><h3>Offen</h3><p>Der ganze Code liegt auf <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a>. Wer will, kann nachschauen, was die App macht.</p></div>
-    </div>
-  </section>
-
-  <section class="block" id="download">
-    <hr class="rule">
-    <div class="head">
-      <h2>Download.</h2>
-      <p>Beim ersten Start meldest du dich einmal mit deinem WISS-Konto an. Danach aktualisiert sich alles von selbst.</p>
-    </div>
-    <table>
-      <thead><tr><th>Gerät</th><th>So gehts</th><th></th></tr></thead>
-      <tbody>
-        <tr><td>Chrome</td><td>Im Chrome Web Store auf «Hinzufügen» klicken. Geht auch in Edge und Brave.</td><td><a class="go" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">Web Store <span>↗</span></a></td></tr>
-        <tr><td>Android</td><td>APK laden und die Installation erlauben. Mit Widget und Erinnerungen.</td><td><a class="go line" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.apk">APK laden <span>↓</span></a></td></tr>
-        <tr><td>Firefox</td><td>Datei öffnen und «Hinzufügen» bestätigen. Auf dem Computer und auf Android.</td><td><a class="go line" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Firefox.xpi">Add-on laden <span>↓</span></a></td></tr>
-        <tr><td>Computer</td><td>Eigene App für Windows, Mac und Linux, mit Erinnerungen und Mini-Fenster. Linux: im Terminal <code style="font-size:13px;word-break:break-all">wget -qO- https://nicolas-wehrle.github.io/Wiss-Stundenplan/linux.sh | sh</code>, danach kommen Updates mit dem System.</td><td><a class="go line" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest" target="_blank" rel="noopener">Release-Seite <span>↗</span></a></td></tr>
-        <tr><td>iPhone</td><td>In Safari mit der App «Userscripts». Die Anleitung dauert zwei Minuten.</td><td><a class="go line" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan#readme" target="_blank" rel="noopener">Anleitung <span>↗</span></a></td></tr>
-      </tbody>
-    </table>
-  </section>
-
-  <footer>
-    <span>Ein Projekt von Lernenden, nicht von der WISS oder Tocco. Massgeblich ist immer das offizielle Extranet.</span>
-    <span><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a> · MIT-Lizenz</span>
-  </footer>
-</div>
+<footer>
+  <div class="wrap">
+    <span>WISS Stundenplan · inoffizielles Projekt von Lernenden, nicht von der WISS oder Tocco · MIT-Lizenz</span>
+    <nav><a href="#docs" data-go="docs">Docs</a><a href="#download" data-go="download">Download</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY.md" target="_blank" rel="noopener">Datenschutz</a></nav>
+  </div>
+</footer>
 
 <script>
 (() => {
-  const $ = (id) => document.getElementById(id);
-  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-  const seg = (p, a, b) => clamp((p - a) / (b - a));
-  const ease = (t) => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  const out = (t) => 1 - Math.pow(1 - t, 3);
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
-  // ---------- logos ----------
-  const LOGOS = {
-    standard: { name: 'Standard', bg: ['#ff6478', '#d81f3c'], c: '#fff', o: .3, t: '#fff', g: '#ffc857', r: 4.5, R: 27 },
-    apple: { name: 'Apple', bg: ['#5ab0ff', '#0a6cff'], c: '#fff', o: .32, t: '#fff', g: '#ffd60a', r: 4.5, R: 27 },
-    samsung: { name: 'Samsung', bg: ['#2c2c31', '#0d0d0f'], c: '#6e9cff', o: .35, t: '#6e9cff', g: '#fff', r: 7.5, R: 34 },
-    nothing: { name: 'Nothing', bg: ['#1c1c1c', '#000'], c: '#fff', o: .3, t: '#e8222b', g: '#fff', r: 7.5, R: 27, edge: '#3a3a3a' },
-    github: { name: 'GitHub', bg: ['#1b222c', '#0d1117'], cs: ['#0e4429', '#006d32', '#39d353', '#006d32', '#39d353', '#26a641', '#26a641', '#0e4429', '#006d32'], r: 3, R: 22, edge: '#30363d' },
-    pastel: { name: 'Pastell', bg: ['#a78bfa', '#f490b5'], c: '#fff', o: .4, t: '#fff', g: '#ffe08a', r: 6, R: 32 },
-    neon: { name: 'Neon', bg: ['#22174a', '#0b0918'], c: '#ff3cac', o: .4, t: '#2de2e6', g: '#ff3cac', r: 4.5, R: 27, edge: '#ff3cac' },
-    paper: { name: 'Papier', bg: ['#f8f3e8', '#e9e1cf'], c: '#2b2620', o: .16, t: '#8e3523', g: '#c9a227', r: 3, R: 24, edge: '#cdbfa3' },
-    terminal: { name: 'Terminal', bg: ['#0b140b', '#030603'], c: '#39ff6a', o: .22, t: '#39ff6a', g: '#b6ffc8', r: 0, R: 14, edge: '#1d4d27' },
-  };
-  let gid = 0;
-  function logo(style) {
-    const L = LOGOS[style], id = 'g' + (++gid);
-    let cells = '';
+  // logo
+  const logo = () => {
+    let c = '';
     for (let i = 0; i < 9; i++) {
       const x = 23 + (i % 3) * 19, y = 23 + Math.floor(i / 3) * 19;
-      const fill = L.cs ? L.cs[i] : i === 4 ? L.t : i === 2 ? L.g : L.c;
-      const op = L.cs || i === 4 || i === 2 ? 1 : L.o;
-      cells += `<rect x="${x}" y="${y}" width="15" height="15" rx="${L.r}" fill="${fill}" fill-opacity="${op}"/>`;
+      const f = i === 4 ? '#fff' : i === 2 ? '#ffc857' : '#fff', o = i === 4 || i === 2 ? 1 : .3;
+      c += `<rect x="${x}" y="${y}" width="15" height="15" rx="4.5" fill="${f}" fill-opacity="${o}"/>`;
     }
-    return `<defs><linearGradient id="${id}" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="${L.bg[0]}"/><stop offset="1" stop-color="${L.bg[1]}"/></linearGradient></defs><rect width="100" height="100" rx="${L.R}" fill="url(#${id})"/>${L.edge ? `<rect x="1" y="1" width="98" height="98" rx="${L.R - 1}" fill="none" stroke="${L.edge}" stroke-width="2"/>` : ''}${cells}`;
-  }
-  document.querySelectorAll('[data-logo]').forEach((s) => { s.innerHTML = logo('standard'); });
+    return `<defs><linearGradient id="lg" x1="0" y1="0" x2=".35" y2="1"><stop offset="0" stop-color="#ff6478"/><stop offset="1" stop-color="#d81f3c"/></linearGradient></defs><rect width="100" height="100" rx="27" fill="url(#lg)"/>${c}`;
+  };
+  $$('[data-logo]').forEach((s) => { s.innerHTML = logo(); });
 
-  // ---------- example data (invented) ----------
+  // screenshot follows the page's light/dark mode
+  const dark = matchMedia('(prefers-color-scheme: dark)');
+  const theme = () => {
+    const d = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : dark.matches;
+    $('#shot').classList.toggle('dark', d);
+    document.body.classList.toggle('dark-ui', d);
+  };
+  theme(); dark.addEventListener ? dark.addEventListener('change', theme) : dark.addListener(theme);
+
+  // ---------- week grid (example data) ----------
   const C = { db: '#2fbf71', net: '#5b8def', en: '#b07cf0', web: '#f0a23b', math: '#e2556b', abu: '#14a5a0' };
-  const WEEK = [
-    { d: 'Mo', n: 9, l: [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', 'A. Meier', C.net], ['13:00', '16:30', 'Web-App entwickeln', 'ZH-404', 'B. Keller', C.web]] },
-    { d: 'Di', n: 10, l: [['08:30', '12:00', 'Allgemeinbildung', 'ZH-302', 'C. Rossi', C.abu], ['13:00', '14:30', 'Mathematik', 'ZH-404', 'D. Huber', C.math]] },
-    { d: 'Mi', n: 11, l: [['10:30', '12:00', 'Datenbanken abfragen', 'ZH-404', 'B. Keller', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', 'E. Smith', C.en], ['14:45', '16:30', 'Web-App entwickeln', 'ZH-404', 'B. Keller', C.web]] },
-    { d: 'Do', n: 12, x: 'ZP', l: [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', 'A. Meier', C.net]] },
-    { d: 'Fr', n: 13, l: [['08:30', '12:00', 'Datenbanken abfragen', 'ZH-404', 'B. Keller', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', 'E. Smith', C.en]] },
+  const W = [
+    ['Mo', '16. Nov', [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', C.net], ['13:00', '16:30', 'Web-App entwickeln', 'ZH-404', C.web]]],
+    ['Di', '17. Nov', [['08:30', '12:00', 'Allgemeinbildung', 'ZH-302', C.abu], ['13:00', '14:30', 'Mathematik', 'ZH-404', C.math]]],
+    ['Mi', '18. Nov', [['08:30', '10:00', 'Netzwerke planen', 'ZH-411', C.net], ['10:30', '12:00', 'Datenbanken abfragen', 'ZH-404', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', C.en], ['14:45', '16:30', 'Web-App entwickeln', 'ZH-404', C.web]]],
+    ['Do', '19. Nov', [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', C.net]]],
+    ['Fr', '20. Nov', [['08:30', '12:00', 'Datenbanken abfragen', 'ZH-404', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', C.en]]],
   ];
-  const hm = (m) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
-  const days = (sel) => `<div class="days" data-days>${WEEK.map((w, i) => `<button class="day ${i === sel ? 'on' : ''}" data-i="${i}" aria-pressed="${i === sel}"><small>${w.d}</small><b>${w.n}</b><span class="dots">${w.l.map((l) => `<i style="background:${l[5]}"></i>`).join('')}</span>${w.x ? `<span class="x">${w.x}</span>` : ''}</button>`).join('')}</div>`;
-  const lessons = (i) => WEEK[i].l.slice(0, 3).map((l) => `<div class="les card" style="--c:${l[5]}"><div class="t">${l[0]}<span>${l[1]}</span></div><div><h5>${l[2]}</h5><div class="m"><span class="chip-room">${l[3]}</span><span>${l[4]}</span></div></div></div>`).join('');
-  const heat = () => { let h = ''; for (let i = 0; i < 100; i++) { const r = Math.abs((Math.sin(i * 12.9898) * 43758.5453) % 1); h += `<i class="${i > 64 ? '' : r < .05 ? 'u' : r < .12 ? 'a' : 'p'}"></i>`; } return h; };
-  const VIEWS = [
-    `<div class="now card" style="--c:${C.db}"><div class="kick"><span class="live"></span>Jetzt · noch 77 min</div>
-      <div class="now-row"><div><h4>Datenbanken abfragen</h4><div class="m2">10:30–12:00 · B. Keller</div></div><div class="room"><small>RAUM</small><b><span>ZH-</span>404</b></div></div>
-      <div class="daybar"><i class="done" style="left:0;width:18%;background:${C.net}"></i><i style="left:25%;width:18%;background:${C.db}"></i><i style="left:56%;width:18%;background:${C.en}"></i><i style="left:78%;width:22%;background:${C.web}"></i><b></b></div>
-      <div class="foot"><span class="tag">Projekt</span><span><b style="color:var(--a-ink)">Web-App entwickeln</b> · in 5 Tagen</span></div></div>
-      ${days(2)}<div data-list style="display:grid;gap:8px">${lessons(2)}</div>`,
-    `<div class="xhero card"><div class="cd"><b>5</b><small>Tage</small></div><div><div class="kick">Nächste Prüfung <span class="tag">Projekt</span></div><h4 style="font-size:18px;margin-top:4px">Web-App entwickeln</h4><div class="m2">Mo, 16. Nov · 08:30 · ZH-404</div></div></div>
-      <div class="sect">November 2026 <small>2</small></div>
-      <div class="xrow card soon"><div class="xd"><b>19</b><small>DO</small></div><div class="nm"><span class="tag zp">ZP</span>Netzwerke planen</div><div class="in">in 8 Tagen</div></div>
-      <div class="xrow card"><div class="xd"><b>27</b><small>FR</small></div><div class="nm"><span class="tag lb">LB 2</span>Englisch</div><div class="in">in 16 Tagen</div></div>
-      <div class="sect">Dezember 2026 <small>1</small></div>
-      <div class="xrow card"><div class="xd"><b>09</b><small>MI</small></div><div class="nm"><span class="tag zp est">ZP</span>Daten modellieren</div><div class="in" data-n="est">in 28 Tagen</div></div>`,
-    `<div class="ghero card"><div><small>Schnitt</small><div class="avg">5.12</div><small>2 Module über 5.5</small></div><div class="ring"><div><b>14<small>/38</small></b><span>Module</span></div></div></div>
-      <div class="trend card"><svg viewBox="0 0 300 60" preserveAspectRatio="none" aria-hidden="true"><path class="a" d="M0 44 L40 36 L80 40 L120 26 L160 30 L200 18 L240 22 L300 10 L300 60 L0 60 Z"/><path class="l" id="trendLine" d="M0 44 L40 36 L80 40 L120 26 L160 30 L200 18 L240 22 L300 10"/></svg></div>
-      <div class="calc card"><div class="ttl">Applikationen testen<span>Modul 450</span></div><div class="parts"><span class="part">ZP <b>4.5</b> · 30 %</span><span class="part">Projekt <b>5.5</b> · 30 %</span><span class="part" style="opacity:.6">LB offen · 40 %</span></div>
-        <div class="targets" data-targets>${[4, 4.5, 5, 5.5, 6].map((t) => `<button data-t="${t}" aria-pressed="${t === 5}">${t.toFixed(1)}</button>`).join('')}</div><p class="need" data-need></p></div>`,
-    `<div class="todo"><div><b>Mo, 2. Nov · 2 Lektionen</b><small>Englisch · offen</small></div><span class="left">noch 3 Tage</span></div>
-      <div class="sect">Noch fehlen erlaubt <small>Lektionen</small></div>
-      <div class="budget card"><div class="brow"><div class="bh"><span>Netzwerke planen</span><span style="color:var(--warn)">noch 1</span></div><div class="bbar"><i data-grow style="--w:86%;background:var(--warn)"></i></div></div>
-      <div class="brow"><div class="bh"><span>Englisch</span><span style="color:var(--ok)">noch 3</span></div><div class="bbar"><i data-grow style="--w:52%;background:var(--ok)"></i></div></div>
-      <div class="brow"><div class="bh"><span>Datenbanken abfragen</span><span style="color:var(--ok)">noch 5</span></div><div class="bbar"><i data-grow style="--w:24%;background:var(--ok)"></i></div></div></div>
-      <div class="sect">Dieses Schuljahr</div><div class="heat card">${heat()}</div>`,
-    `<div class="rhero card"><div class="rh"><div><small>Frei um <span data-rt2>10:45</span></small><b><span data-free>7</span><em> / 12</em></b></div><div class="t" data-rt>10:45</div></div>
-      <div class="slider"><input type="range" min="480" max="1020" step="15" value="645" aria-label="Uhrzeit" data-slider></div></div>
-      <div class="sect">WISS Zürich · 4. OG</div><div class="floor card" data-floor></div>`,
-  ];
-  const ROOMS = [['4.01', [[510, 720], [780, 870]]], ['4.02', [[510, 600]]], ['4.03', []], ['4.04', [[510, 720], [780, 990]]], ['4.05', [[630, 720]]], ['4.06', [[780, 990]]], ['4.07', []], ['4.08', [[510, 870]]], ['4.09', [[510, 720]]], ['4.10', [[780, 870]]], ['4.11', [[630, 720], [780, 990]]], ['4.12', []]];
+  const m = (t) => +t.slice(0, 2) * 60 + +t.slice(3), top = (t) => ((m(t) - 480) / 540) * 100;
+  let g = '<div></div>' + W.map((d, i) => `<div class="h ${i === 2 ? 'today' : ''}">${d[0]}<small>${d[1]}</small></div>`).join('');
+  g += '<div class="times">' + ['08:00', '10:00', '12:00', '14:00', '16:00'].map((t) => `<span style="top:${top(t)}%">${t}</span>`).join('') + '</div>';
+  g += W.map((d, i) => `<div class="col ${i === 2 ? 'today' : ''}">${i === 2 ? `<i class="nowline" style="top:${top('11:13')}%"></i>` : ''}${d[2].map((l) => `<div class="l" style="--c:${l[4]};top:${top(l[0])}%;height:calc(${top(l[1]) - top(l[0])}% - 3px)"><b>${l[2]}</b><span>${l[0]} · ${l[3]}</span></div>`).join('')}</div>`).join('');
+  $('#wk').innerHTML = g;
 
-  const rail = $('rail');
-  rail.innerHTML = VIEWS.map((v) => `<div class="view">${v}</div>`).join('');
-  const dayEl = rail.querySelector('[data-days]');
-  dayEl.addEventListener('click', (e) => {
-    const b = e.target.closest('.day'); if (!b) return; const i = +b.dataset.i;
-    dayEl.querySelectorAll('.day').forEach((d) => { d.classList.toggle('on', +d.dataset.i === i); d.setAttribute('aria-pressed', +d.dataset.i === i); });
-    rail.querySelector('[data-list]').innerHTML = lessons(i);
-  });
-  const tg = rail.querySelector('[data-targets]');
+  // ---------- grade calculator ----------
   const need = (t) => {
     const v = Math.max(1, Math.ceil(((t - .25 - (4.5 * .3 + 5.5 * .3)) / .4) * 10) / 10);
-    rail.querySelector('[data-need]').innerHTML = v > 6 ? `Eine ${t.toFixed(1)} geht nicht mehr.` : `Für eine ${t.toFixed(1)} brauchst du in der LB noch <b class="${v > 5.5 ? 'bad' : ''}">${v.toFixed(1)}</b>`;
-    tg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.t === t));
+    $('#need').innerHTML = v > 6 ? `Eine ${t.toFixed(1)} geht nicht mehr.` : `Für eine ${t.toFixed(1)} brauchst du in der LB noch <b class="${v > 5.5 ? 'bad' : ''}">${v.toFixed(1)}</b>`;
+    $$('#targets button').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.t === t));
   };
-  tg.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) need(+b.dataset.t); });
+  $('#targets').innerHTML = [4, 4.5, 5, 5.5, 6].map((t) => `<button type="button" data-t="${t}"><span>${t.toFixed(1)}</span></button>`).join('');
+  $('#targets').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) need(+b.dataset.t); });
   need(5);
-  const sl = rail.querySelector('[data-slider]');
-  const drawRooms = (m) => {
+
+  // ---------- rooms ----------
+  const ROOMS = [['4.01', [[510, 720], [780, 870]]], ['4.02', [[510, 600]]], ['4.03', []], ['4.04', [[510, 720], [780, 990]]], ['4.05', [[630, 720]]], ['4.06', [[780, 990]]], ['4.07', []], ['4.08', [[510, 870]]], ['4.09', [[510, 720]]], ['4.10', [[780, 870]]], ['4.11', [[630, 720], [780, 990]]], ['4.12', []]];
+  const hm = (x) => `${String(Math.floor(x / 60)).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`;
+  const rooms = (t) => {
     let free = 0;
-    rail.querySelector('[data-floor]').innerHTML = ROOMS.map(([n, b]) => {
-      const busy = b.some(([a, z]) => m >= a && m < z); const next = b.filter(([a]) => a > m).map(([a]) => a).sort((x, y) => x - y)[0];
+    $('#floor').innerHTML = ROOMS.map(([n, b]) => {
+      const busy = b.some(([a, z]) => t >= a && t < z), next = b.filter(([a]) => a > t).map(([a]) => a).sort((x, y) => x - y)[0];
       if (!busy) free++;
       return `<div class="rm ${busy ? 'busy' : ''} ${n === '4.04' ? 'mine' : ''}">${n}<small>${busy ? 'belegt' : next ? 'bis ' + hm(next) : 'frei'}</small></div>`;
     }).join('');
-    rail.querySelector('[data-free]').textContent = free; rail.querySelector('[data-rt]').textContent = hm(m); rail.querySelector('[data-rt2]').textContent = hm(m);
-    sl.style.setProperty('--p', ((m - 480) / 540) * 100 + '%');
+    $('#free').textContent = free; $('#rt').textContent = hm(t); $('#rt2').textContent = hm(t);
   };
-  sl.addEventListener('input', () => { sl.dataset.touched = 1; drawRooms(+sl.value); }); drawRooms(645);
+  $('#slider').addEventListener('input', (e) => rooms(+e.target.value)); rooms(645);
 
-  // ---------- the logo puts itself together ----------
-  const build = $('build'), SQ = [];
-  for (let i = 0; i < 9; i++) {
-    const s = document.createElement('i');
-    s.className = 'sq' + (i === 4 ? ' c' : i === 2 ? ' g' : '');
-    s.style.left = (50 + (i % 3) * 42) + 'px'; s.style.top = (50 + Math.floor(i / 3) * 42) + 'px';
-    const a = i * 2.39996 + .6, r = 200 + (i * 53) % 140;
-    SQ.push({ el: s, dx: Math.cos(a) * r, dy: Math.sin(a) * r, rot: ((i * 67) % 180) - 90 });
-    build.appendChild(s);
-  }
-  const tile = build.querySelector('.tile');
-
-  // ---------- scroll drives the walk-through ----------
-  const walk = $('app'), phonebox = $('phonebox'), steps = [...$('steps').children], count = $('count');
-  const tabs = [...$('atabs').querySelectorAll('span')], dot = $('adot'), trend = $('trendLine'), grows = [...rail.querySelectorAll('[data-grow]')];
-  let fit = 1, mobile = false, lastCur = -1, land = { x: 0, y: 0, s: .14 };
-  const appIcon = phonebox.querySelector('.a-top .mark'), stage = phonebox.parentElement;
-
-  // labels: [tab, element, text]
-  const NOTES = [
-    [0, '.room', 'Der Raum'], [0, '.day .x', 'Prüfung am Donnerstag'],
-    [1, '.cd','Tage bis dahin'], [1, '[data-n=est]', 'Datum geschätzt'],
-    [2, '.ring', 'Module fertig'], [2, '[data-targets]', 'Zielnote antippen'],
-    [3, '.todo .left', 'Frist'], [3, '.bh span:last-child', 'Darfst noch fehlen'],
-    [4, '.rh .t', 'Uhrzeit'], [4, '.rm.mine', 'Dein Raum'],
-  ];
-  const phoneEl = phonebox.querySelector('.phone');
-  const offs = (el) => { let x = 0, y = 0; while (el && el !== phoneEl) { x += el.offsetLeft; y += el.offsetTop; el = el.offsetParent; } return { x, y }; };
-  const notes = NOTES.map(([v, sel, text]) => {
-    const n = document.createElement('div'); n.className = 'note'; n.innerHTML = `<span>${text}</span>`;
-    $('notes').appendChild(n); return { v, sel, n };
+  // ---------- copy buttons on commands ----------
+  $$('pre.cmd').forEach((pre) => {
+    const b = document.createElement('button'); b.className = 'copy'; b.type = 'button'; b.textContent = 'kopieren';
+    b.addEventListener('click', async () => {
+      const text = [...pre.childNodes].filter((n) => !(n.nodeType === 1 && (n.classList.contains('p') || n.classList.contains('copy')))).map((n) => n.textContent).join('').replace(/^\s+/gm, (s) => s.includes('\n') ? s : s).trim();
+      try { await navigator.clipboard.writeText(text); b.textContent = 'kopiert'; } catch (e) { b.textContent = 'markieren'; }
+      setTimeout(() => { b.textContent = 'kopieren'; }, 1500);
+    });
+    pre.appendChild(b);
   });
-  function placeNotes() {
-    notes.forEach((o) => {
-      const view = rail.children[o.v], el = view.querySelector(o.sel); if (!el) return;
-      const a = offs(el), b = offs(view);
-      const x = a.x - b.x + el.offsetWidth + 6, y = a.y + el.offsetHeight / 2;
-      o.n.style.left = x + 'px'; o.n.style.top = y + 'px'; o.n.style.width = (400 - x + 48) + 'px';
-    });
-  }
-  function measure() {
-    mobile = innerWidth <= 860;
-    const availH = innerHeight - (mobile ? 70 + 150 + 30 : 90), availW = mobile ? innerWidth - 40 : Math.min(600, (innerWidth - 80) * 6 / 11);
-    fit = Math.min(1, availH / 714, availW / 400);
-    const dw = -(400 * (1 - fit)) / 2, dh = -(714 * (1 - fit));
-    phonebox.style.margin = mobile ? `0 ${dw}px ${dh}px` : `${dh / 2}px ${dw}px`;
-    phonebox.style.transformOrigin = mobile ? '50% 0' : '50% 50%';
-    // where the app icon sits once the phone has arrived: the logo flies exactly there
-    const keep = phonebox.style.transform;
-    phonebox.style.transform = `scale(${fit})`;
-    const m = appIcon.getBoundingClientRect(), s = stage.getBoundingClientRect();
-    phonebox.style.transform = keep;
-    land = { x: m.left + m.width / 2 - (s.left + s.width / 2), y: m.top + m.height / 2 - (s.top + s.height / 2), s: m.width / 220 };
-    placeNotes();
-    if (typeof phonebox2 !== 'undefined') { phonebox2.style.margin = phonebox.style.margin; phonebox2.style.transformOrigin = phonebox.style.transformOrigin; }
-  }
-  function frame() {
-    const r = walk.getBoundingClientRect();
-    const p = clamp(-r.top / (walk.offsetHeight - innerHeight));
 
-    // 1. the nine squares fly in and become the logo
-    SQ.forEach((s, i) => {
-      const k = 1 - ease(seg(p, i * .005, .09 + i * .003));
-      s.el.style.transform = `translate(${s.dx * k}px, ${s.dy * k}px) rotate(${s.rot * k}deg)`;
-      s.el.style.opacity = 1 - k * .6;
-    });
-    tile.style.opacity = seg(p, .06, .12);
-    tile.style.transform = `scale(${.7 + .3 * out(seg(p, .06, .12))})`;
-    // 2. the phone comes up and the logo lands exactly on its app icon
-    const c = out(seg(p, .14, .29)), L = ease(seg(p, .14, .29));
-    const rise = (1 - c) * .7 * innerHeight;
-    phonebox.style.opacity = seg(p, .14, .2);
-    phonebox.style.transform = `translateY(${rise}px) scale(${fit})`;
-    build.style.transform = `translate(${land.x * L}px, ${(land.y + rise) * L}px) scale(${1 + (land.s - 1) * L})`;
-    const landed = p >= .29;
-    build.style.visibility = landed ? 'hidden' : 'visible';
-    appIcon.style.opacity = landed ? 1 : 0;
-
-    // 3. five tabs: each one stays for a moment, then slides to the next
-    const x = seg(p, .3, .97) * 4.9;
-    const i = Math.min(4, Math.floor(x)), f = x - i;
-    const pos = Math.min(4, i + ease(seg(f, .62, 1)));
-    rail.style.transform = `translateX(${-pos * 20}%)`;
-    const cur = Math.round(pos);
-    const lo = tabs[Math.floor(pos)], hi = tabs[Math.ceil(pos)], fr = pos - Math.floor(pos);
-    const cx = (t) => t.offsetLeft + t.offsetWidth / 2;
-    dot.style.transform = `translateX(${cx(lo) + (cx(hi) - cx(lo)) * fr - 2.5}px)`;
-    trend.style.strokeDashoffset = 420 * (1 - out(clamp(1 - Math.abs(pos - 2) * 1.6)));
-    grows.forEach((g) => { g.style.transform = `scaleX(${out(clamp(1 - Math.abs(pos - 3) * 1.6))})`; });
-    notes.forEach((o) => {
-      const v = p < .3 ? 0 : clamp(1 - Math.abs(pos - o.v) * 3.2);
-      o.n.style.opacity = v; o.n.style.transform = `translateX(${(1 - v) * 14}px)`;
-    });
-    if (!sl.dataset.touched) { const m = Math.round((510 + clamp(pos - 3.4, 0, .6) / .6 * 300) / 15) * 15; if (+sl.value !== m) { sl.value = m; drawRooms(m); } }
-
-    const active = p < .26 ? -1 : cur;
-    if (active !== lastCur) {
-      lastCur = active;
-      steps.forEach((s, k) => s.classList.toggle('on', k === active || (active === -1 && mobile && k === 0)));
-      tabs.forEach((t, k) => t.classList.toggle('on', k === cur));
-      count.innerHTML = `${Math.max(0, active) + 1}<span> / 5</span>`;
-    }
+  // ---------- pages: #, #docs, #docs/<part>, #download, #download/<platform>, #features ----------
+  const pages = $$('[data-page]');
+  function route() {
+    const h = decodeURIComponent(location.hash.slice(1));
+    const [page, part] = h.split('/');
+    const which = page === 'docs' || page === 'download' ? page : 'home';
+    pages.forEach((p) => p.classList.toggle('on', p.dataset.page === which));
+    $$('.nav nav a').forEach((a) => a.classList.toggle('on', a.dataset.go === which && which !== 'home'));
+    document.title = which === 'docs' ? 'Docs · WISS Stundenplan' : which === 'download' ? 'Download · WISS Stundenplan' : 'WISS Stundenplan';
+    let target = null;
+    if (which === 'docs' && part) target = document.getElementById('d-' + part);
+    else if (which === 'download' && part) target = document.getElementById('dl-' + part);
+    else if (which === 'home' && page) target = document.getElementById(page);
+    requestAnimationFrame(() => target ? target.scrollIntoView({ block: 'start' }) : scrollTo(0, 0));
+    if (which === 'docs') markToc();
   }
+  addEventListener('hashchange', route);
+  route();
 
-  // ---------- nine styles, one phone ----------
-  const THEMES = {
-    standard: { d: 'Warm und ruhig, mit der roten Linie.', light: { bg: '#f5f2ed', s: '#fff', ink: '#16141d', line: '#e9e4dc', a: '#e8344e' }, dark: { bg: '#0f0e13', s: '#1a1820', ink: '#f3f1f6', line: '#2c2934', a: '#ff4d63' } },
-    apple: { d: 'Glas, weiche Ecken, wie iOS.', r: '22px', glass: 1, light: { bg: 'linear-gradient(160deg,#cfe3ff,#f6d9ea 55%,#d8f5ec)', s: 'rgba(255,255,255,.62)', ink: '#1c1c1e', line: 'rgba(255,255,255,.85)', a: '#0a84ff' }, dark: { bg: 'linear-gradient(160deg,#0d1b33,#2a1630 55%,#0c2a24)', s: 'rgba(255,255,255,.08)', ink: '#f2f2f7', line: 'rgba(255,255,255,.12)', a: '#0a84ff' } },
-    samsung: { d: 'Grosse, runde Karten wie One UI.', r: '26px', light: { bg: '#f2f3f7', s: '#fff', ink: '#111', line: '#e3e4ea', a: '#3e6cf0' }, dark: { bg: '#000', s: '#1c1c1e', ink: '#f2f2f2', line: '#2a2a2c', a: '#6e9cff' } },
-    nothing: { d: 'Punktraster, Mono-Schrift, ein roter Punkt.', r: '14px', disp: '"Geist Mono", ui-monospace, monospace', light: { bg: '#f2f2f2 radial-gradient(#cfcfcf .8px, transparent 1px) 0 0/7px 7px', s: '#fff', ink: '#000', line: '#dcdcdc', a: '#d71921' }, dark: { bg: '#000 radial-gradient(#2a2a2a .8px, transparent 1px) 0 0/7px 7px', s: '#111', ink: '#f2f2f2', line: '#262626', a: '#e8222b' } },
-    github: { d: 'Kantig und sachlich, wie ein Repo.', r: '8px', light: { bg: '#f6f8fa', s: '#fff', ink: '#1f2328', line: '#d0d7de', a: '#fd8c73' }, dark: { bg: '#0d1117', s: '#161b22', ink: '#e6edf3', line: '#30363d', a: '#f78166' } },
-    pastel: { d: 'Weich, hell und freundlich.', r: '22px', light: { bg: '#fbf3ff', s: '#fff', ink: '#3b2f55', line: '#eee3fa', a: '#a78bfa' }, dark: { bg: '#1b1626', s: '#261f35', ink: '#efe8ff', line: '#3a3050', a: '#c4b0ff' } },
-    neon: { d: 'Leuchtende Kanten für die Nacht.', r: '12px', glow: 1, light: { bg: '#0b0918 linear-gradient(rgba(255,60,172,.1) 1px, transparent 1px) 0 0/18px 18px', s: '#141029', ink: '#f4f0ff', line: '#5a3a9b', a: '#ff3cac' }, dark: { bg: '#0b0918 linear-gradient(rgba(255,60,172,.1) 1px, transparent 1px) 0 0/18px 18px', s: '#141029', ink: '#f4f0ff', line: '#5a3a9b', a: '#ff3cac' } },
-    paper: { d: 'Ein Schulheft mit Linien und Serifen.', r: '4px', disp: 'Georgia, "Times New Roman", serif', light: { bg: '#f8f3e8 repeating-linear-gradient(transparent 0 23px, rgba(53,103,214,.13) 23px 24px)', s: '#fffdf7', ink: '#2b2620', line: '#e3d8c3', a: '#8e3523' }, dark: { bg: '#23201b repeating-linear-gradient(transparent 0 23px, rgba(140,170,255,.08) 23px 24px)', s: '#2b2721', ink: '#ece3d2', line: '#3a342b', a: '#e07a55' } },
-    terminal: { d: 'Grün auf Schwarz, alles in Mono.', r: '0px', disp: '"Geist Mono", ui-monospace, monospace', font: '"Geist Mono", ui-monospace, monospace', light: { bg: '#050805', s: '#0a120a', ink: '#b6ffc8', line: '#1d4d27', a: '#39ff6a' }, dark: { bg: '#050805', s: '#0a120a', ink: '#b6ffc8', line: '#1d4d27', a: '#39ff6a' } },
-  };
-  const tKeys = Object.keys(THEMES), screen2 = $('screen2');
-  $('styleSteps').innerHTML = tKeys.map((k, i) => `<li><b>${String(i + 1).padStart(2, '0')}</b><div><h3>${LOGOS[k].name}</h3></div><p>${THEMES[k].d}</p></li>`).join('');
-  $('view2').innerHTML = VIEWS[0];
-  const styleSteps = [...$('styleSteps').children];
-  let tCur = -1, tMode = 'light';
-  function setTheme(i) {
-    const k = tKeys[i], T = THEMES[k], c = T[tMode];
-    const st = screen2.style;
-    st.setProperty('--a-bg', c.bg); st.setProperty('--a-surface', c.s); st.setProperty('--a-ink', c.ink); st.setProperty('--a-line', c.line); st.setProperty('--a-accent', c.a);
-    st.setProperty('--a-muted', `color-mix(in srgb, ${c.ink} 58%, transparent)`);
-    st.setProperty('--red', c.a); st.setProperty('--a-r', T.r || '18px');
-    st.setProperty('--display', T.disp || '"Bricolage Grotesque", "Geist", system-ui, sans-serif');
-    st.setProperty('--body', T.font || '"Geist", system-ui, sans-serif');
-    st.setProperty('--a-glow', T.glow ? `0 0 14px -2px ${c.a}` : '0 0 0 transparent');
-    screen2.classList.toggle('glass', !!T.glass);
-    $('mark2').innerHTML = logo(k);
-    styleSteps.forEach((s, j) => s.classList.toggle('on', j === i));
-    $('count2').innerHTML = `${i + 1}<span> / 9</span>`;
+  // docs: highlight the part you're reading
+  const toc = $$('#toc a');
+  function markToc() {
+    let cur = null;
+    for (const s of $$('.doc section')) if (s.getBoundingClientRect().top < 140) cur = s.id;
+    toc.forEach((a) => a.classList.toggle('on', cur && a.getAttribute('href') === '#docs/' + cur.slice(2)));
   }
-  document.querySelectorAll('.mode button').forEach((b) => b.addEventListener('click', () => {
-    tMode = b.dataset.mode;
-    document.querySelectorAll('.mode button').forEach((x) => x.setAttribute('aria-pressed', x === b));
-    setTheme(Math.max(0, tCur));
-  }));
-  const stylesSec = $('styles'), phonebox2 = $('phonebox2');
-  function frameStyles() {
-    const r = stylesSec.getBoundingClientRect(), p = clamp(-r.top / (stylesSec.offsetHeight - innerHeight));
-    const i = Math.min(8, Math.floor(p * 9));
-    if (i !== tCur) { tCur = i; setTheme(i); }
-    const f = p * 9 - i, bump = i > 0 && f < .12 ? 1 - f / .12 : 0;
-    phonebox2.style.transform = `scale(${fit * (1 - bump * .025)})`;
-  }
+  addEventListener('scroll', () => { if ($('[data-page=docs]').classList.contains('on')) markToc(); }, { passive: true });
 
-  // ---------- sync, step by step ----------
-  const syncSec = $('syncsec'), syncSteps = [...$('syncSteps').children], syncBox = $('sync');
-  const cells = [...$('cells').querySelectorAll('span')], CODE = 'K7QM4XD2', NOTE = 'Laptop mitnehmen, Projekt zeigen';
-  let pts = [];
-  function measureSync() {
-    const b = syncBox.getBoundingClientRect();
-    const c = (el) => { const q = el.getBoundingClientRect(); return [q.left + q.width / 2 - b.left, q.top + q.height / 2 - b.top]; };
-    pts = [c($('nboxA')), c($('srv')), c($('nboxB'))];
-    $('wireP').setAttribute('points', pts.map((q) => q.join(',')).join(' '));
-  }
-  const scramble = (n, seed) => { const s = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789+/'; let o = ''; for (let i = 0; i < n; i++) o += s[Math.floor(Math.abs(Math.sin((i + 1) * 91.7 + seed * 13.1)) * 1e4) % s.length]; return o; };
-  let lastSync = '';
-  function frameSync() {
-    const r = syncSec.getBoundingClientRect(), p = clamp(-r.top / (syncSec.offsetHeight - innerHeight));
-    const step = p < .22 ? 0 : p < .48 ? 1 : p < .76 ? 2 : 3;
-    $('tog').classList.toggle('on', p > .06);
-    $('codeShow').classList.toggle('on', p > .14);
-    const n = Math.floor(seg(p, .25, .42) * 8.99);
-    cells.forEach((c, i) => { c.textContent = i < n ? CODE[i] : ''; c.classList.toggle('f', i < n); });
-    $('okLine').classList.toggle('on', p > .44);
-    const t = Math.floor(seg(p, .5, .62) * NOTE.length);
-    const noteA = $('noteA'); noteA.textContent = NOTE.slice(0, t); noteA.classList.toggle('typing', p > .48 && p < .64);
-    const travel = seg(p, .63, .74), arrived = p >= .74;
-    const pk = $('packet');
-    if (pts.length && travel > 0 && !arrived) {
-      const u = travel * 2, [a, b] = u < 1 ? [pts[0], pts[1]] : [pts[1], pts[2]], v = u < 1 ? u : u - 1;
-      pk.style.opacity = 1; pk.style.transform = `translate(${a[0] + (b[0] - a[0]) * v}px, ${a[1] + (b[1] - a[1]) * v}px) rotate(${travel * 180}deg)`;
-    } else pk.style.opacity = 0;
-    const key = step + '|' + arrived + '|' + Math.floor(p * 60);
-    if (key !== lastSync) {
-      const wasArrived = lastSync.split('|')[1] === 'true';
-      lastSync = key;
-      $('noteB').textContent = arrived ? NOTE : '';
-      if (arrived && !wasArrived) { const nb = $('nboxB'); nb.classList.remove('got'); void nb.offsetWidth; nb.classList.add('got'); }
-      $('cipher').textContent = p < .63 ? '—' : scramble(26, p > .78 ? 7 : Math.floor(p * 60));
-      $('srv').classList.toggle('hot', p > .78);
-      syncSteps.forEach((s, k) => s.classList.toggle('on', k === step));
-    }
-  }
-  let ticking = false;
-  const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { ticking = false; frame(); frameStyles(); frameSync(); }); } };
-  addEventListener('scroll', req, { passive: true });
-  addEventListener('resize', () => { measure(); measureSync(); lastCur = -2; lastSync = ''; req(); });
-  measure(); measureSync(); frame(); frameStyles(); frameSync();
-  if (document.fonts) document.fonts.ready.then(() => { measure(); measureSync(); frame(); frameStyles(); frameSync(); });
-
-  // ---------- the hero timetable counts down ----------
-  let left = 47;
-  const tickToday = () => {
-    $('leftTxt').textContent = `Jetzt, noch ${left} min`;
-    $('nowRow').style.setProperty('--done', ((90 - left) / 90 * 100) + '%');
-  };
-  tickToday();
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setInterval(() => { left = left <= 38 ? 47 : left - 1; tickToday(); }, 3000);
+  // ---------- newest release: version and direct file links (falls back to the release page) ----------
+  const fmt = (b) => (b / 1048576).toFixed(1) + ' MB';
+  const PATTERNS = { exe: /x64-setup\.exe$/i, msi: /\.msi$/i, dmg: /\.dmg$/i, rpm: /\.rpm$/i, deb: /\.deb$/i, appimage: /\.AppImage$/i };
+  fetch('https://api.github.com/repos/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest', { headers: { Accept: 'application/vnd.github+json' } })
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((j) => {
+      const v = String(j.tag_name || '').replace(/^v/i, '');
+      if (v) $$('[data-ver]').forEach((el) => { el.textContent = v; });
+      for (const [k, re] of Object.entries(PATTERNS)) {
+        const a = (j.assets || []).find((x) => re.test(x.name));
+        if (!a) continue;
+        $$(`[data-asset="${k}"]`).forEach((el) => { el.href = a.browser_download_url; });
+        $$(`[data-size="${k}"]`).forEach((el) => { el.textContent = (el.textContent ? el.textContent + ' · ' : '') + fmt(a.size); });
+      }
+    })
+    .catch(() => { /* offline or rate-limited: links keep pointing at the release page */ });
 })();
 </script>
 </body>
