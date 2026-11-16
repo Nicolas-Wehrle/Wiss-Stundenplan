@@ -272,6 +272,14 @@ pre.cmd .p { color: var(--faint); user-select: none; }
 .dlgroup h2 { font-size: 26px; font-weight: 800; }
 .dlgroup p { color: var(--muted); font-size: 14.5px; }
 .dlgroup + .plat { border-top: 0; }
+.guide { margin: 14px 0 0; padding: 0; list-style: none; counter-reset: g; display: grid; gap: 10px; max-width: 44em; }
+.guide li { counter-increment: g; position: relative; padding-left: 36px; min-height: 24px; font-size: 15px; line-height: 1.55; }
+.guide li::before { content: counter(g); position: absolute; left: 0; top: 0; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line2); display: grid; place-items: center; font: 600 12px var(--mono); color: var(--muted); }
+.guide a, .more a { color: var(--ink); }
+.more { margin-top: 16px; max-width: 44em; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.more summary { cursor: pointer; padding: 10px 14px; font-size: 14px; font-weight: 600; }
+.more ul { margin: 0; padding: 0 16px 12px 32px; display: grid; gap: 7px; font-size: 14px; color: var(--muted); }
+.more b { color: var(--ink); font-weight: 600; }
 .plat h2 { font-size: 22px; font-weight: 750; display: flex; align-items: center; gap: 10px; }
 .plat h2 svg { width: 22px; height: 22px; flex: none; }
 .plat .req { font: 12.5px var(--mono); color: var(--faint); margin-top: 8px; }
@@ -430,7 +438,7 @@ footer a { text-decoration: none; }
         <li><b>Modulbeschreibungen</b> <span>aus modulbaukasten.ch, auch offline</span></li>
         <li><b>Demokonto</b> <span>alles ausprobieren ohne Login</span></li>
         <li><b>Offline</b> <span>die letzten Daten sind immer da</span></li>
-        <li><b>Automatische Updates</b> <span>auf jeder Plattform</span></li>
+        <li><b>Automatische Updates</b> <span>am Computer, auf Android und im Browser</span></li>
         <li><b>Akzentfarbe</b> <span>frei wählbar</span></li>
         <li><b>Notizen exportieren</b></li>
         <li><b>Alles löschen</b> <span>mit einem Knopf</span></li>
@@ -498,7 +506,7 @@ footer a { text-decoration: none; }
           <tr><td>Android</td><td>App, <code>.apk</code></td><td>in der App</td></tr>
           <tr><td>Chrome, Edge, Brave</td><td>Add-on aus dem Chrome Web Store</td><td>automatisch</td></tr>
           <tr><td>Firefox</td><td>Add-on, <code>.xpi</code> (Computer und Android)</td><td>automatisch</td></tr>
-          <tr><td>iPhone</td><td>Userscript für Safari mit der App «Userscripts»</td><td>automatisch</td></tr>
+          <tr><td>iPhone</td><td>Userscript für Safari mit der App «Userscripts» (<a href="#download/iphone" data-go="download">Anleitung</a>)</td><td>neue Datei ersetzen</td></tr>
         </table>
         <p>Beim ersten Start zeigt die App, was mit deinen Daten passiert. Danach meldest du dich einmal an, oder probierst zuerst das <b>Demokonto</b> mit erfundenen Daten.</p>
       </section>
@@ -623,7 +631,8 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
           <tr><td>Linux (Paketquelle)</td><td>mit den Systemupdates: GNOME Software, KDE Discover, <code>dnf upgrade</code>, <code>apt upgrade</code></td></tr>
           <tr><td>Linux (AppImage)</td><td>wie Windows, in der App</td></tr>
           <tr><td>Android</td><td>Banner › Installieren, dann bestätigen</td></tr>
-          <tr><td>Chrome, Firefox, iPhone</td><td>automatisch durch Browser bzw. Userscripts-App</td></tr>
+          <tr><td>Chrome, Firefox</td><td>automatisch durch den Browser</td></tr>
+          <tr><td>iPhone</td><td>neue <code>WISS-Stundenplan.user.js</code> in den Userscripts-Ordner legen, die alte ersetzen</td></tr>
         </table>
         <p>Updates für die Desktop-App sind signiert. Die App installiert nur Updates mit der richtigen Signatur.</p>
       </section>
@@ -712,6 +721,22 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
       <p class="ver">Neueste Version <b data-ver>1.12.3</b> · <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest" target="_blank" rel="noopener">Release-Seite</a> · <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Änderungen</a></p>
     </div>
 
+    <div class="dlgroup" id="dlg-browser"><h2>Browser-Add-ons</h2><p>Ein Klick auf das Symbol in der Leiste öffnet den Stundenplan.</p></div>
+    <section class="plat" id="dl-chrome">
+      <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364zM12 16.364a4.364 4.364 0 1 1 0-8.728 4.364 4.364 0 0 1 0 8.728Z"/></svg>Chrome, Edge, Brave</h2><p class="req">Add-on</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">Im Chrome Web Store</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Chrome.zip">.zip <small>selbst laden</small></a></div>
+        <p class="info">Ein Klick auf das Symbol öffnet den Stundenplan, auch als ganze Seite. Updates über den Web Store.</p>
+      </div>
+    </section>
+
+    <section class="plat" id="dl-firefox">
+      <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.824 7.287c.008 0 .004 0 0 0zm-2.8-1.4c.006 0 .003 0 0 0zm16.754 2.161c-.505-1.215-1.53-2.528-2.333-2.943.654 1.283 1.033 2.57 1.177 3.53l.002.02c-1.314-3.278-3.544-4.6-5.366-7.477-.091-.147-.184-.292-.273-.446a3.545 3.545 0 01-.13-.24 2.118 2.118 0 01-.172-.46.03.03 0 00-.027-.03.038.038 0 00-.021 0l-.006.001a.037.037 0 00-.01.005L15.624 0c-2.585 1.515-3.657 4.168-3.932 5.856a6.197 6.197 0 00-2.305.587.297.297 0 00-.147.37c.057.162.24.24.396.17a5.622 5.622 0 012.008-.523l.067-.005a5.847 5.847 0 011.957.222l.095.03a5.816 5.816 0 01.616.228c.08.036.16.073.238.112l.107.055a5.835 5.835 0 01.368.211 5.953 5.953 0 012.034 2.104c-.62-.437-1.733-.868-2.803-.681 4.183 2.09 3.06 9.292-2.737 9.02a5.164 5.164 0 01-1.513-.292 4.42 4.42 0 01-.538-.232c-1.42-.735-2.593-2.121-2.74-3.806 0 0 .537-2 3.845-2 .357 0 1.38-.998 1.398-1.287-.005-.095-2.029-.9-2.817-1.677-.422-.416-.622-.616-.8-.767a3.47 3.47 0 00-.301-.227 5.388 5.388 0 01-.032-2.842c-1.195.544-2.124 1.403-2.8 2.163h-.006c-.46-.584-.428-2.51-.402-2.913-.006-.025-.343.176-.389.206-.406.29-.787.616-1.136.974-.397.403-.76.839-1.085 1.303a9.816 9.816 0 00-1.562 3.52c-.003.013-.11.487-.19 1.073-.013.09-.026.181-.037.272a7.8 7.8 0 00-.069.667l-.002.034-.023.387-.001.06C.386 18.795 5.593 24 12.016 24c5.752 0 10.527-4.176 11.463-9.661.02-.149.035-.298.052-.448.232-1.994-.025-4.09-.753-5.844z"/></svg>Firefox</h2><p class="req">Computer · Android 142+</p></div>
+      <div>
+        <div class="btns"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Firefox.xpi">Add-on installieren <small>.xpi</small></a></div>
+        <p class="info">Von Mozilla signiert. Firefox fragt einmal, ob es das Add-on hinzufügen darf. Updates automatisch.</p>
+      </div>
+    </section>
     <div class="dlgroup" id="dlg-desktop"><h2>Computer</h2><p>Eigene App mit Tray, Erinnerungen und Mini-Fenster. Updates kommen von selbst.</p></div>
     <section class="plat" id="dl-windows">
       <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.5v7H3zM11.5 4.4 21 3v8.5h-9.5zM3 12.5h7.5v7L3 18.5zM11.5 12.5H21V21l-9.5-1.4z"/></svg>Windows</h2><p class="req">Windows 10, 11 · x64</p></div>
@@ -752,27 +777,29 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
     <section class="plat" id="dl-iphone">
       <div><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="6" y="2.5" width="12" height="19" rx="3"/><path d="M10 5h4"/></svg>iPhone</h2><p class="req">Safari · App «Userscripts»</p></div>
       <div>
-        <div class="btns"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/iphone/README.md" target="_blank" rel="noopener">Anleitung</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.user.js">.user.js</a></div>
-        <p class="info">Die kostenlose App «Userscripts» aus dem App Store macht aus der Extranet-Seite die App. Dauert zwei Minuten, Updates automatisch.</p>
+        <p class="info" style="margin-top:0">Die kostenlose App «Userscripts» macht in Safari aus der Extranet-Seite den Stundenplan. Einmal einrichten, dauert etwa zwei Minuten.</p>
+        <ol class="guide">
+          <li>Im App Store <b>Userscripts</b> (von Justin Wasack) installieren.</li>
+          <li>Userscripts öffnen, auf <b>Set Userscripts Directory</b> tippen und einen Ordner wählen, zum Beispiel <i>Auf meinem iPhone › Userscripts</i>.</li>
+          <li><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.user.js">WISS-Stundenplan.user.js</a> laden und in diesen Ordner sichern: <b>Teilen › In «Dateien» sichern</b>, Ordner wählen.</li>
+          <li>In <b>Einstellungen › Apps › Safari › Erweiterungen › Userscripts</b> die Erweiterung einschalten und bei <i>wiss.tocco.ch</i> <b>Erlauben</b> wählen.</li>
+          <li>In Safari <a href="https://wiss.tocco.ch/extranet/?stundenplan" target="_blank" rel="noopener">wiss.tocco.ch/extranet/?stundenplan</a> öffnen und auf <b>Anmelden</b> tippen. Danach gehts von selbst zurück zum Stundenplan.</li>
+        </ol>
+        <div class="btns" style="margin-top:16px"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.user.js">.user.js laden</a><a class="btn ghost" href="https://wiss.tocco.ch/extranet/?stundenplan" target="_blank" rel="noopener">Stundenplan öffnen</a></div>
+        <details class="more">
+          <summary>Schneller öffnen, Updates, Probleme</summary>
+          <ul>
+            <li><b>Als Icon auf dem Home-Bildschirm:</b> in der App <i>Kurzbefehle</i> einen Kurzbefehl mit <b>URL öffnen</b> und der Adresse oben erstellen, dann <b>Zum Home-Bildschirm</b>. Safaris eigenes «Zum Home-Bildschirm» geht nicht, dort laufen keine Erweiterungen.</li>
+            <li><b>Als Favorit:</b> Teilen › Zu Favoriten hinzufügen. Auf jeder Extranet-Seite ist ausserdem unten rechts ein Knopf <b>Stundenplan</b>.</li>
+            <li><b>Updates:</b> die neue <code>WISS-Stundenplan.user.js</code> in denselben Ordner legen und die alte ersetzen. Deine Daten bleiben.</li>
+            <li><b>Du siehst das normale Extranet:</b> Userscripts ist für wiss.tocco.ch noch nicht erlaubt. In Safari auf <b>aA › Erweiterungen verwalten</b>, Userscripts einschalten und <b>Immer erlauben</b>.</li>
+            <li><b>Es steht immer «Anmeldung nötig»:</b> auf <b>Anmelden</b> tippen und bei Microsoft «Angemeldet bleiben» wählen.</li>
+            <li>Keine Benachrichtigungen und kein Widget: das erlaubt Apple nur Apps aus dem App Store.</li>
+          </ul>
+        </details>
       </div>
     </section>
 
-    <div class="dlgroup" id="dlg-browser"><h2>Browser-Add-ons</h2><p>Ein Klick auf das Symbol in der Leiste öffnet den Stundenplan.</p></div>
-    <section class="plat" id="dl-chrome">
-      <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-5.344 9.257c.206.01.413.016.621.016 6.627 0 12-5.373 12-12 0-1.54-.29-3.011-.818-4.364zM12 16.364a4.364 4.364 0 1 1 0-8.728 4.364 4.364 0 0 1 0 8.728Z"/></svg>Chrome, Edge, Brave</h2><p class="req">Add-on</p></div>
-      <div>
-        <div class="btns"><a class="btn primary" href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc" target="_blank" rel="noopener">Im Chrome Web Store</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Chrome.zip">.zip <small>selbst laden</small></a></div>
-        <p class="info">Ein Klick auf das Symbol öffnet den Stundenplan, auch als ganze Seite. Updates über den Web Store.</p>
-      </div>
-    </section>
-
-    <section class="plat" id="dl-firefox">
-      <div><h2><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.824 7.287c.008 0 .004 0 0 0zm-2.8-1.4c.006 0 .003 0 0 0zm16.754 2.161c-.505-1.215-1.53-2.528-2.333-2.943.654 1.283 1.033 2.57 1.177 3.53l.002.02c-1.314-3.278-3.544-4.6-5.366-7.477-.091-.147-.184-.292-.273-.446a3.545 3.545 0 01-.13-.24 2.118 2.118 0 01-.172-.46.03.03 0 00-.027-.03.038.038 0 00-.021 0l-.006.001a.037.037 0 00-.01.005L15.624 0c-2.585 1.515-3.657 4.168-3.932 5.856a6.197 6.197 0 00-2.305.587.297.297 0 00-.147.37c.057.162.24.24.396.17a5.622 5.622 0 012.008-.523l.067-.005a5.847 5.847 0 011.957.222l.095.03a5.816 5.816 0 01.616.228c.08.036.16.073.238.112l.107.055a5.835 5.835 0 01.368.211 5.953 5.953 0 012.034 2.104c-.62-.437-1.733-.868-2.803-.681 4.183 2.09 3.06 9.292-2.737 9.02a5.164 5.164 0 01-1.513-.292 4.42 4.42 0 01-.538-.232c-1.42-.735-2.593-2.121-2.74-3.806 0 0 .537-2 3.845-2 .357 0 1.38-.998 1.398-1.287-.005-.095-2.029-.9-2.817-1.677-.422-.416-.622-.616-.8-.767a3.47 3.47 0 00-.301-.227 5.388 5.388 0 01-.032-2.842c-1.195.544-2.124 1.403-2.8 2.163h-.006c-.46-.584-.428-2.51-.402-2.913-.006-.025-.343.176-.389.206-.406.29-.787.616-1.136.974-.397.403-.76.839-1.085 1.303a9.816 9.816 0 00-1.562 3.52c-.003.013-.11.487-.19 1.073-.013.09-.026.181-.037.272a7.8 7.8 0 00-.069.667l-.002.034-.023.387-.001.06C.386 18.795 5.593 24 12.016 24c5.752 0 10.527-4.176 11.463-9.661.02-.149.035-.298.052-.448.232-1.994-.025-4.09-.753-5.844z"/></svg>Firefox</h2><p class="req">Computer · Android 142+</p></div>
-      <div>
-        <div class="btns"><a class="btn primary" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan-Firefox.xpi">Add-on installieren <small>.xpi</small></a></div>
-        <p class="info">Von Mozilla signiert. Firefox fragt einmal, ob es das Add-on hinzufügen darf. Updates automatisch.</p>
-      </div>
-    </section>
 
     <p class="info muted" style="margin-top:26px;font-size:14px">Prüfsummen: <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/SHA256SUMS.txt">SHA256SUMS.txt</a> · Ältere Versionen: <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases" target="_blank" rel="noopener">alle Releases</a> · Selbst bauen: <a href="#docs/build" data-go="docs">Docs</a></p>
   </div>
