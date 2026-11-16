@@ -27,8 +27,9 @@ How it works in one sentence: it shows the last saved data immediately and fetch
 | Firefox (computer + Android 142+) | Self-hosted signed `.xpi` ("On your own" on addons.mozilla.org) | Automatic via `updates.json` in the repo |
 | Android app | Java app with a WebView that runs the add-on code | In-app: downloads the APK, opens the install screen |
 | iPhone | Safari userscript via the free "Userscripts" app | Userscripts app updates it from the repo (`@updateURL`) |
+| Windows / macOS / Linux | Tauri 2 app (Rust) with the system web view, runs the add-on code like the Android app | In-app: downloads the signed update from the release (`latest.json`), installs, restarts |
 
-All four run **the same web code** (`chrome addon/`). The others are built from it.
+All five run **the same web code** (`chrome addon/`). The others are built from it.
 
 ---
 
@@ -78,6 +79,13 @@ Wiss-Stundenplan/
     app/src/main/res/layout/    widget_*.xml (one per style + widget_nothing_s for flat)
     web-src/app-shim.js         provides chrome.* APIs inside the app
     build-android-web.py        copies the web code into the app
+  desktop app/         Tauri 2 project (Rust + system web view), see desktop app/README.md
+    src-tauri/src/main.rs     window, hidden sign-in pages, request bridge, tray, reminders, updater
+    src-tauri/src/store.rs    storage (one JSON file)
+    src-tauri/capabilities/   which window may call which command
+    web-src/desktop-shim.js   provides chrome.* APIs inside the app
+    build-desktop-web.mjs     copies the web code into the app (runs before every build)
+  .github/workflows/desktop.yml  builds the desktop app for all three systems on every published release
   iphone/
     entry.js           decides: become the app (/extranet/?stundenplan) or show a helper button
     ios-shim.js        chrome.* APIs for Safari (localStorage, sign-in by navigation)
@@ -88,7 +96,7 @@ Wiss-Stundenplan/
   README.md, CHANGELOG.md, LICENSE (MIT), firefox-README.md, .gitignore
 ```
 
-**Never commit or share:** `android app/wiss-stundenplan.jks` and `android app/keystore.properties` (the Android signing key). `.gitignore` covers them. If the key is lost, existing users can't update the app anymore (they'd have to uninstall first).
+**Never commit or share:** `android app/wiss-stundenplan.jks` and `android app/keystore.properties` (the Android signing key), and `wiss-desktop-updater.key` (signs the desktop updates; lives only on your PC and as the `TAURI_SIGNING_PRIVATE_KEY` secret on GitHub). `.gitignore` covers them. If the key is lost, existing users can't update the app anymore (they'd have to uninstall first).
 
 ---
 
@@ -188,6 +196,8 @@ python iphone/build-ios.py "chrome addon" iphone
 4. `git add . && git commit -m "…" && git push`. `updates.json` and `iphone/WISS-Stundenplan.user.js` must be on `main`.
 5. `gh release create v<version> (Get-ChildItem release\v<version>\*).FullName --title "<version>" --notes-file release-notes-<version>.txt` (PowerShell). File names must stay exactly as they are; the update links point to them.
 
+6. Publishing the release starts `.github/workflows/desktop.yml`: it builds Windows (`.exe`, `.msi`), macOS (`.dmg`) and Linux (`.deb`, `.rpm`, `.AppImage`) and uploads them plus `latest.json` (read by the desktop updater) to the same release.
+
 Users on versions before 1.9.3 don't have auto-update and need one manual install.
 
 ---
@@ -201,6 +211,7 @@ The legacy regression tests are Playwright scripts (Chromium) that simulate the 
 | `tests-private/android/run.mjs` + `bridge-mock.js` | The whole Android app web layer with a fake native bridge: first sign-in, modules, teachers, panels, back button, rooms, session expiry, slow network, "WISS Office 365" page, Microsoft needing input, server never answering, widget data, settings, styles, new-grade notification, update banner, reset. Checks that no sign-in screen pops up after a break. | 24/24 |
 | `tests-private/iphone/run.mjs` | The userscript in Chromium posing as an iPhone: takeover, sign-in by navigation, return to the app, update banner, helper button. | 14/14 |
 | `tests-private/chrome/ext.mjs` | Loads the real Chrome extension. | OK |
+| `tests/browser/desktop-demo.mjs` (public) | The generated desktop page with a fake Rust side: storage, requests through the hidden wiss.tocco.ch page, native requests, abort, demo views, reload, exit cleanup. Run `node "desktop app/build-desktop-web.mjs"` first. | Pass |
 | `tests-private/chrome/en.mjs` | Looks for leftover German text in English mode. | Clean (only proper nouns) |
 | `tests-private/perf/*` | Render timing, CPU profiles, storage bridge traffic, mouse drag test. | |
 | `tests-private/widget-mockups/*` | HTML recreations of the 9 widget layouts at 150 dp and 80 dp (no Android emulator was available). | |

@@ -105,7 +105,7 @@ function renderSettings({ acc, ab, zp, user }) {
     row(tr('Absenzen-Frist'), tr('2 Tage vorher'), sw('notifyAbsences')),
     row(tr('Neue Noten'), '', sw('notifyGrades')),
     row(tr('Testen'), '', `<button class="btn ghost" data-act="notif-test">${tr('Test-Benachrichtigung')}</button>`)
-  ].join('') + (IS_APP_PAGE ? `<p class="shint">${tr('Kommt auch bei geschlossener App.')}</p>`
+  ].join('') + (IS_APP_PAGE ? `<p class="shint">${tr(globalThis.__wissApp.desktop ? 'Kommt auch bei geschlossenem Fenster, die App läuft im Hintergrund weiter.' : 'Kommt auch bei geschlossener App.')}</p>`
     : `<p class="shint">${tr('Nur wenn der Browser offen ist.')}</p>`);
 
   const notifyBox = window.__wissIOS

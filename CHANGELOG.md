@@ -1,3 +1,15 @@
+## Unreleased
+
+**New: desktop app for Windows, macOS and Linux**
+- A real app instead of a browser add-on, built with Tauri: the installer is a few MB and it uses the web engine that's already on the computer.
+- Same screens, styles and settings as everywhere else, always in the full-page layout.
+- The sign-in runs in hidden windows. A window only appears when Microsoft really needs you, and closes itself afterwards.
+- Lives in the tray: the next lesson and room in the tray menu, reminders and new grades as system notifications, also with the window closed.
+- Mini window: a small card with the next lesson and room that stays on top. Turn it on in the tray menu.
+- Can start with the computer (tray menu), quietly in the tray.
+- Updates install themselves from the GitHub release (signed).
+- GitHub builds the app for all three systems by itself whenever a release is published.
+
 ## 1.12.2
 
 - Full screen: today and your next exams on the left, the week on the right. Lists stay at a readable width, and the header is bigger.

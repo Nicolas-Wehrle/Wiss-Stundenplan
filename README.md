@@ -2,7 +2,7 @@
 
 A faster way to check your WISS timetable. It shows your last data right away and updates in the background, so you don't have to wait for the extranet to load.
 
-Works as a Chrome/Edge add-on, a Firefox add-on, an Android app and on iPhone (Safari).
+Works as a Chrome/Edge add-on, a Firefox add-on, a desktop app for Windows, macOS and Linux, an Android app and on iPhone (Safari).
 
 > **Unofficial.** This is a student project. It is not made by, endorsed by or affiliated with WISS or Tocco.
 > It only uses your own WISS login, the same way the extranet website does.
@@ -16,6 +16,7 @@ Works as a Chrome/Edge add-on, a Firefox add-on, an Android app and on iPhone (S
 - Notes per lesson
 - Deutsch / English, nine styles, each in light and dark
 - Android: reminders and a home-screen widget
+- Desktop app: reminders, tray icon with the next lesson, a small always-on-top window, starts with the computer if you want
 
 ## Download
 
@@ -29,6 +30,9 @@ The project website lives in [`docs/index.html`](docs/index.html). To put it onl
 |---|---|---|
 | Chrome, Edge, Brave | [Chrome Web Store](https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc) (or `WISS-Stundenplan-Chrome.zip` to load it yourself) | [chrome addon/README.md](chrome%20addon/README.md) |
 | Firefox (computer and Android) | `WISS-Stundenplan-Firefox.xpi` | [firefox addon/README.md](firefox%20addon/README.md) |
+| Windows app | the file ending in `_x64-setup.exe` | [desktop app/README.md](desktop%20app/README.md) |
+| macOS app | the file ending in `_universal.dmg` | [desktop app/README.md](desktop%20app/README.md) |
+| Linux app | `.deb`, `.rpm` or `.AppImage` | [desktop app/README.md](desktop%20app/README.md) |
 | Android app | `WISS-Stundenplan.apk` | [android app/README.md](android%20app/README.md) |
 | iPhone | `WISS-Stundenplan.user.js` | [iphone/README.md](iphone/README.md) |
 
@@ -49,6 +53,7 @@ Run `node --test tests/sync/*.test.mjs` with Node 22 or later. All public tests 
 - `chrome addon/`: the main code. All other versions are built from it.
 - `firefox addon/`: built with `build-firefox.py`
 - `android app/`: Android project. Its web part is copied in with `build-android-web.py`.
+- `desktop app/`: Windows/macOS/Linux app (Tauri, Rust). Copies the web part in by itself when it builds.
 - `iphone/`: Safari userscript, built with `build-ios.py`
 
 ## Building
@@ -61,6 +66,8 @@ python3 iphone/build-ios.py "chrome addon" iphone
 ```
 The Android build needs JDK 17+ and the Android SDK, plus your own signing key (see `android app/README.md`).
 
+The desktop app needs nothing by hand: GitHub builds it for Windows, macOS and Linux when a release is published (see `desktop app/README.md`, including the one secret it needs). To build it yourself: `cd "desktop app" && npm ci && npm run build` (needs Rust).
+
 ## Publishing a release
 1. Raise `version` in `chrome addon/manifest.json` and run the build steps above. Every release needs a new version number, Mozilla won't sign the same one twice.
 2. Run `python3 release.py` once. It makes `release/v<version>/WISS-Stundenplan-Firefox.zip` and tells you the signed `.xpi` is still missing.
@@ -72,6 +79,7 @@ The Android build needs JDK 17+ and the Android SDK, plus your own signing key (
 4. Run `python3 release.py` again. Now all 5 files should show `ok`, and `updates.json` is updated.
    The `.apk` is taken from the Android build. If you built it somewhere else, copy it into `release/v<version>/` yourself.
 5. Commit and push, so `updates.json` and `iphone/WISS-Stundenplan.user.js` are on GitHub.
+   After the release is published (step 6), GitHub adds the Windows, macOS and Linux apps to it by itself within about 15 minutes (Actions › Desktop app).
 6. Create the GitHub release with the tag `v<version>` (for example `v1.9.4`) and attach all 5 files from `release/v<version>/`. The file names must stay as they are, the update links point to them.
    Website: Releases > Draft a new release. Or with the GitHub CLI in PowerShell:
    ```

@@ -74,6 +74,7 @@
     "Anzeigen": "Show",
     "Trennen oder löschen": "Disconnect or delete",
     "Kommt auch bei geschlossener App.": "Works even when the app is closed.",
+    "Kommt auch bei geschlossenem Fenster, die App läuft im Hintergrund weiter.": "Works with the window closed too, the app keeps running in the background.",
     "Nur wenn der Browser offen ist.": "Only while the browser is open.",
     "Auf dem iPhone gibt es keine Benachrichtigungen.": "No notifications on iPhone.",
     "Nur auf diesem Gerät": "Only on this device",

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>WISS Stundenplan</title>
+<style>
+  :root { --bg: #fbfaf7; --ink: #16141d; --muted: #6e6a76; --line: #e9e4dc; --accent: #e8344e; color-scheme: light; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #1a1820; --ink: #f3f1f6; --muted: #9d98a8; --line: #2c2934; color-scheme: dark; } }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font: 13px/1.3 "Segoe UI", system-ui, -apple-system, sans-serif; -webkit-user-select: none; user-select: none; overflow: hidden; cursor: default; }
+  .box { position: relative; height: 100%; display: grid; grid-template-columns: 4px 1fr auto; gap: 12px; align-items: center; padding: 10px 14px 10px 10px; border: 1px solid var(--line); }
+  .bar { align-self: stretch; border-radius: 3px; background: var(--accent); }
+  .k { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+  .t { font-size: 15px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .m { color: var(--muted); font-size: 12px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .room { text-align: right; padding-left: 12px; border-left: 1px solid var(--line); }
+  .room small { display: block; font-size: 9.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; }
+  .room b { font-size: 24px; line-height: 1.05; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .x { position: absolute; top: 3px; right: 5px; border: 0; background: none; color: var(--muted); font-size: 14px; line-height: 1; padding: 2px 4px; cursor: pointer; opacity: 0; transition: opacity .15s; }
+  body:hover .x { opacity: 1; }
+  .empty { grid-column: 2 / -1; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="box" id="box" data-tauri-drag-region></div>
+<button class="x" id="x" title="Schliessen" aria-label="Schliessen">×</button>
+<script>
+(() => {
+  const T = window.__TAURI__;
+  const box = document.getElementById('box');
+  let data = null;
+  const esc = (s) => String(s || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function draw() {
+    const en = data && data.lang === 'en';
+    document.getElementById('x').title = en ? 'Close' : 'Schliessen';
+    if (data && data.accent) document.documentElement.style.setProperty('--accent', data.accent);
+    const now = Date.now();
+    const l = data && (data.lessons || []).find((x) => x.e > now);
+    if (!l) { box.innerHTML = `<i class="bar" data-tauri-drag-region></i><div class="empty" data-tauri-drag-region>${en ? 'No more lessons' : 'Keine Lektionen mehr'}</div>`; return; }
+    const on = l.s <= now;
+    const mins = Math.round(((on ? l.e : l.s) - now) / 60000);
+    const when = on ? (en ? `Now · ${mins} min left` : `Jetzt · noch ${mins} min`)
+      : l.s - now < 12 * 3600e3 ? (en ? `Next · ${l.sh}` : `Nächste · ${l.sh}`) : `${l.dl} · ${l.sh}`;
+    const [pre, num] = (l.r || '').includes('-') ? [l.r.slice(0, l.r.indexOf('-') + 1), l.r.slice(l.r.indexOf('-') + 1)] : ['', l.r || '–'];
+    box.innerHTML = `<i class="bar" data-tauri-drag-region></i>
+      <div data-tauri-drag-region><div class="k" data-tauri-drag-region>${esc(when)}</div><div class="t" data-tauri-drag-region>${esc(l.t)}</div><div class="m" data-tauri-drag-region>${esc(l.sh)}–${esc(l.eh)}${l.p ? ' · ' + esc(l.p) : ''}</div></div>
+      <div class="room" data-tauri-drag-region><small data-tauri-drag-region>${en ? 'ROOM' : 'RAUM'}</small><b data-tauri-drag-region><span style="font-size:12px;opacity:.5">${esc(pre)}</span>${esc(num)}</b></div>`;
+  }
+  T.core.invoke('mini_data').then((d) => { data = d; draw(); });
+  T.event.listen('widget', (e) => { data = e.payload; draw(); });
+  document.getElementById('x').addEventListener('click', () => T.core.invoke('mini_close'));
+  setInterval(draw, 30000);
+})();
+</script>
+</body>
+</html>

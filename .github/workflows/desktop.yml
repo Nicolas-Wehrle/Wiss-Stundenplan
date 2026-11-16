@@ -1,0 +1,65 @@
+# Builds the desktop app (Windows, macOS, Linux) and adds it to the GitHub release.
+# Runs by itself when a release is published (publish-release.ps1), or by hand under
+# Actions › Desktop app › Run workflow (then the files are only kept as workflow artifacts).
+#
+# Needs one repository secret: TAURI_SIGNING_PRIVATE_KEY (the content of wiss-desktop-updater.key).
+# It signs the updates, so the app only ever installs updates that come from you.
+name: Desktop app
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            args: ''
+          - os: ubuntu-22.04
+            args: ''
+          - os: macos-latest
+            args: '--target universal-apple-darwin'
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ runner.os == 'macOS' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: 'desktop app/src-tauri -> target'
+
+      - name: Linux libraries
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - name: Install Tauri CLI
+        working-directory: desktop app
+        run: npm ci
+
+      - uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ''
+        with:
+          projectPath: desktop app
+          args: ${{ matrix.args }}
+          releaseId: ${{ github.event.release.id }}
+          updaterJsonPreferNsis: true
+          uploadWorkflowArtifacts: ${{ github.event_name == 'workflow_dispatch' }}

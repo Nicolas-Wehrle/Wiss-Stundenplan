@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "mini",
+  "description": "The small always-on-top window with the next lesson.",
+  "windows": ["mini"],
+  "permissions": ["core:event:default", "core:window:allow-start-dragging", "allow-mini-data", "allow-mini-close"]
+}

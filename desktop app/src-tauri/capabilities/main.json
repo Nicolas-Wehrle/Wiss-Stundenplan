@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "The app page: storage, hidden pages, notifications, updates.",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "allow-store-load", "allow-store-set", "allow-store-replace",
+    "allow-tab-create", "allow-tab-info", "allow-tab-update", "allow-tab-show", "allow-tab-remove", "allow-tab-exec",
+    "allow-http", "allow-notify", "allow-schedule", "allow-set-lang", "allow-widget", "allow-open-external",
+    "allow-install-update", "allow-app-ready"
+  ]
+}

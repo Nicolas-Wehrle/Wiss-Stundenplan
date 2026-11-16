@@ -316,7 +316,7 @@ function xtag(x, withGrade) {
 const examsOf = (l) => (D.examsByLesson[l.id] || []);
 
 // ---------- updates ----------
-const PLATFORM = window.__wissIOS ? 'ios' : (globalThis.__wissApp ? 'android' : (/Firefox\//.test(navigator.userAgent) ? 'firefox' : 'chrome'));
+const PLATFORM = window.__wissIOS ? 'ios' : (globalThis.__wissApp ? (globalThis.__wissApp.desktop ? 'desktop' : 'android') : (/Firefox\//.test(navigator.userAgent) ? 'firefox' : 'chrome'));
 function newerVersion(a, b) {          // is a newer than b?
   const pa = String(a || '').split('.').map((x) => +x || 0), pb = String(b || '').split('.').map((x) => +x || 0);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) { if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) > (pb[i] || 0); }
@@ -330,7 +330,7 @@ function updateAvailable() {
 function updateBanner() {
   if (!updateAvailable() || (S.prefs && S.prefs.updateDismissed === S.updateInfo.latest)) return '';
   const v = esc(S.updateInfo.latest);
-  const label = PLATFORM === 'android' ? tr('Installieren') : PLATFORM === 'chrome' ? tr('Herunterladen') : tr('Update laden');
+  const label = PLATFORM === 'android' || PLATFORM === 'desktop' ? tr('Installieren') : PLATFORM === 'chrome' ? tr('Herunterladen') : tr('Update laden');
   return `<div class="banner upd"><p><b>${tr('Version {V} ist da.', { V: v })}</b>${PLATFORM === 'chrome' ? `<br><span class="muted" style="font-size:11.5px">${tr('ZIP entpacken, alten Ordner ersetzen, dann in chrome://extensions neu laden.')}</span>` : ''}</p>
     <div class="bbtns"><button class="btn ghost" data-act="update-later">${tr('Später')}</button><button class="btn" data-act="update-go">${label}</button></div></div>`;
 }
@@ -343,6 +343,7 @@ function openUrl(url) {
 function startUpdate() {
   const u = S.updateInfo || {};
   if (PLATFORM === 'android' && u.apk && globalThis.__wissApp.installUpdate) globalThis.__wissApp.installUpdate(u.apk);
+  else if (PLATFORM === 'desktop') globalThis.__wissApp.installUpdate();
   else if (PLATFORM === 'firefox') openUrl(u.firefox || u.page);
   else if (PLATFORM === 'ios') openUrl(u.ios || u.page);
   else openUrl(u.chrome || u.page);
@@ -1645,7 +1646,7 @@ document.addEventListener('click', (ev) => {
     }
     else if (act === 'close') closeSheet();
     else if (act === 'openl') openSheet(a.dataset.lid);
-    else if (act === 'update-go') { startUpdate(); if (PLATFORM === 'android') { a.textContent = tr('Lädt…'); a.disabled = true; } }
+    else if (act === 'update-go') { startUpdate(); if (PLATFORM === 'android' || PLATFORM === 'desktop') { a.textContent = tr('Lädt…'); a.disabled = true; } }
     else if (act === 'update-later') { setPref('updateDismissed', S.updateInfo.latest); renderStatus(); }
     else if (act === 'togglepast') { showPast = !showPast; render(); }
     else if (act === 'hday') { heatSel = a.dataset.k; render(); }

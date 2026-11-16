@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "tabs",
+  "description": "Pages on wiss.tocco.ch may only hand back script results and content-script messages. Nothing on any other site can talk to the app.",
+  "windows": ["tab-*"],
+  "remote": { "urls": ["https://wiss.tocco.ch/*"] },
+  "permissions": ["allow-tab-result", "allow-tab-message"]
+}
