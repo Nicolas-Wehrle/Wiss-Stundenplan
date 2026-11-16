@@ -1,0 +1,73 @@
+# Publishes the website (docs/) and the Linux package sources on GitHub Pages.
+# Fedora/openSUSE (dnf, zypper) and Ubuntu/Debian/Mint (apt) then update the desktop app with
+# the rest of the system. Runs when docs/ changes, after every desktop build, or by hand.
+#
+# Needs: Settings › Pages › Source: "GitHub Actions", and the repository secret
+# LINUX_REPO_GPG_KEY (the content of wiss-linux-repo.private.asc). Without the secret it
+# publishes the website only.
+name: Website and Linux updates
+
+on:
+  push:
+    branches: [main]
+    paths: ['docs/**', 'desktop app/linux-repos.sh', '.github/workflows/pages.yml']
+  workflow_run:
+    workflows: ['Desktop app']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y createrepo-c apt-utils rpm
+
+      - name: Linux packages of the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p pkgs
+          gh release download --repo "$GITHUB_REPOSITORY" --dir pkgs --pattern '*.rpm' --pattern '*.deb' || echo "no Linux packages in the latest release yet"
+          ls -la pkgs
+
+      - name: Website
+        run: cp -r docs site
+
+      - name: Package sources
+        env:
+          LINUX_REPO_GPG_KEY: ${{ secrets.LINUX_REPO_GPG_KEY }}
+        run: |
+          if [ -z "$LINUX_REPO_GPG_KEY" ]; then echo "::warning::LINUX_REPO_GPG_KEY is not set, publishing the website only"; exit 0; fi
+          echo "$LINUX_REPO_GPG_KEY" | gpg --batch --import
+          owner="${GITHUB_REPOSITORY_OWNER,,}"
+          bash "desktop app/linux-repos.sh" pkgs site "https://$owner.github.io/${GITHUB_REPOSITORY#*/}"
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

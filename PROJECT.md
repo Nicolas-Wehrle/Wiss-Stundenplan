@@ -96,7 +96,7 @@ Wiss-Stundenplan/
   README.md, CHANGELOG.md, LICENSE (MIT), firefox-README.md, .gitignore
 ```
 
-**Never commit or share:** `android app/wiss-stundenplan.jks` and `android app/keystore.properties` (the Android signing key), and `wiss-desktop-updater.key` (signs the desktop updates; lives only on your PC and as the `TAURI_SIGNING_PRIVATE_KEY` secret on GitHub). `.gitignore` covers them. If the key is lost, existing users can't update the app anymore (they'd have to uninstall first).
+**Never commit or share:** `android app/wiss-stundenplan.jks` and `android app/keystore.properties` (the Android signing key), `wiss-desktop-updater.key` (signs the desktop updates; lives only on your PC and as the `TAURI_SIGNING_PRIVATE_KEY` secret on GitHub) and `wiss-linux-repo.private.asc` (signs the Linux package sources; `LINUX_REPO_GPG_KEY` secret). `.gitignore` covers them. If the key is lost, existing users can't update the app anymore (they'd have to uninstall first).
 
 ---
 
@@ -196,7 +196,7 @@ python iphone/build-ios.py "chrome addon" iphone
 4. `git add . && git commit -m "…" && git push`. `updates.json` and `iphone/WISS-Stundenplan.user.js` must be on `main`.
 5. `gh release create v<version> (Get-ChildItem release\v<version>\*).FullName --title "<version>" --notes-file release-notes-<version>.txt` (PowerShell). File names must stay exactly as they are; the update links point to them.
 
-6. Publishing the release starts `.github/workflows/desktop.yml`: it builds Windows (`.exe`, `.msi`), macOS (`.dmg`) and Linux (`.deb`, `.rpm`, `.AppImage`) and uploads them plus `latest.json` (read by the desktop updater) to the same release.
+6. Publishing the release starts `.github/workflows/desktop.yml`: it builds Windows (`.exe`, `.msi`), macOS (`.dmg`) and Linux (`.deb`, `.rpm`, `.AppImage`) and uploads them plus `latest.json` (read by the desktop updater) to the same release. When it's done, `.github/workflows/pages.yml` republishes the website with the Linux package sources (`desktop app/linux-repos.sh`: dnf/zypper repo in `rpm/`, apt repo in `apt/`, both signed with `LINUX_REPO_GPG_KEY`). Linux `.deb`/`.rpm` installs get `window.__wissSystemUpdates` and show no update banner (`SYSTEM_UPDATES` in popup.js).
 
 Users on versions before 1.9.3 don't have auto-update and need one manual install.
 

@@ -130,9 +130,9 @@ function renderSettings({ acc, ab, zp, user }) {
 
   const ver = hasChrome && browser.runtime.getManifest ? browser.runtime.getManifest().version : '';
   const ui = S.updateInfo;
-  const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr('Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
+  const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr(SYSTEM_UPDATES ? 'Version {V} kommt mit den Systemupdates.' : 'Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
   const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
-    ${row(tr('Updates'), updText, updateAvailable() ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
+    ${row(tr('Updates'), updText, updateAvailable() && !SYSTEM_UPDATES ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
     ${row(tr('Datenschutz'), '', `<button class="btn ghost" data-act="privacy-show">${tr('Lesen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}
     <p class="shint">${tr('Daten von wiss.tocco.ch und modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;

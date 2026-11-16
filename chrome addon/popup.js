@@ -327,8 +327,10 @@ function updateAvailable() {
   const u = S.updateInfo;
   return !!(u && u.latest && APP_VERSION && newerVersion(u.latest, APP_VERSION));
 }
+// Linux desktop app installed as .deb/.rpm: the system's own updates bring new versions
+const SYSTEM_UPDATES = !!globalThis.__wissSystemUpdates;
 function updateBanner() {
-  if (!updateAvailable() || (S.prefs && S.prefs.updateDismissed === S.updateInfo.latest)) return '';
+  if (SYSTEM_UPDATES || !updateAvailable() || (S.prefs && S.prefs.updateDismissed === S.updateInfo.latest)) return '';
   const v = esc(S.updateInfo.latest);
   const label = PLATFORM === 'android' || PLATFORM === 'desktop' ? tr('Installieren') : PLATFORM === 'chrome' ? tr('Herunterladen') : tr('Update laden');
   return `<div class="banner upd"><p><b>${tr('Version {V} ist da.', { V: v })}</b>${PLATFORM === 'chrome' ? `<br><span class="muted" style="font-size:11.5px">${tr('ZIP entpacken, alten Ordner ersetzen, dann in chrome://extensions neu laden.')}</span>` : ''}</p>

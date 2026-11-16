@@ -3286,7 +3286,7 @@ var qrcode = function() {
     'Bitte Userscripts aktualisieren. Sicherer Schlüsselspeicher ist nicht verfügbar.': 'Please update Userscripts. Secure key storage is unavailable.',
     'Speichern fehlgeschlagen': 'Could not save',
     'Löscht Stundenplan, Noten, Notizen und Einstellungen auf diesem Gerät. Synchronisierte Daten bleiben auf dem Server.': 'Deletes the timetable, grades, notes and settings on this device. Synced data stays on the server.',
-    'Installieren': 'Install', 'Herunterladen': 'Download', 'Update laden': 'Get update', 'Version {V} ist da.': 'Version {V} is out.',
+    'Installieren': 'Install', 'Herunterladen': 'Download', 'Update laden': 'Get update', 'Version {V} ist da.': 'Version {V} is out.', 'Version {V} kommt mit den Systemupdates.': 'Version {V} comes with your system updates.',
     'ZIP entpacken, alten Ordner ersetzen, dann in chrome://extensions neu laden.': 'Unzip it, replace the old folder, then reload it in chrome://extensions.',
     'Lädt…': 'Downloading…', 'Du hast die neuste Version.': 'You have the latest version.', 'Updates': 'Updates', 'Antippen zum Anzeigen': 'Tap to show', 'Wie iOS': 'Like iOS', 'Wie One UI': 'Like One UI', 'Pastell': 'Pastel', 'Sanfte Farben': 'Soft colours', 'Leuchtend': 'Glowing', 'Papier': 'Paper', 'Warm, mit Serifen': 'Warm, with serifs', 'Grün auf Schwarz': 'Green on black', 'Prüfen': 'Check',
     'Prüfe…': 'Checking…', 'GitHub nicht erreichbar.': 'Can\'t reach GitHub.', 'Öffnen': 'Open',
@@ -5578,8 +5578,10 @@ function updateAvailable() {
   const u = S.updateInfo;
   return !!(u && u.latest && APP_VERSION && newerVersion(u.latest, APP_VERSION));
 }
+// Linux desktop app installed as .deb/.rpm: the system's own updates bring new versions
+const SYSTEM_UPDATES = !!globalThis.__wissSystemUpdates;
 function updateBanner() {
-  if (!updateAvailable() || (S.prefs && S.prefs.updateDismissed === S.updateInfo.latest)) return '';
+  if (SYSTEM_UPDATES || !updateAvailable() || (S.prefs && S.prefs.updateDismissed === S.updateInfo.latest)) return '';
   const v = esc(S.updateInfo.latest);
   const label = PLATFORM === 'android' || PLATFORM === 'desktop' ? tr('Installieren') : PLATFORM === 'chrome' ? tr('Herunterladen') : tr('Update laden');
   return `<div class="banner upd"><p><b>${tr('Version {V} ist da.', { V: v })}</b>${PLATFORM === 'chrome' ? `<br><span class="muted" style="font-size:11.5px">${tr('ZIP entpacken, alten Ordner ersetzen, dann in chrome://extensions neu laden.')}</span>` : ''}</p>
@@ -7158,9 +7160,9 @@ function renderSettings({ acc, ab, zp, user }) {
 
   const ver = hasChrome && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '';
   const ui = S.updateInfo;
-  const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr('Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
+  const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr(SYSTEM_UPDATES ? 'Version {V} kommt mit den Systemupdates.' : 'Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
   const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
-    ${row(tr('Updates'), updText, updateAvailable() ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
+    ${row(tr('Updates'), updText, updateAvailable() && !SYSTEM_UPDATES ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
     ${row(tr('Datenschutz'), '', `<button class="btn ghost" data-act="privacy-show">${tr('Lesen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}
     <p class="shint">${tr('Daten von wiss.tocco.ch und modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;

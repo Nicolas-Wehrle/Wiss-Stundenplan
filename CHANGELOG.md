@@ -7,7 +7,7 @@
 - Lives in the tray: the next lesson and room in the tray menu, reminders and new grades as system notifications, also with the window closed.
 - Mini window: a small card with the next lesson and room that stays on top. Turn it on in the tray menu.
 - Can start with the computer (tray menu), quietly in the tray.
-- Updates install themselves from the GitHub release (signed).
+- Updates install themselves from the GitHub release (signed). On Linux, one command adds the app's own package source (Fedora, openSUSE, Ubuntu, Debian, Mint), and new versions then come with the normal system updates.
 - GitHub builds the app for all three systems by itself whenever a release is published.
 
 ## 1.12.2

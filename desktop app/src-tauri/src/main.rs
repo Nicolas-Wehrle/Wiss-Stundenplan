@@ -618,6 +618,12 @@ fn saved_size(path: &std::path::Path) -> (f64, f64) {
 
 // ------------------------------------------------------------------ start
 
+/// Linux .deb/.rpm: installed from the app's package source, the system's own updates bring new
+/// versions (the in-app updater only works for the AppImage there).
+fn system_updates() -> bool {
+    cfg!(target_os = "linux") && std::env::var_os("APPIMAGE").is_none()
+}
+
 fn main() {
     // WebKitGTK + NVIDIA can show a blank window with the DMA-BUF renderer; the fallback is fine there.
     #[cfg(target_os = "linux")]
@@ -670,6 +676,7 @@ fn main() {
                 .min_inner_size(380.0, 560.0)
                 .center()
                 .visible(false)
+                .initialization_script(if system_updates() { "window.__wissSystemUpdates = true;" } else { "" })
                 .on_navigation(move |u: &Url| {
                     let local = u.scheme() == "tauri" || u.host_str() == Some("tauri.localhost") || u.host_str() == Some("localhost");
                     if !local && matches!(u.scheme(), "https" | "http" | "mailto") {

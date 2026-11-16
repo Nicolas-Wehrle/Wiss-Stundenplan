@@ -197,7 +197,7 @@
     'Bitte Userscripts aktualisieren. Sicherer Schlüsselspeicher ist nicht verfügbar.': 'Please update Userscripts. Secure key storage is unavailable.',
     'Speichern fehlgeschlagen': 'Could not save',
     'Löscht Stundenplan, Noten, Notizen und Einstellungen auf diesem Gerät. Synchronisierte Daten bleiben auf dem Server.': 'Deletes the timetable, grades, notes and settings on this device. Synced data stays on the server.',
-    'Installieren': 'Install', 'Herunterladen': 'Download', 'Update laden': 'Get update', 'Version {V} ist da.': 'Version {V} is out.',
+    'Installieren': 'Install', 'Herunterladen': 'Download', 'Update laden': 'Get update', 'Version {V} ist da.': 'Version {V} is out.', 'Version {V} kommt mit den Systemupdates.': 'Version {V} comes with your system updates.',
     'ZIP entpacken, alten Ordner ersetzen, dann in chrome://extensions neu laden.': 'Unzip it, replace the old folder, then reload it in chrome://extensions.',
     'Lädt…': 'Downloading…', 'Du hast die neuste Version.': 'You have the latest version.', 'Updates': 'Updates', 'Antippen zum Anzeigen': 'Tap to show', 'Wie iOS': 'Like iOS', 'Wie One UI': 'Like One UI', 'Pastell': 'Pastel', 'Sanfte Farben': 'Soft colours', 'Leuchtend': 'Glowing', 'Papier': 'Paper', 'Warm, mit Serifen': 'Warm, with serifs', 'Grün auf Schwarz': 'Green on black', 'Prüfen': 'Check',
     'Prüfe…': 'Checking…', 'GitHub nicht erreichbar.': 'Can\'t reach GitHub.', 'Öffnen': 'Open',

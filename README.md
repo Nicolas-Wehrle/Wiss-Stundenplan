@@ -24,7 +24,7 @@ Works as a Chrome/Edge add-on, a Firefox add-on, a desktop app for Windows, macO
 
 For everything else, get the latest version from the **[Releases](../../releases/latest)** page.
 
-The project website lives in [`docs/index.html`](docs/index.html). To put it online: GitHub › Settings › Pages › Deploy from a branch › `main` / `docs`. Under "Assets", download the file for your device:
+The project website lives in [`docs/index.html`](docs/index.html). GitHub publishes it, together with the Linux package sources, with `.github/workflows/pages.yml` (Settings › Pages › Source: GitHub Actions). On the release page, under "Assets", download the file for your device:
 
 | Device | Download this | Guide |
 |---|---|---|
@@ -32,7 +32,7 @@ The project website lives in [`docs/index.html`](docs/index.html). To put it onl
 | Firefox (computer and Android) | `WISS-Stundenplan-Firefox.xpi` | [firefox addon/README.md](firefox%20addon/README.md) |
 | Windows app | the file ending in `_x64-setup.exe` | [desktop app/README.md](desktop%20app/README.md) |
 | macOS app | the file ending in `_universal.dmg` | [desktop app/README.md](desktop%20app/README.md) |
-| Linux app | `.deb`, `.rpm` or `.AppImage` | [desktop app/README.md](desktop%20app/README.md) |
+| Linux app | best: `wget -qO- https://nicolas-wehrle.github.io/Wiss-Stundenplan/linux.sh \| sh` in a terminal, then it updates with the system. Or `.deb`, `.rpm`, `.AppImage` | [desktop app/README.md](desktop%20app/README.md) |
 | Android app | `WISS-Stundenplan.apk` | [android app/README.md](android%20app/README.md) |
 | iPhone | `WISS-Stundenplan.user.js` | [iphone/README.md](iphone/README.md) |
 
@@ -66,7 +66,7 @@ python3 iphone/build-ios.py "chrome addon" iphone
 ```
 The Android build needs JDK 17+ and the Android SDK, plus your own signing key (see `android app/README.md`).
 
-The desktop app needs nothing by hand: GitHub builds it for Windows, macOS and Linux when a release is published (see `desktop app/README.md`, including the one secret it needs). To build it yourself: `cd "desktop app" && npm ci && npm run build` (needs Rust).
+The desktop app needs nothing by hand: GitHub builds it for Windows, macOS and Linux when a release is published (see `desktop app/README.md`, including the two secrets it needs). To build it yourself: `cd "desktop app" && npm ci && npm run build` (needs Rust).
 
 ## Publishing a release
 1. Raise `version` in `chrome addon/manifest.json` and run the build steps above. Every release needs a new version number, Mozilla won't sign the same one twice.
@@ -79,7 +79,7 @@ The desktop app needs nothing by hand: GitHub builds it for Windows, macOS and L
 4. Run `python3 release.py` again. Now all 5 files should show `ok`, and `updates.json` is updated.
    The `.apk` is taken from the Android build. If you built it somewhere else, copy it into `release/v<version>/` yourself.
 5. Commit and push, so `updates.json` and `iphone/WISS-Stundenplan.user.js` are on GitHub.
-   After the release is published (step 6), GitHub adds the Windows, macOS and Linux apps to it by itself within about 15 minutes (Actions › Desktop app).
+   After the release is published (step 6), GitHub adds the Windows, macOS and Linux apps to it by itself within about 15 minutes (Actions › Desktop app), then updates the Linux package sources (Actions › Website and Linux updates).
 6. Create the GitHub release with the tag `v<version>` (for example `v1.9.4`) and attach all 5 files from `release/v<version>/`. The file names must stay as they are, the update links point to them.
    Website: Releases > Draft a new release. Or with the GitHub CLI in PowerShell:
    ```
