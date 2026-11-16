@@ -1,4 +1,6 @@
-## Unreleased
+## 1.12.3
+
+- Standard style: no more short white line under the tab you just left.
 
 **New: desktop app for Windows, macOS and Linux**
 - A real app instead of a browser add-on, built with Tauri: the installer is a few MB and it uses the web engine that's already on the computer.

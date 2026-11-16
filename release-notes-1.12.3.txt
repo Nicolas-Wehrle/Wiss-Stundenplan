@@ -1,0 +1,8 @@
+WISS Stundenplan 1.12.3
+
+- New: desktop app for Windows, macOS and Linux. A few MB, own window, lives in the tray.
+- Desktop: the sign-in runs in hidden windows, a window only appears when Microsoft needs you.
+- Desktop: reminders and new grades as system notifications, also with the window closed.
+- Desktop: mini window with the next lesson and room, can start with the computer.
+- Desktop: updates install themselves. On Linux, one command adds the app's package source, then it updates with the system.
+- Standard style: no more short white line under the tab you just left.

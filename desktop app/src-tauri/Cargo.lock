@@ -5547,7 +5547,7 @@ dependencies = [
 
 [[package]]
 name = "wiss-stundenplan"
-version = "1.12.2"
+version = "1.12.3"
 dependencies = [
  "reqwest 0.12.28",
  "serde",
