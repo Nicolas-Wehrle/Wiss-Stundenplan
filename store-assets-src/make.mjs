@@ -179,12 +179,32 @@ const pages = {
     <div class="abs" style="left:76px;bottom:52px;font:600 18px G;color:#e2283f">stundenplan.severinwehrle.dev</div>
     ${win('week', { x: 690, y: 110, w: 760, rot: -3 })}
     ${pop('popup', { x: 650, y: 230, w: 290, rot: 4 })}`],
+
+  // ---------- README banner (light + dark, sharp on high-DPI screens) ----------
+  'docs/readme-banner.png': [1280, 440, `
+    <div class="glow" style="width:900px;height:900px;right:-260px;top:-360px"></div>
+    <div class="abs" style="left:64px;top:60px;width:560px">
+      ${brand(50)}
+      <h1 style="font-size:58px;margin-top:34px">Your timetable,<br><em>instantly.</em></h1>
+      <p class="sub" style="font-size:19px;max-width:500px">Timetable, exams, grades, absences and free rooms from the WISS extranet. On every device.</p>
+    </div>
+    ${win('week', { x: 700, y: 60, w: 700, rot: -3 })}
+    ${pop('popup', { x: 650, y: 150, w: 250, rot: 4 })}`, '', 2],
+  'docs/readme-banner-dark.png': [1280, 440, `
+    <div class="glow" style="width:900px;height:900px;right:-260px;top:-360px;background:radial-gradient(circle, rgba(232,52,78,.3), transparent 65%)"></div>
+    <div class="abs" style="left:64px;top:60px;width:560px">
+      ${brand(50)}
+      <h1 style="font-size:58px;margin-top:34px">Your timetable,<br><em>instantly.</em></h1>
+      <p class="sub" style="font-size:19px;max-width:500px">Timetable, exams, grades, absences and free rooms from the WISS extranet. On every device.</p>
+    </div>
+    ${win('week-dark', { x: 700, y: 60, w: 700, rot: -3, d: true })}
+    ${pop('popup-dark', { x: 650, y: 150, w: 250, rot: 4 })}`, 'dark', 2],
 };
 
 const browser = await chromium.launch({ executablePath: process.env.BROWSER_EXECUTABLE });
 try {
-  for (const [file, [w, h, html, cls]] of Object.entries(pages)) {
-    const p = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: 1 });
+  for (const [file, [w, h, html, cls, scale = 1]] of Object.entries(pages)) {
+    const p = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: scale });
     const tmp = path.join(here, '.page.html');
     fs.writeFileSync(tmp, `<!doctype html><meta charset="utf-8"><style>${CSS}</style><body class="${cls || ''}">${html}</body>`);
     await p.goto(pathToFileURL(tmp).href, { waitUntil: 'load' });

@@ -1,118 +1,99 @@
-<p align="center"><img src="docs/logo.svg" width="96" height="96" alt=""></p>
-
-<h1 align="center">WISS Stundenplan</h1>
+<a href="https://stundenplan.severinwehrle.dev">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/readme-banner-dark.png">
+    <img alt="WISS Stundenplan: your timetable, instantly" src="docs/readme-banner.png" width="100%">
+  </picture>
+</a>
 
 <p align="center">
-  <b><a href="https://stundenplan.severinwehrle.dev/">Website</a></b> ·
-  <a href="https://stundenplan.severinwehrle.dev/#download">Download</a> ·
-  <a href="https://stundenplan.severinwehrle.dev/#docs">Docs</a> ·
-  <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc">Chrome Web Store</a>
+  <a href="https://stundenplan.severinwehrle.dev"><b>Website</b></a> &nbsp;·&nbsp;
+  <a href="https://stundenplan.severinwehrle.dev/#download"><b>Download</b></a> &nbsp;·&nbsp;
+  <a href="https://stundenplan.severinwehrle.dev/#docs"><b>Docs</b></a> &nbsp;·&nbsp;
+  <a href="CHANGELOG.md"><b>Changelog</b></a>
 </p>
 
-<p align="center"><b>→ <a href="https://stundenplan.severinwehrle.dev/">stundenplan.severinwehrle.dev</a></b><br>Downloads for every platform, how everything works, and the Linux install command.</p>
+<p align="center">
+  <a href="../../releases/latest"><img alt="Latest version" src="https://img.shields.io/github/v/release/Nicolas-Wehrle/Wiss-Stundenplan?style=flat-square&label=version&color=e2283f"></a>
+  <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc"><img alt="Chrome Web Store users" src="https://img.shields.io/chrome-web-store/users/ljhofcahlfajoepidneficpnjckmcomc?style=flat-square&label=chrome%20users&color=e2283f"></a>
+  <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/Nicolas-Wehrle/Wiss-Stundenplan/total?style=flat-square&color=e2283f"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-16141d?style=flat-square"></a>
+</p>
 
-<p align="center">Made by <a href="https://severinwehrle.dev">Severin Wehrle</a>.</p>
+**WISS Stundenplan** is a fast, private way to check your WISS timetable, exams, grades, absences and free rooms. It shows your last data the moment you open it and updates in the background, so you never wait for the extranet again.
 
----
+> [!NOTE]
+> **Unofficial student project**, not made by, endorsed by or affiliated with WISS or Tocco. It signs in with your own WISS account, the same way the extranet website does, and never types or stores your password.
 
-A faster way to check your WISS timetable. It shows your last data right away and updates in the background, so you don't have to wait for the extranet to load.
+## Get it
 
-Works as a Chrome/Edge add-on, a Firefox add-on, a desktop app for Windows, macOS and Linux, an Android app and on iPhone (Safari).
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc"><img alt="Chrome Web Store" src="https://img.shields.io/badge/Chrome-Web_Store-e2283f?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=16141d"></a>
+  <a href="https://stundenplan.severinwehrle.dev/#download/firefox"><img alt="Firefox Add-on" src="https://img.shields.io/badge/Firefox-Add--on-e2283f?style=for-the-badge&logo=firefoxbrowser&logoColor=white&labelColor=16141d"></a>
+  <a href="https://stundenplan.severinwehrle.dev/#download/android"><img alt="Android APK" src="https://img.shields.io/badge/Android-APK-e2283f?style=for-the-badge&logo=android&logoColor=white&labelColor=16141d"></a>
+  <a href="https://stundenplan.severinwehrle.dev/#download/iphone"><img alt="iPhone Safari" src="https://img.shields.io/badge/iPhone-Safari-e2283f?style=for-the-badge&logo=safari&logoColor=white&labelColor=16141d"></a>
+  <br>
+  <a href="https://stundenplan.severinwehrle.dev/#download/windows"><img alt="Windows App" src="https://img.shields.io/badge/Windows-App-e2283f?style=for-the-badge&logo=windows&logoColor=white&labelColor=16141d"></a>
+  <a href="https://stundenplan.severinwehrle.dev/#download/macos"><img alt="macOS App" src="https://img.shields.io/badge/macOS-App-e2283f?style=for-the-badge&logo=apple&logoColor=white&labelColor=16141d"></a>
+  <a href="https://stundenplan.severinwehrle.dev/#download/linux"><img alt="Linux rpm deb AppImage" src="https://img.shields.io/badge/Linux-rpm_deb_AppImage-e2283f?style=for-the-badge&logo=linux&logoColor=white&labelColor=16141d"></a>
+</p>
 
-> **Unofficial.** This is a student project. It is not made by, endorsed by or affiliated with WISS or Tocco.
-> It only uses your own WISS login, the same way the extranet website does.
+All downloads with step-by-step guides are on **[stundenplan.severinwehrle.dev](https://stundenplan.severinwehrle.dev/#download)**. Linux in one line, with automatic updates afterwards:
 
-## Features
-- Week view with the current and next lesson, holidays and school breaks
-- Exam dates (ZP, LB, projects), estimated where the extranet doesn't list them
-- Grades, average over the year and a calculator for what you still need
-- Absences with the 7-day deadline and attendance per module
-- Free rooms at any time, with floor plans for WISS Zürich
-- Notes per lesson
-- Deutsch / English, nine styles, each in light and dark
-- Android: reminders and a home-screen widget
-- Desktop app: reminders, tray icon with the next lesson, a small always-on-top window, starts with the computer if you want
+```sh
+wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
+```
 
-## Download
+## What it does
 
-**Chrome, Edge, Brave:** install it from the **[Chrome Web Store](https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc)**. It updates itself.
+<table>
+  <tr>
+    <td width="50%"><img src="store-assets/screenshot-2-exams-1280x800.png" alt="Exams with countdown"></td>
+    <td width="50%"><img src="store-assets/screenshot-3-grades-1280x800.png" alt="Grades with calculator"></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="store-assets/screenshot-4-absences-1280x800.png" alt="Absences with deadlines"></td>
+    <td width="50%"><img src="store-assets/screenshot-5-rooms-dark-1280x800.png" alt="Free rooms in dark mode"></td>
+  </tr>
+</table>
 
-For everything else, get the latest version from the **[Releases](../../releases/latest)** page.
+| | |
+|---|---|
+| 🗓️ **Week** | current and next lesson, room, holidays and school breaks |
+| 📝 **Exams** | ZP, LB and projects with a countdown, estimated where the extranet lists nothing |
+| 📈 **Grades** | average over the year, history chart and a calculator for what you still need |
+| ✅ **Absences** | open excuses with their 7-day deadline, attendance per module |
+| 🚪 **Rooms** | free rooms at any time, with floor plans for WISS Zürich |
+| 🔔 **Reminders** | lessons, absence deadlines and new grades (Android and desktop) |
+| 🎨 **Your look** | German or English, nine styles, light and dark, your own accent colour |
+| 🖥️ **Desktop extras** | tray icon with the next lesson, a small always-on-top window, start with the computer |
 
-The project website lives in [`docs/index.html`](docs/index.html). GitHub publishes it, together with the Linux package sources, with `.github/workflows/pages.yml` (Settings › Pages › Source: GitHub Actions). On the release page, under "Assets", download the file for your device:
-
-| Device | Download this | Guide |
-|---|---|---|
-| Chrome, Edge, Brave | [Chrome Web Store](https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc) (or `WISS-Stundenplan-Chrome.zip` to load it yourself) | [chrome addon/README.md](chrome%20addon/README.md) |
-| Firefox (computer and Android) | `WISS-Stundenplan-Firefox.xpi` | [firefox addon/README.md](firefox%20addon/README.md) |
-| Windows app | the file ending in `_x64-setup.exe` | [desktop app/README.md](desktop%20app/README.md) |
-| macOS app | the file ending in `_universal.dmg` | [desktop app/README.md](desktop%20app/README.md) |
-| Linux app | best: `wget -qO- https://stundenplan.severinwehrle.dev/linux.sh \| sh` in a terminal, then it updates with the system. Or `.deb`, `.rpm`, `.AppImage` | [desktop app/README.md](desktop%20app/README.md) |
-| Android app | `WISS-Stundenplan.apk` | [android app/README.md](android%20app/README.md) |
-| iPhone | `WISS-Stundenplan.user.js` | [iphone/README.md](iphone/README.md) |
-
-**Firefox users:** take the `.xpi`, not `WISS-Stundenplan-Firefox.zip`. The `.xpi` is the version signed by Mozilla. Firefox refuses to install the unsigned `.zip`; that file is only there so it can be uploaded to Mozilla for signing.
+*All pictures use invented demo data. Try it yourself: choose "Demokonto testen" on first start, no WISS login needed.*
 
 ## Privacy
-School data is loaded with your own login and stays on your device. The app only talks to wiss.tocco.ch, modulbaukasten.ch and GitHub (for updates). Optional end-to-end encrypted sync can transfer notes, exam corrections and selected settings between your devices. The app shows this on the first start. The sync server is never contacted before you enable it. It receives encrypted packages and a random ID, never the encryption key or your school login.
 
-Keep your recovery code safe: losing it and every linked device means the synced data cannot be recovered. Deletion removes the active server file after durable confirmation; encrypted copies can remain in GitHub backups. See [sync-server/README.md](sync-server/README.md) for the full setup and retention details.
+- Your school data is loaded with your own login and **stays on your device**. There is no server in between.
+- The app only talks to wiss.tocco.ch (your data), modulbaukasten.ch (module descriptions) and GitHub (updates).
+- No ads, no tracking, no account.
+- **Optional sync** between your devices transfers notes, exam corrections and some settings, end-to-end encrypted. It is off until you turn it on, and your timetable, grades, absences and login never leave your device. Keep the recovery code safe: without it and without a linked device, synced data can't be recovered.
 
-## Sync server
-The source in `sync-server/` runs on Render and stores encrypted packages in a separate private GitHub repository. [Exact Render settings and deployment steps](sync-server/README.md).
-
-## Sync tests
-Run `node --test tests/sync/*.test.mjs` with Node 22 or later. All public tests use synthetic data. The optional browser test, `tests/browser/sync-ui.mjs`, requires Playwright and rebuilt Android/iPhone web assets. Set `PLAYWRIGHT_MODULE` to its installed package directory if it is not on the normal module path. Private regression fixtures live in the ignored `tests-private/` folder.
-
-## Project layout
-- `chrome addon/`: the main code. All other versions are built from it.
-- `firefox addon/`: built with `build-firefox.py`
-- `android app/`: Android project. Its web part is copied in with `build-android-web.py`.
-- `desktop app/`: Windows/macOS/Linux app (Tauri, Rust). Copies the web part in by itself when it builds.
-- `iphone/`: Safari userscript, built with `build-ios.py`
-
-## Building
-After changing something in `chrome addon/`:
-```
-python3 build-firefox.py "chrome addon" "firefox addon"
-python3 "android app/build-android-web.py" "chrome addon" "android app"
-cd "android app" && ./gradlew assembleRelease && cd ..
-python3 iphone/build-ios.py "chrome addon" iphone
-```
-The Android build needs JDK 17+ and the Android SDK, plus your own signing key (see `android app/README.md`).
-
-The desktop app needs nothing by hand: GitHub builds it for Windows, macOS and Linux when a release is published (see `desktop app/README.md`, including the two secrets it needs). To build it yourself: `cd "desktop app" && npm ci && npm run build` (needs Rust).
-
-## Publishing a release
-1. Raise `version` in `chrome addon/manifest.json` and run the build steps above. Every release needs a new version number, Mozilla won't sign the same one twice.
-2. Run `python3 release.py` once. It makes `release/v<version>/WISS-Stundenplan-Firefox.zip` and tells you the signed `.xpi` is still missing.
-3. Get the signed Firefox file:
-   1. Go to the [Developer Hub](https://addons.mozilla.org/developers/addons) on addons.mozilla.org and open the add-on (the first time: "Submit a New Add-on").
-   2. Click "Upload New Version", choose **On your own** and upload `WISS-Stundenplan-Firefox.zip`.
-   3. Wait for the automatic check (usually a few minutes), then download the signed `.xpi` on the version page.
-   4. Rename it to exactly `WISS-Stundenplan-Firefox.xpi` and put it in the main folder, next to `release.py`.
-4. Run `python3 release.py` again. Now all 5 files should show `ok`, and `updates.json` is updated.
-   The `.apk` is taken from the Android build. If you built it somewhere else, copy it into `release/v<version>/` yourself.
-5. Commit and push, so `updates.json` and `iphone/WISS-Stundenplan.user.js` are on GitHub.
-   After the release is published (step 6), GitHub adds the Windows, macOS and Linux apps to it by itself within about 15 minutes (Actions › Desktop app), then updates the Linux package sources (Actions › Website and Linux updates).
-6. Create the GitHub release with the tag `v<version>` (for example `v1.9.4`) and attach all 5 files from `release/v<version>/`. The file names must stay as they are, the update links point to them.
-   Website: Releases > Draft a new release. Or with the GitHub CLI in PowerShell:
-   ```
-   gh release create v1.9.4 (Get-ChildItem release\v1.9.4\*).FullName --title "1.9.4"
-   ```
-
-Never attach or commit `wiss-stundenplan.jks` or `keystore.properties`.
+Full details: [PRIVACY.md](PRIVACY.md).
 
 ## Updates
-- **Android:** the app checks GitHub twice a day. When there's a new release it shows "Installieren", downloads the APK and opens Android's install screen.
-- **iPhone:** the Userscripts app updates the script on its own from `iphone/WISS-Stundenplan.user.js` in this repo.
-- **Firefox:** updates on its own through `updates.json`. This only works if the release has the signed `WISS-Stundenplan-Firefox.xpi` and `updates.json` is pushed.
-- **Chrome / Edge:** the Chrome Web Store version updates itself. Add-ons loaded with "Load unpacked" can't update themselves; they show a banner with the download link instead.
+
+Every version updates itself: Chrome and Firefox in the background, Android, Windows, macOS and the Linux AppImage with an "Installieren" button in the app, Linux `.rpm`/`.deb` (installed with the command above) with your normal system updates, and iPhone through the Userscripts app.
+
+## Building it yourself
+
+The code is open source under the MIT license. How to build, test and release it is in **[DEVELOPMENT.md](DEVELOPMENT.md)**.
 
 ## Credits
-- Module descriptions and the list of apprenticeships come from [modulbaukasten.ch](https://www.modulbaukasten.ch) (ICT-Berufsbildung Schweiz). A copy is included in `modules.js` and `catalog.js` so the app also works offline. All rights to that text stay with them.
-- Fonts: [Doto](https://github.com/oliverlalan/Doto) and Space Mono, both under the SIL Open Font License (see `chrome addon/fonts/LICENSE-fonts.txt`).
+- Module descriptions and the list of apprenticeships come from [modulbaukasten.ch](https://www.modulbaukasten.ch) (ICT-Berufsbildung Schweiz). A copy is included so the app also works offline. All rights to that text stay with them.
+- Fonts: [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), [Geist](https://github.com/vercel/geist-font), [Doto](https://github.com/oliverlalan/Doto) and Space Mono, all under the SIL Open Font License (see `chrome addon/fonts/LICENSE-fonts.txt`).
 - The "Nothing" and "GitHub" styles are only inspired by those designs. No logos or brand assets are used.
 
 ## License
 [MIT](LICENSE) for the code in this repository. This doesn't cover the third-party content listed under Credits.
+
+---
+
+<p align="center">Made by <a href="https://severinwehrle.dev"><b>Severin Wehrle</b></a></p>
