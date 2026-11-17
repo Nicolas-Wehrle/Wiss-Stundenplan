@@ -86,10 +86,12 @@ code, kbd, pre { font-family: var(--mono); font-size: .88em; }
 .ah b { font: 700 17px var(--display); letter-spacing: -.02em; display: block; }
 .ah small { font-size: 11.5px; opacity: .6; }
 .ah small i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: #2fbf71; margin-right: 5px; vertical-align: 1px; }
-.at { display: flex; gap: 6px; padding: 0 16px; border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent); font-weight: 600; font-size: 13px; }
-.at span { padding: 8px 10px 10px; opacity: .55; position: relative; }
-.at span.on { opacity: 1; }
-.at span.on::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #e8344e; }
+.at { display: flex; gap: 6px; padding: 0 16px; border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent); font-weight: 600; font-size: 13px; overflow-x: auto; scrollbar-width: none; }
+.at button { border: 0; background: none; color: inherit; font: inherit; padding: 8px 10px 10px; opacity: .55; position: relative; cursor: pointer; white-space: nowrap; transition: opacity .15s ease; }
+.at button:hover { opacity: .85; }
+.at button.on { opacity: 1; }
+.at button.on::after { content: ""; position: absolute; left: 50%; bottom: 2px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: #e8344e; }
+.at em:empty { display: none; }
 .at em { font-style: normal; font-size: 10px; background: #e8344e; color: #fff; border-radius: 999px; padding: 0 5px; margin-left: 4px; vertical-align: 1px; }
 .ab { display: grid; grid-template-columns: 300px 1fr; gap: 18px; padding: 18px 22px 22px; }
 .cardx { background: color-mix(in srgb, #fff 92%, transparent); border-radius: 16px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.07); }
@@ -137,6 +139,76 @@ code, kbd, pre { font-family: var(--mono); font-size: .88em; }
   .ab { grid-template-columns: 1fr; }
   .wk-card { display: none; }
   .shot { margin-top: 38px; }
+}
+/* the try-it app */
+.ah { position: relative; }
+.mrf { margin-left: auto; width: 32px; height: 32px; border-radius: 9px; border: 0; background: transparent; color: inherit; opacity: .55; cursor: pointer; display: grid; place-items: center; }
+.mrf:hover { opacity: 1; background: color-mix(in srgb, currentColor 8%, transparent); }
+.mrf svg { width: 17px; height: 17px; }
+.mrf.spin svg { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.views { min-height: 410px; }
+.av { display: none; }
+.av.on { display: grid; animation: avIn .25s ease; }
+@keyframes avIn { from { opacity: 0; transform: translateY(4px); } }
+.dlist { display: grid; gap: 6px; }
+.dl { display: grid; grid-template-columns: 46px 1fr auto; gap: 10px; align-items: center; padding: 8px 11px 8px 14px; position: relative; cursor: pointer; border: 0; text-align: left; font: inherit; color: inherit; transition: transform .12s ease; }
+.dl::before { content: ""; position: absolute; left: 4px; top: 9px; bottom: 9px; width: 3px; border-radius: 2px; background: var(--c); }
+.dl:hover { transform: translateX(2px); }
+.dl.sel { box-shadow: inset 0 0 0 1.5px var(--c); }
+.dl .tm { font: 600 11.5px var(--mono); opacity: .7; }
+.dl .nm { font-weight: 600; font-size: 12.5px; }
+.dl .rm2 { font: 600 11px var(--mono); padding: 1px 6px; border-radius: 5px; background: color-mix(in srgb, currentColor 8%, transparent); }
+.wk .l { cursor: pointer; transition: transform .12s ease, box-shadow .12s ease; }
+.wk .l:hover { transform: scale(1.02); }
+.wk .l.sel { box-shadow: 0 0 0 2px var(--c); }
+.now { transition: box-shadow .2s ease; }
+.now.flash { box-shadow: inset 0 0 0 2px #e8344e; }
+.xhero { display: flex; gap: 14px; align-items: center; padding: 14px; }
+.xhero .cd { width: 76px; height: 76px; border-radius: 18px; background: rgba(232,52,78,.12); color: #e8344e; display: grid; place-items: center; align-content: center; flex: none; }
+.xhero .cd b { font: 800 34px/0.95 var(--display); }
+.xhero .cd small { font-size: 10.5px; font-weight: 650; }
+.xhero h4 { margin: 4px 0 0; font: 700 18px/1.15 var(--display); letter-spacing: -.02em; }
+.xhero p { font-size: 12px; opacity: .6; margin-top: 3px; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
+.tile { padding: 10px 12px; }
+.tile small { display: block; font-size: 10.5px; opacity: .6; font-weight: 600; }
+.tile b { font: 800 22px var(--display); }
+.xr.click { cursor: pointer; border: 0; width: 100%; text-align: left; font: inherit; color: inherit; transition: transform .12s ease; }
+.xr.click:hover { transform: translateX(2px); }
+.xr.sel { box-shadow: inset 0 0 0 1.5px #e8344e; }
+.xr.est { outline: 1.5px dashed rgba(53,103,214,.5); outline-offset: -1.5px; }
+.ring { position: relative; width: 70px; height: 70px; display: grid; place-items: center; flex: none; }
+.ring::before { content: ""; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(#e8344e 37%, color-mix(in srgb, currentColor 10%, transparent) 0); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px)); mask: radial-gradient(farthest-side, transparent calc(100% - 8px), #000 calc(100% - 7px)); }
+.ring b { font: 800 18px var(--display); }
+.ring b span { font-size: 11px; opacity: .6; }
+.gt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 10px; }
+.gt { padding: 9px 10px; position: relative; overflow: hidden; }
+.gt::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 3px; background: var(--c); }
+.gt small { display: block; font-size: 10.5px; opacity: .6; line-height: 1.2; height: 2.4em; overflow: hidden; }
+.gt b { font: 800 19px var(--display); color: #23955d; }
+.todo { display: flex; align-items: center; gap: 10px; padding: 13px 14px; background: rgba(232,52,78,.1) !important; transition: background-color .3s ease; }
+.todo b { font-size: 13px; }
+.todo small { display: block; font-size: 11.5px; opacity: .65; }
+.todo .left { margin-left: auto; font: 750 14px var(--display); color: #e8344e; white-space: nowrap; }
+.todo.done { background: rgba(35,149,93,.12) !important; }
+.todo.done .left { color: #23955d; }
+.mbtn { margin-top: 10px; width: 100%; border: 0; border-radius: 12px; padding: 11px; font: 650 13px var(--body); cursor: pointer; background: currentColor; }
+.mbtn span { color: #f5f2ed; }
+.shot.dark .mbtn span { color: #0f0e13; }
+.mbtn:disabled { opacity: .45; cursor: default; }
+.budget { padding: 12px 14px; }
+.budget h5 { margin: 0 0 4px; font: 700 13px var(--display); }
+.brow { padding: 9px 0; }
+.brow + .brow { border-top: 1px solid color-mix(in srgb, currentColor 8%, transparent); }
+.bh { display: flex; justify-content: space-between; font-weight: 600; font-size: 12.5px; }
+.bbar { height: 6px; border-radius: 3px; background: color-mix(in srgb, currentColor 8%, transparent); margin-top: 6px; overflow: hidden; }
+.bbar i { display: block; height: 100%; border-radius: 3px; transition: width .4s ease; }
+.av[data-v=rooms] { grid-template-columns: 300px 1fr; align-items: start; }
+@media (max-width: 820px) {
+  .views { min-height: 0; }
+  .av.on { grid-template-columns: 1fr; }
+  .gt-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .caption { text-align: center; font: 12px var(--mono); color: var(--faint); margin-top: 12px; }
 
@@ -344,28 +416,58 @@ footer a { text-decoration: none; }
       </div>
       <p class="meta">Kostenlos · MIT-Lizenz · kein Konto, kein Tracking</p>
 
-      <div class="shot" id="shot" role="img" aria-label="Die App im Vollbild mit Beispieldaten: links die aktuelle Lektion mit Raum ZH-404 und die nächsten Prüfungen, rechts die Woche.">
+      <div class="shot" id="shot" aria-label="Die App zum Ausprobieren, mit Beispieldaten">
         <div class="tb"><span class="ctl">● ● ●</span><span class="t">WISS Stundenplan</span><span class="ctl">— ▢ ✕</span></div>
-        <div class="ah"><svg viewBox="0 0 100 100" data-logo aria-hidden="true"></svg><div><b>Stundenplan</b><small><i></i>Aktualisiert vor 2 Min.</small></div></div>
-        <div class="at"><span class="on">Woche</span><span>Prüfungen<em>2</em></span><span>Noten</span><span>Absenzen<em>1</em></span><span>Räume</span></div>
-        <div class="ab">
-          <div>
-            <div class="cardx now">
-              <div class="kick"><i></i>Jetzt · noch 47 min</div>
-              <div class="nr"><div><h4>Datenbanken abfragen</h4><p>10:30–12:00 · B. Keller</p></div><div class="room"><small>RAUM</small><b><span>ZH-</span>404</b></div></div>
-              <div class="bar"><i style="left:0;width:22%;background:#5b8def;opacity:.4"></i><i style="left:26%;width:19%;background:#2fbf71"></i><i style="left:55%;width:19%;background:#b07cf0"></i><i style="left:77%;width:23%;background:#f0a23b"></i><b></b></div>
+        <div class="ah"><svg viewBox="0 0 100 100" data-logo aria-hidden="true"></svg><div><b>Stundenplan</b><small><i></i><span id="mUpd">Aktualisiert vor 2 Min.</span></small></div>
+          <button type="button" class="mrf" id="mRefresh" aria-label="Aktualisieren"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v4.5h-4.5"/></svg></button></div>
+        <div class="at" role="tablist"><button type="button" class="on" data-v="week">Woche</button><button type="button" data-v="exams">Prüfungen<em>2</em></button><button type="button" data-v="grades">Noten</button><button type="button" data-v="abs">Absenzen<em id="mAbsN">1</em></button><button type="button" data-v="rooms">Räume</button></div>
+        <div class="views">
+          <div class="ab av on" data-v="week">
+            <div>
+              <div class="cardx now" id="mNow">
+                <div class="kick"><i></i><span data-k>Jetzt · noch 47 min</span></div>
+                <div class="nr"><div><h4 data-t>Datenbanken abfragen</h4><p data-m>10:30–12:00 · B. Keller</p></div><div class="room"><small>RAUM</small><b data-r><span>ZH-</span>404</b></div></div>
+                <div class="bar" data-bar></div>
+              </div>
+              <div class="xs"><h5 data-dayname>Mittwoch, 18. Nov</h5><div class="dlist" id="mDay"></div></div>
             </div>
-            <div class="xs">
-              <h5>Nächste Prüfungen</h5>
-              <div class="cardx xr"><div class="d"><b>19</b><small>DO</small></div><div class="n"><span class="tag">ZP</span>Netzwerke planen</div><div class="in soon">in 3 Tagen</div></div>
-              <div class="cardx xr"><div class="d"><b>24</b><small>DI</small></div><div class="n"><span class="tag pj">PROJEKT</span>Web-App entwickeln</div><div class="in">in 8 Tagen</div></div>
-              <div class="cardx xr"><div class="d"><b>02</b><small>MI</small></div><div class="n"><span class="tag">ZP</span>Daten modellieren</div><div class="in">in 16 Tagen</div></div>
+            <div class="cardx wk-card"><div class="wk" id="wk"></div></div>
+          </div>
+          <div class="ab av" data-v="exams">
+            <div>
+              <div class="cardx xhero" id="mX"><div class="cd"><b data-d>3</b><small>Tage</small></div><div><div class="kick" data-kind>Nächste Prüfung · ZP</div><h4 data-n>Netzwerke planen</h4><p data-w>Do, 19. Nov · 08:30 · ZH-411</p></div></div>
+              <div class="tiles"><div class="cardx tile"><small>7 Tage</small><b style="color:#e8344e">1</b></div><div class="cardx tile"><small>30 Tage</small><b>3</b></div><div class="cardx tile"><small>Geschätzt</small><b>1</b></div></div>
+            </div>
+            <div class="xs" id="mXList" style="margin-top:0"></div>
+          </div>
+          <div class="ab av" data-v="grades">
+            <div>
+              <div class="cardx ghead"><div><small>Schnitt</small><div class="avg">5.12</div><small>14 von 38 Modulen</small></div><div class="ring"><b>37<span>%</span></b></div></div>
+              <div class="gt-grid" id="mGrades"></div>
+            </div>
+            <div class="cardx calc"><div class="ttl">Applikationen testen<span>Modul 450</span></div>
+              <div class="parts"><span class="part">ZP <b>4.5</b> · 30 %</span><span class="part">Projekt <b>5.5</b> · 30 %</span><span class="part" style="opacity:.6">LB offen · 40 %</span></div>
+              <p style="margin-top:12px;font-size:12px;opacity:.6">Zielnote antippen</p>
+              <div class="targets" data-targets></div><p class="need" data-need></p></div>
+          </div>
+          <div class="ab av" data-v="abs">
+            <div>
+              <div class="cardx todo" id="mTodo"><div><b>Mo, 9. Nov · 2 Lektionen</b><small>Englisch · noch nicht entschuldigt</small></div><span class="left">noch 3 Tage</span></div>
+              <button type="button" class="mbtn" id="mExcuse">Als entschuldigt markieren</button>
+            </div>
+            <div class="cardx budget"><h5>Noch fehlen erlaubt</h5>
+              <div class="brow"><div class="bh"><span>Netzwerke planen</span><span style="color:#c47f06">noch 1</span></div><div class="bbar"><i style="width:86%;background:#c47f06"></i></div></div>
+              <div class="brow"><div class="bh"><span>Englisch</span><span style="color:#23955d" id="mEnLeft">noch 3</span></div><div class="bbar"><i id="mEnBar" style="width:52%;background:#23955d"></i></div></div>
+              <div class="brow"><div class="bh"><span>Datenbanken abfragen</span><span style="color:#23955d">noch 5</span></div><div class="bbar"><i style="width:24%;background:#23955d"></i></div></div>
             </div>
           </div>
-          <div class="cardx wk-card"><div class="wk" id="wk"></div></div>
+          <div class="ab av" data-v="rooms">
+            <div class="cardx rtop"><div class="rr"><div><small>Frei um <span data-rt2>10:45</span></small><b><span data-free>7</span><em> / 12</em></b></div><div class="tt" data-rt>10:45</div></div><input type="range" min="480" max="1020" step="15" value="645" data-slider aria-label="Uhrzeit"><p style="margin-top:8px;font-size:11.5px;opacity:.55">Schieb die Zeit · rot umrandet: dein Klassenzimmer</p></div>
+            <div class="cardx floor" data-floor></div>
+          </div>
         </div>
       </div>
-      <p class="caption">Vollbild auf dem Computer · Beispieldaten</p>
+      <p class="caption">Zum Ausprobieren: Tabs, Lektionen und Prüfungen anklicken · Beispieldaten</p>
     </section>
 
     <section class="sec" id="how">
@@ -857,20 +959,103 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
   };
   theme(); dark.addEventListener ? dark.addEventListener('change', theme) : dark.addListener(theme);
 
-  // ---------- week grid (example data) ----------
+  // ---------- the try-it app (example data) ----------
   const C = { db: '#2fbf71', net: '#5b8def', en: '#b07cf0', web: '#f0a23b', math: '#e2556b', abu: '#14a5a0' };
+  const TEACH = { 'Netzwerke planen': 'A. Meier', 'Web-App entwickeln': 'B. Keller', 'Allgemeinbildung': 'C. Rossi', 'Mathematik': 'D. Huber', 'Datenbanken abfragen': 'B. Keller', 'Englisch': 'E. Smith' };
   const W = [
-    ['Mo', '16. Nov', [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', C.net], ['13:00', '16:30', 'Web-App entwickeln', 'ZH-404', C.web]]],
-    ['Di', '17. Nov', [['08:30', '12:00', 'Allgemeinbildung', 'ZH-302', C.abu], ['13:00', '14:30', 'Mathematik', 'ZH-404', C.math]]],
-    ['Mi', '18. Nov', [['08:30', '10:00', 'Netzwerke planen', 'ZH-411', C.net], ['10:30', '12:00', 'Datenbanken abfragen', 'ZH-404', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', C.en], ['14:45', '16:30', 'Web-App entwickeln', 'ZH-404', C.web]]],
-    ['Do', '19. Nov', [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', C.net]]],
-    ['Fr', '20. Nov', [['08:30', '12:00', 'Datenbanken abfragen', 'ZH-404', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', C.en]]],
+    ['Mo', 'Montag', '16. Nov', [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', C.net], ['13:00', '16:30', 'Web-App entwickeln', 'ZH-404', C.web]]],
+    ['Di', 'Dienstag', '17. Nov', [['08:30', '12:00', 'Allgemeinbildung', 'ZH-302', C.abu], ['13:00', '14:30', 'Mathematik', 'ZH-404', C.math]]],
+    ['Mi', 'Mittwoch', '18. Nov', [['08:30', '10:00', 'Netzwerke planen', 'ZH-411', C.net], ['10:30', '12:00', 'Datenbanken abfragen', 'ZH-404', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', C.en], ['14:45', '16:30', 'Web-App entwickeln', 'ZH-404', C.web]]],
+    ['Do', 'Donnerstag', '19. Nov', [['08:30', '12:00', 'Netzwerke planen', 'ZH-411', C.net]]],
+    ['Fr', 'Freitag', '20. Nov', [['08:30', '12:00', 'Datenbanken abfragen', 'ZH-404', C.db], ['13:00', '14:30', 'Englisch', 'ZH-206', C.en]]],
   ];
+  const TODAY = 2, NOW = '11:13';
   const m = (t) => +t.slice(0, 2) * 60 + +t.slice(3), top = (t) => ((m(t) - 480) / 540) * 100;
-  let g = '<div></div>' + W.map((d, i) => `<div class="h ${i === 2 ? 'today' : ''}">${d[0]}<small>${d[1]}</small></div>`).join('');
+  let g = '<div></div>' + W.map((d, i) => `<div class="h ${i === TODAY ? 'today' : ''}">${d[0]}<small>${d[2]}</small></div>`).join('');
   g += '<div class="times">' + ['08:00', '10:00', '12:00', '14:00', '16:00'].map((t) => `<span style="top:${top(t)}%">${t}</span>`).join('') + '</div>';
-  g += W.map((d, i) => `<div class="col ${i === 2 ? 'today' : ''}">${i === 2 ? `<i class="nowline" style="top:${top('11:13')}%"></i>` : ''}${d[2].map((l) => `<div class="l" style="--c:${l[4]};top:${top(l[0])}%;height:calc(${top(l[1]) - top(l[0])}% - 3px)"><b>${l[2]}</b><span>${l[0]} · ${l[3]}</span></div>`).join('')}</div>`).join('');
+  g += W.map((d, i) => `<div class="col ${i === TODAY ? 'today' : ''}">${i === TODAY ? `<i class="nowline" style="top:${top(NOW)}%"></i>` : ''}${d[3].map((l, k) => `<div class="l" data-d="${i}" data-k="${k}" style="--c:${l[4]};top:${top(l[0])}%;height:calc(${top(l[1]) - top(l[0])}% - 3px)" title="${l[2]}"><b>${l[2]}</b><span>${l[0]} · ${l[3]}</span></div>`).join('')}</div>`).join('');
   $('#wk').innerHTML = g;
+
+  const nowCard = $('#mNow');
+  function showDay(di) {
+    $('[data-dayname]').textContent = `${W[di][1]}, ${W[di][2]}`;
+    $('#mDay').innerHTML = W[di][3].map((l, k) => `<button type="button" class="cardx dl" data-d="${di}" data-k="${k}" style="--c:${l[4]}"><span class="tm">${l[0]}</span><span class="nm">${l[2]}</span><span class="rm2">${l[3]}</span></button>`).join('');
+  }
+  function pick(di, k) {
+    const l = W[di][3][k], now = m(NOW);
+    const on = di === TODAY && m(l[0]) <= now && now < m(l[1]);
+    const kick = on ? `Jetzt · noch ${m(l[1]) - now} min` : di === TODAY && m(l[0]) > now ? `Als Nächstes · in ${m(l[0]) - now} min` : `${W[di][0]} · ${l[0]}`;
+    $('[data-k]', nowCard).textContent = kick;
+    $('[data-t]', nowCard).textContent = l[2];
+    $('[data-m]', nowCard).textContent = `${l[0]}–${l[1]} · ${TEACH[l[2]]}`;
+    const [pre, num] = l[3].split('-');
+    $('[data-r]', nowCard).innerHTML = `<span>${pre}-</span>${num}`;
+    nowCard.style.setProperty('--c', l[4]);
+    nowCard.querySelector('.kick i').style.background = on ? '#e8344e' : '#ffc857';
+    const span = 510, len = 480;   // 08:30–16:30
+    $('[data-bar]', nowCard).innerHTML = W[di][3].map((x, n) => `<i style="left:${((m(x[0]) - span) / len) * 100}%;width:${((m(x[1]) - m(x[0])) / len) * 100}%;background:${x[4]};opacity:${n === k ? 1 : .35}"></i>`).join('') + (di === TODAY ? `<b style="left:${((now - span) / len) * 100}%"></b>` : '');
+    $$('.wk .l, .dl').forEach((el) => el.classList.toggle('sel', +el.dataset.d === di && +el.dataset.k === k));
+    nowCard.classList.add('flash'); setTimeout(() => nowCard.classList.remove('flash'), 350);
+  }
+  $('#shot').addEventListener('click', (e) => {
+    const l = e.target.closest('.wk .l, .dl'); if (!l) return;
+    if (e.target.closest('.wk')) showDay(+l.dataset.d);
+    pick(+l.dataset.d, +l.dataset.k);
+  });
+  $$('.wk .h').forEach((h, i) => { h.style.cursor = 'pointer'; h.addEventListener('click', () => { showDay(i); pick(i, 0); }); });
+  showDay(TODAY); pick(TODAY, 1); nowCard.classList.remove('flash');
+
+  // tabs
+  $$('.at button').forEach((b) => b.addEventListener('click', () => {
+    $$('.at button').forEach((x) => x.classList.toggle('on', x === b));
+    $$('.views .av').forEach((v) => v.classList.toggle('on', v.dataset.v === b.dataset.v));
+  }));
+
+  // refresh button
+  $('#mRefresh').addEventListener('click', (e) => {
+    const b = e.currentTarget; if (b.classList.contains('spin')) return;
+    b.classList.add('spin'); $('#mUpd').textContent = 'Aktualisiere …';
+    setTimeout(() => { b.classList.remove('spin'); $('#mUpd').textContent = 'Aktualisiert gerade eben'; }, 1100);
+  });
+
+  // exams
+  const EX = [
+    ['19', 'DO', 'ZP', 'Netzwerke planen', 'Do, 19. Nov · 08:30 · ZH-411', 3, ''],
+    ['24', 'DI', 'PROJEKT', 'Web-App entwickeln', 'Di, 24. Nov · 13:00 · ZH-404', 8, 'pj'],
+    ['02', 'MI', 'ZP', 'Daten modellieren', 'Mi, 2. Dez · 08:30 · ZH-302 · geschätzt', 16, 'est'],
+    ['11', 'FR', 'LB 2', 'Englisch', 'Fr, 11. Dez · 13:00 · ZH-206', 25, 'lb'],
+  ];
+  $('#mXList').innerHTML = '<h5>November</h5>' + EX.map((x, i) => (i === 2 ? '<h5>Dezember</h5>' : '') + `<button type="button" class="cardx xr click ${x[6] === 'est' ? 'est' : ''} ${i === 0 ? 'sel' : ''}" data-x="${i}"><div class="d"><b>${x[0]}</b><small>${x[1]}</small></div><div class="n"><span class="tag ${x[6] === 'pj' ? 'pj' : ''}" ${x[6] === 'lb' ? 'style="background:rgba(232,52,78,.12);color:#e8344e"' : ''}>${x[2]}</span>${x[3]}</div><div class="in ${x[5] <= 7 ? 'soon' : ''}">in ${x[5]} Tagen</div></button>`).join('');
+  $('#mXList').addEventListener('click', (e) => {
+    const b = e.target.closest('[data-x]'); if (!b) return; const x = EX[+b.dataset.x];
+    $$('#mXList .xr').forEach((r) => r.classList.toggle('sel', r === b));
+    $('#mX [data-d]').textContent = x[5]; $('#mX [data-n]').textContent = x[3]; $('#mX [data-w]').textContent = x[4];
+    $('#mX [data-kind]').textContent = (+b.dataset.x ? 'Prüfung · ' : 'Nächste Prüfung · ') + x[2];
+  });
+
+  // grades
+  $('#mGrades').innerHTML = [['Netzwerk aufbauen', 5.5, C.net], ['Webseiten gestalten', 5.0, C.web], ['Mathematik', 5.5, C.math], ['Daten modellieren', 4.5, C.db], ['Englisch', 5.0, C.en], ['Allgemeinbildung', 5.5, C.abu]]
+    .map(([n, v, c]) => `<div class="cardx gt" style="--c:${c}"><small>${n}</small><b>${v.toFixed(1)}</b></div>`).join('');
+  function wireCalc(root) {
+    const tg = $('[data-targets]', root), out = $('[data-need]', root);
+    const need = (t) => {
+      const v = Math.max(1, Math.ceil(((t - .25 - (4.5 * .3 + 5.5 * .3)) / .4) * 10) / 10);
+      out.innerHTML = v > 6 ? `Eine ${t.toFixed(1)} geht nicht mehr.` : `Für eine ${t.toFixed(1)} brauchst du in der LB noch <b class="${v > 5.5 ? 'bad' : ''}">${v.toFixed(1)}</b>`;
+      $$('button', tg).forEach((b) => b.setAttribute('aria-pressed', +b.dataset.t === t));
+    };
+    tg.innerHTML = [4, 4.5, 5, 5.5, 6].map((t) => `<button type="button" data-t="${t}"><span>${t.toFixed(1)}</span></button>`).join('');
+    tg.addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) need(+b.dataset.t); });
+    need(5);
+  }
+  wireCalc($('[data-v=grades].av'));
+
+  // absences
+  $('#mExcuse').innerHTML = '<span>Als entschuldigt markieren</span>';
+  $('#mExcuse').addEventListener('click', (e) => {
+    const b = e.currentTarget; b.disabled = true; b.innerHTML = '<span>✓ Entschuldigt</span>';
+    $('#mTodo').classList.add('done'); $('#mTodo small').textContent = 'Englisch · entschuldigt'; $('#mTodo .left').textContent = 'erledigt';
+    $('#mAbsN').textContent = '';
+  });
 
   // ---------- grade calculator ----------
   const need = (t) => {
@@ -885,16 +1070,20 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
   // ---------- rooms ----------
   const ROOMS = [['4.01', [[510, 720], [780, 870]]], ['4.02', [[510, 600]]], ['4.03', []], ['4.04', [[510, 720], [780, 990]]], ['4.05', [[630, 720]]], ['4.06', [[780, 990]]], ['4.07', []], ['4.08', [[510, 870]]], ['4.09', [[510, 720]]], ['4.10', [[780, 870]]], ['4.11', [[630, 720], [780, 990]]], ['4.12', []]];
   const hm = (x) => `${String(Math.floor(x / 60)).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`;
-  const rooms = (t) => {
-    let free = 0;
-    $('#floor').innerHTML = ROOMS.map(([n, b]) => {
-      const busy = b.some(([a, z]) => t >= a && t < z), next = b.filter(([a]) => a > t).map(([a]) => a).sort((x, y) => x - y)[0];
-      if (!busy) free++;
-      return `<div class="rm ${busy ? 'busy' : ''} ${n === '4.04' ? 'mine' : ''}">${n}<small>${busy ? 'belegt' : next ? 'bis ' + hm(next) : 'frei'}</small></div>`;
-    }).join('');
-    $('#free').textContent = free; $('#rt').textContent = hm(t); $('#rt2').textContent = hm(t);
-  };
-  $('#slider').addEventListener('input', (e) => rooms(+e.target.value)); rooms(645);
+  function wireRooms(floor, slider, free, rt, rt2) {
+    const draw = (t) => {
+      let n = 0;
+      floor.innerHTML = ROOMS.map(([r, b]) => {
+        const busy = b.some(([a, z]) => t >= a && t < z), next = b.filter(([a]) => a > t).map(([a]) => a).sort((x, y) => x - y)[0];
+        if (!busy) n++;
+        return `<div class="rm ${busy ? 'busy' : ''} ${r === '4.04' ? 'mine' : ''}">${r}<small>${busy ? 'belegt' : next ? 'bis ' + hm(next) : 'frei'}</small></div>`;
+      }).join('');
+      free.textContent = n; rt.textContent = hm(t); rt2.textContent = hm(t);
+    };
+    slider.addEventListener('input', () => draw(+slider.value)); draw(+slider.value);
+  }
+  wireRooms($('#floor'), $('#slider'), $('#free'), $('#rt'), $('#rt2'));
+  { const r = $('[data-v=rooms].av'); wireRooms($('[data-floor]', r), $('[data-slider]', r), $('[data-free]', r), $('[data-rt]', r), $('[data-rt2]', r)); }
 
   // ---------- pop-ups ----------
   // iPhone guide: one step at a time
