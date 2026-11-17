@@ -48,8 +48,7 @@ try {
   }
   fs.writeFileSync(path.join(out, 'facts.json'), JSON.stringify(facts, null, 1));
   await p.emulateMedia({ colorScheme: 'dark' }); await p.waitForTimeout(300);
-  await shoot('week', 'week-dark');
-  await shoot('rooms', 'rooms-dark');
+  for (const t of ['week', 'exams', 'grades', 'absences', 'rooms']) await shoot(t, t + '-dark');
   // the toolbar popup itself
   const q = await ctx.newPage(); await q.setViewportSize({ width: 420, height: 600 });
   for (const [mode, sfx] of [['light', ''], ['dark', '-dark']]) {

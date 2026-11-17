@@ -19,18 +19,33 @@ const CSS = `
 @font-face { font-family: G; src: url(${font('geist.woff2')}); font-weight: 100 900; }
 * { box-sizing: border-box; margin: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; }
-body { position: relative; background: #f7f5f1; color: #16141d; font: 400 18px/1.45 G, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+body { --bg: #f7f5f1; --ink: #16141d; --mut: #5d5964; --faint: #8a8592; --card: #fff; --bx: #f3f0ea; --hot: #fde8eb; --hotT: #a1243a; --arr: #c9c3b8; position: relative; background: var(--bg); color: var(--ink); font: 400 18px/1.45 G, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
 body::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(#d9d3c8 1.1px, transparent 1.2px); background-size: 22px 22px; mask-image: radial-gradient(ellipse at 70% 40%, #000 20%, transparent 75%); }
 .blob { position: absolute; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff6478, #d81f3c 70%); filter: blur(0); }
 .glow { position: absolute; border-radius: 50%; background: radial-gradient(circle, rgba(232,52,78,.22), transparent 65%); }
-.dark { background: #15131a; color: #f3f1f6; }
+.dark { --bg: #15131a; --ink: #f3f1f6; --mut: #a7a2b1; --faint: #8f8a99; --card: #1f1d25; --bx: #2a2731; --hot: rgba(232,52,78,.18); --hotT: #ff8a9b; --arr: #4a4553; }
+.dark .glow { background: radial-gradient(circle, rgba(232,52,78,.28), transparent 65%); }
+.dark .card { box-shadow: 0 26px 60px -18px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.08); }
+.dark .card .k { color: #9d98a8; }
+.dark .pill { background: #2a2731; box-shadow: 0 16px 34px -14px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.1); }
+.dark .checks li::before { background: rgba(232,52,78,.18); }
+.dark .foot { color: #6e6a78; }
+.dark .pop { box-shadow: 0 40px 80px -24px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.1); }
+.mut { color: var(--mut); } .faint { color: var(--faint); } .ink { color: var(--ink); }
+.bx { flex: 1; padding: 10px 14px; border-radius: 12px; background: var(--bx); font-size: 14px; color: var(--mut); }
+.bx b { display: block; font: 800 26px/1.1 B; color: var(--ink); margin-top: 2px; }
+.bx.hot { background: var(--hot); color: var(--hotT); } .bx.hot b { color: #e2283f; }
+.arr { font: 800 24px B; color: var(--arr); }
+.free { white-space: nowrap; padding: 5px 9px; border-radius: 8px; background: rgba(31,138,85,.14); color: #1f8a55; font: 700 13px G; }
+.dark .free { background: rgba(31,138,85,.22); color: #6ee7a8; }
+.pill.red { background: #e2283f; } .pill.red b { background: #fff; color: #e2283f; }
 .dark::before { background-image: radial-gradient(#2e2a36 1.1px, transparent 1.2px); }
 .abs { position: absolute; }
 .eye { display: inline-flex; align-items: center; gap: 8px; font: 700 13px/1 G; letter-spacing: .12em; text-transform: uppercase; color: #e2283f; }
 .eye::before { content: ""; width: 18px; height: 2px; background: currentColor; }
 h1 { font: 800 58px/1.02 B, G, sans-serif; letter-spacing: -.035em; margin-top: 16px; }
 h1 em { font-style: normal; color: #e2283f; }
-.sub { margin-top: 18px; font-size: 20px; line-height: 1.45; color: #5d5964; max-width: 440px; }
+.sub { margin-top: 18px; font-size: 20px; line-height: 1.45; color: var(--mut); max-width: 440px; }
 .dark .sub { color: #a7a2b1; }
 .win { position: absolute; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 rgba(0,0,0,.04), 0 30px 70px -20px rgba(40,20,30,.35), 0 0 0 1px rgba(22,20,29,.08); }
 .win .bar { height: 34px; display: flex; align-items: center; gap: 7px; padding: 0 14px; background: #efece6; border-bottom: 1px solid #e2ddd4; }
@@ -41,7 +56,7 @@ h1 em { font-style: normal; color: #e2283f; }
 .win img { display: block; width: 100%; }
 .pop { position: absolute; border-radius: 18px; overflow: hidden; box-shadow: 0 40px 80px -24px rgba(40,10,20,.5), 0 0 0 1px rgba(22,20,29,.1); }
 .pop img { display: block; width: 100%; }
-.card { position: absolute; background: #fff; border-radius: 16px; padding: 16px 18px; box-shadow: 0 22px 50px -18px rgba(40,20,30,.4), 0 0 0 1px rgba(22,20,29,.07); }
+.card { position: absolute; background: var(--card); color: var(--ink); border-radius: 16px; padding: 16px 18px; box-shadow: 0 22px 50px -18px rgba(40,20,30,.4), 0 0 0 1px rgba(22,20,29,.07); }
 .card .k { font: 700 11.5px/1 G; letter-spacing: .1em; text-transform: uppercase; color: #8a8592; }
 .card .v { font: 800 30px/1.1 B, G; letter-spacing: -.03em; margin-top: 6px; }
 .pill { position: absolute; display: inline-flex; align-items: center; gap: 9px; padding: 10px 16px 10px 12px; border-radius: 99px; background: #16141d; color: #fff; font: 600 15px/1 G; box-shadow: 0 16px 34px -14px rgba(0,0,0,.55); white-space: nowrap; }
@@ -58,6 +73,7 @@ const win = (src, { x, y, w, d = false, url = 'WISS Stundenplan', rot = 0, crop 
 const pop = (src, { x, y, w, rot = 0, crop }) => `<div class="pop" style="left:${x}px;top:${y}px;width:${w}px;${crop ? `height:${crop}px;` : ''}transform:rotate(${rot}deg)"><img src="${shot(src)}"></div>`;
 const brand = (size = 52) => `<div class="brand">${logo.replace('<svg ', `<svg style="width:${size}px;height:${size}px" `)}<span>WISS Stundenplan</span></div>`;
 
+const pick = (o, f) => Object.fromEntries(Object.entries(o).filter(([k]) => f(k)));
 function build(L) {
 SHOTS = L === 'en' ? 'shots-en' : 'shots';
 const t = (de, en) => (L === 'en' ? en : de), de = L === 'de';
@@ -70,9 +86,13 @@ const absTitle = t(`Absenz vom ${absDay}.${MON[absMon.split(' ')[0]] || ''}. noc
 const absBody = `${absLabel.split(' ')[0]} · ${t(`noch ${absN} Tag${absN === '1' ? '' : 'e'} zum Entschuldigen`, `${absN} day${absN === '1' ? '' : 's'} left to excuse it`)}`;
 const noteTxt = t('Inoffizielles Schülerprojekt · Abbildungen mit frei erfundenen Demodaten', 'Unofficial student project · pictures use invented demo data');
 const note = `<div class="foot" style="left:72px;bottom:28px">${noteTxt}</div>`;
-return {
-  // ---------- screenshots, 1280×800 ----------
-  [out('screenshot-1-overview-1280x800.png')]: [1280, 800, `
+// One set of feature pictures. dk = dark version (app in dark mode, dark page).
+const slides = (dk) => {
+  const S = (n) => (dk ? n + '-dark' : n);
+  const key = (i, name) => (de ? `store-assets/screenshot-${i}-${name}-1280x800.png` : `docs/readme/${i}-${name}${dk ? '-dark' : ''}.png`);
+  const cls = dk ? 'dark' : '';
+  return {
+  [key(1, 'overview')]: [1280, 800, `
     <div class="glow" style="width:900px;height:900px;right:-300px;top:-260px"></div>
     <div class="abs" style="left:72px;top:84px;width:500px">
       ${brand(48)}
@@ -80,79 +100,86 @@ return {
       <p class="sub">${t(`Woche, Prüfungen, Noten, Absenzen und freie Räume aus dem WISS-Extranet. Sofort da, ohne Ladezeit.`, `Week, exams, grades, absences and free rooms from the WISS extranet. There instantly, no loading.`)}</p>
       <ul class="checks">${t(`<li>Lädt sofort, aktualisiert im Hintergrund</li><li>Daten bleiben auf deinem Gerät</li><li>Kostenlos, ohne Werbung</li>`, `<li>Opens instantly, updates in the background</li><li>Your data stays on your device</li><li>Free, no ads</li>`)}</ul>
     </div>
-    ${win('week', { x: 600, y: 96, w: 880 })}
-    ${pop('popup', { x: 540, y: 300, w: 330 })}
+    ${win(S('week'), { x: 600, y: 96, w: 880, d: dk })}
+    ${pop(S('popup'), { x: 540, y: 300, w: 330 })}
     <div class="pill" style="left:808px;top:258px"><b>↗</b>${t(`Ein Klick in der Symbolleiste`, `One click in the toolbar`)}</div>
-    ${note}`],
+    ${note}`, cls],
 
-  [out('screenshot-2-exams-1280x800.png')]: [1280, 800, `
+  [key(2, 'exams')]: [1280, 800, `
     <div class="glow" style="width:800px;height:800px;left:-260px;top:-300px"></div>
     <div class="abs" style="left:0;right:0;top:66px;text-align:center">
-      ${t(`<span class="eye">Prüfungen</span>`, `<span class="eye">Exams</span>`)}
+      <span class="eye">${t('Prüfungen', 'Exams')}</span>
       <h1>${t(`Keine Prüfung kommt <em>überraschend.</em>`, `No exam takes you <em>by surprise.</em>`)}</h1>
       <p class="sub" style="margin:16px auto 0;max-width:640px">${t(`Countdown bis zur nächsten Prüfung, Zwischenprüfungen erkannt, geschätzte Termine klar markiert.`, `A countdown to your next exam, mid-term exams recognised, estimated dates clearly marked.`)}</p>
     </div>
-    ${win('exams', { x: 190, y: 300, w: 900 })}
+    ${win(S('exams'), { x: 190, y: 300, w: 900, d: dk })}
     <div class="card" style="left:72px;top:390px;width:230px;transform:rotate(-4deg)">
-      ${t(`<div class="k">Nächste Prüfung</div>`, `<div class="k">Next exam</div>`)}
+      <div class="k">${t('Nächste Prüfung', 'Next exam')}</div>
       <div class="v" style="font-size:54px;color:#e2283f">${esc(facts.exam.days)} ${facts.exam.days === '1' ? t('Tag', 'day') : t('Tage', 'days')}</div>
-      <div style="font-size:14px;color:#5d5964;margin-top:4px">${esc(facts.exam.title.split(' ')[0])}${/ZP/.test(facts.exam.kicker) ? t(' · Zwischenprüfung', ' · mid-term') : ''}<br>${esc(facts.exam.meta.split(' · ').slice(0, 2).join(' · '))}</div>
+      <div class="mut" style="font-size:14px;margin-top:4px">${esc(facts.exam.title.split(' ')[0])}${/ZP/.test(facts.exam.kicker) ? t(' · Zwischenprüfung', ' · mid-term') : ''}<br>${esc(facts.exam.meta.split(' · ').slice(0, 2).join(' · '))}</div>
     </div>
     <div class="pill" style="left:930px;top:470px;transform:rotate(3deg)"><b>✓</b>${t(`Geschätzte Termine gekennzeichnet`, `Estimated dates marked`)}</div>
-    <div class="pill" style="left:960px;top:560px;transform:rotate(-2deg);background:#e2283f"><b style="background:#fff;color:#e2283f;font-size:9px">ZP</b>${t(`Auch im Wochenplan markiert`, `Also marked in your week`)}</div>
-    <div class="foot" style="right:72px;top:28px">${noteTxt}</div>`],
+    <div class="pill red" style="left:960px;top:560px;transform:rotate(-2deg)"><b style="font-size:9px">ZP</b>${t(`Auch im Wochenplan markiert`, `Also marked in your week`)}</div>
+    <div class="foot" style="right:72px;top:28px">${noteTxt}</div>`, cls],
 
-  [out('screenshot-3-grades-1280x800.png')]: [1280, 800, `
+  [key(3, 'grades')]: [1280, 800, `
     <div class="glow" style="width:900px;height:900px;right:-340px;bottom:-420px"></div>
     <div class="abs" style="left:72px;top:110px;width:420px">
-      ${t(`<span class="eye">Noten</span>`, `<span class="eye">Grades</span>`)}
+      <span class="eye">${t('Noten', 'Grades')}</span>
       <h1>${t(`Wissen, wo du <em>stehst.</em>`, `Know where you <em>stand.</em>`)}</h1>
       <p class="sub">${t(`Schnitt, Verlauf und alle Modulnoten. Der Notenrechner zeigt dir, was eine nächste Note bewirkt.`, `Average, history and every module grade. The calculator shows what your next grade would do.`)}</p>
     </div>
-    ${win('grades', { x: 540, y: 90, w: 860 })}
+    ${win(S('grades'), { x: 540, y: 90, w: 860, d: dk })}
     <div class="card" style="left:96px;top:470px;width:380px;padding:20px 22px">
-      ${t(`<div class="k">Notenrechner</div>`, `<div class="k">Grade calculator</div>`)}
+      <div class="k">${t('Notenrechner', 'Grade calculator')}</div>
       <div style="display:flex;align-items:center;gap:14px;margin-top:14px">
-        <div style="flex:1;padding:10px 14px;border-radius:12px;background:#f3f0ea;font-size:14px;color:#5d5964"${t(`>Nächste Note<div`, `>Next grade<div`)} style="font:800 26px/1.1 B;color:#16141d;margin-top:2px">5.5</div></div>
-        <div style="font:800 24px B;color:#c9c3b8">→</div>
-        <div style="flex:1;padding:10px 14px;border-radius:12px;background:#fde8eb;font-size:14px;color:#a1243a"${t(`>Neuer Schnitt<div`, `>New average<div`)} style="font:800 26px/1.1 B;color:#e2283f;margin-top:2px">${after}</div></div>
+        <div class="bx">${t('Nächste Note', 'Next grade')}<b>5.5</b></div>
+        <div class="arr">→</div>
+        <div class="bx hot">${t('Neuer Schnitt', 'New average')}<b>${after}</b></div>
       </div>
-      <div style="font-size:13.5px;color:#8a8592;margin-top:12px">${t(`Bisher ${facts.avg} · eine 5.5 bringt dich auf ${after}`, `Now ${facts.avg} · a 5.5 takes you to ${after}`)}</div>
+      <div class="faint" style="font-size:13.5px;margin-top:12px">${t(`Bisher ${facts.avg} · eine 5.5 bringt dich auf ${after}`, `Now ${facts.avg} · a 5.5 takes you to ${after}`)}</div>
     </div>
-    ${note}`],
+    ${note}`, cls],
 
-  [out('screenshot-4-absences-1280x800.png')]: [1280, 800, `
+  [key(4, 'absences')]: [1280, 800, `
     <div class="glow" style="width:900px;height:900px;left:-380px;bottom:-460px"></div>
-    ${win('absences', { x: -120, y: 90, w: 860 })}
+    ${win(S('absences'), { x: -120, y: 90, w: 860, d: dk })}
     <div class="abs" style="left:800px;top:120px;width:410px">
-      ${t(`<span class="eye">Absenzen</span>`, `<span class="eye">Absences</span>`)}
+      <span class="eye">${t('Absenzen', 'Absences')}</span>
       <h1>${t(`Keine Frist mehr <em>verpassen.</em>`, `Never miss a <em>deadline.</em>`)}</h1>
       <p class="sub">${t(`Offene Entschuldigungen mit Frist, Präsenz Tag für Tag und eine Erinnerung, bevor es zu spät ist.`, `Open excuses with their deadline, attendance day by day and a reminder before it's too late.`)}</p>
     </div>
     <div class="card" style="left:790px;top:470px;width:410px;display:flex;gap:14px;align-items:flex-start;padding:16px">
       <div style="width:40px;height:40px;flex:none">${logo.replace('<svg ', '<svg style="width:40px;height:40px" ')}</div>
-      <div style="flex:1"><div style="display:flex;justify-content:space-between;font-size:13px;color:#8a8592"><b style="color:#16141d">WISS Stundenplan${t(`</b>jetzt</div>`, `</b>now</div>`)}
+      <div style="flex:1"><div class="faint" style="display:flex;justify-content:space-between;font-size:13px"><b class="ink">WISS Stundenplan</b>${t('jetzt', 'now')}</div>
       <div style="font-weight:700;margin-top:4px;font-size:16px">${esc(absTitle)}</div>
-      <div style="font-size:14.5px;color:#5d5964;margin-top:2px">${esc(absBody)}</div></div>
+      <div class="mut" style="font-size:14.5px;margin-top:2px">${esc(absBody)}</div></div>
     </div>
     <div class="pill" style="left:840px;top:620px"><b>✓</b>${t(`Präsenz auf einen Blick`, `Attendance at a glance`)}</div>
-    ${note}`],
+    ${note}`, cls],
 
-  [out('screenshot-5-rooms-dark-1280x800.png')]: [1280, 800, `
-    <div class="glow" style="width:1000px;height:1000px;right:-300px;top:-380px;background:radial-gradient(circle, rgba(232,52,78,.28), transparent 65%)"></div>
+  [key(5, de ? 'rooms-dark' : 'rooms')]: [1280, 800, `
+    <div class="glow" style="width:1000px;height:1000px;right:-300px;top:-380px"></div>
     <div class="abs" style="left:72px;top:110px;width:430px">
-      <span class="eye">${t(`Freie Räume · Dunkelmodus`, `Free rooms · Dark mode`)}</span>
+      <span class="eye">${de ? 'Freie Räume · Dunkelmodus' : 'Free rooms'}</span>
       <h1>${t(`Freien Raum finden, <em>in Sekunden.</em>`, `Find a free room <em>in seconds.</em>`)}</h1>
       <p class="sub">${t(`Schieb die Zeit und sieh, welche Zimmer frei sind. Hell, dunkel oder automatisch, mit deiner Farbe.`, `Slide the time and see which rooms are free. Light, dark or automatic, in your colour.`)}</p>
-      <div style="display:flex;gap:10px;margin-top:30px">${['#e2283f', '#2f6fed', '#1f8a55', '#8b5cf6', '#f59e0b'].map((c, i) => `<i style="width:34px;height:34px;border-radius:50%;background:${c};box-shadow:${i ? 'none' : '0 0 0 3px #15131a, 0 0 0 5px #e2283f'}"></i>`).join('')}</div>
+      <div style="display:flex;gap:10px;margin-top:30px">${['#e2283f', '#2f6fed', '#1f8a55', '#8b5cf6', '#f59e0b'].map((c, i) => `<i style="width:34px;height:34px;border-radius:50%;background:${c};box-shadow:${i ? 'none' : '0 0 0 3px var(--bg), 0 0 0 5px #e2283f'}"></i>`).join('')}</div>
     </div>
-    ${win('rooms-dark', { x: 560, y: 100, w: 860, d: true })}
-    <div class="card" style="left:480px;top:520px;width:330px;background:#1f1d25;color:#f3f1f6;box-shadow:0 26px 60px -18px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.08)">
-      <div class="k" style="color:#9d98a8"${t('>Frei um ', '>Free at ')}${esc(facts.rooms.time)}</div>
+    ${win(S('rooms'), { x: 560, y: 100, w: 860, d: dk })}
+    <div class="card" style="left:480px;top:520px;width:330px">
+      <div class="k">${t('Frei um ', 'Free at ')}${esc(facts.rooms.time)}</div>
       <div class="v">${esc(facts.rooms.free)} ${t('von', 'of')} ${esc(facts.rooms.total)} ${t('Räumen', 'rooms')}</div>
-      <div style="display:flex;gap:6px;margin-top:10px">${facts.rooms.chips.slice(0, 3).map((r) => `<span style="white-space:nowrap;padding:5px 9px;border-radius:8px;background:rgba(31,138,85,.22);color:#6ee7a8;font:700 13px G">${esc(r)}</span>`).join('')}</div>
+      <div style="display:flex;gap:6px;margin-top:10px">${facts.rooms.chips.slice(0, 3).map((r) => `<span class="free">${esc(r)}</span>`).join('')}</div>
     </div>
-    <div class="foot" style="left:72px;bottom:28px;color:#6e6a78">${noteTxt}</div>`, 'dark'],
+    ${note}`, cls],
+  };
+};
+return {
+  // ---------- feature pictures, 1280×800 ----------
+  // store (German): light, the rooms one dark. README (English): every picture in light and dark.
+  ...(de ? { ...pick(slides(false), (k) => !k.includes('rooms')), ...pick(slides(true), (k) => k.includes('rooms')) }
+     : { ...slides(false), ...slides(true) }),
 
   // ---------- promo tiles + link preview (German only) ----------
   ...(de ? {

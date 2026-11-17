@@ -14,7 +14,7 @@
 
 <p align="center">
   <a href="../../releases/latest"><img alt="Latest version" src="https://img.shields.io/github/v/release/Nicolas-Wehrle/Wiss-Stundenplan?style=flat-square&label=version&color=e2283f"></a>
-  <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc"><img alt="Chrome Web Store users" src="https://img.shields.io/chrome-web-store/users/ljhofcahlfajoepidneficpnjckmcomc?style=flat-square&label=chrome%20users&color=e2283f"></a>
+  <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc"><img alt="Chrome Web Store" src="https://img.shields.io/badge/chrome%20web%20store-available-e2283f?style=flat-square"></a>
   <a href="../../releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/Nicolas-Wehrle/Wiss-Stundenplan/total?style=flat-square&color=e2283f"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-16141d?style=flat-square"></a>
 </p>
@@ -47,25 +47,25 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/readme/screenshot-2-exams-1280x800.png" alt="Exams with countdown"></td>
-    <td width="50%"><img src="docs/readme/screenshot-3-grades-1280x800.png" alt="Grades with calculator"></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/2-exams-dark.png"><img src="docs/readme/2-exams.png" alt="Exams with countdown"></picture></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/3-grades-dark.png"><img src="docs/readme/3-grades.png" alt="Grades with calculator"></picture></td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/readme/screenshot-4-absences-1280x800.png" alt="Absences with deadlines"></td>
-    <td width="50%"><img src="docs/readme/screenshot-5-rooms-dark-1280x800.png" alt="Free rooms in dark mode"></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/4-absences-dark.png"><img src="docs/readme/4-absences.png" alt="Absences with deadlines"></picture></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/readme/5-rooms-dark.png"><img src="docs/readme/5-rooms.png" alt="Free rooms"></picture></td>
   </tr>
 </table>
 
 | | |
 |---|---|
-| 🗓️ **Week** | current and next lesson, room, holidays and school breaks |
-| 📝 **Exams** | ZP, LB and projects with a countdown, estimated where the extranet lists nothing |
-| 📈 **Grades** | average over the year, history chart and a calculator for what you still need |
-| ✅ **Absences** | open excuses with their 7-day deadline, attendance per module |
-| 🚪 **Rooms** | free rooms at any time, with floor plans for WISS Zürich |
-| 🔔 **Reminders** | lessons, absence deadlines and new grades (Android and desktop) |
-| 🎨 **Your look** | German or English, nine styles, light and dark, your own accent colour |
-| 🖥️ **Desktop extras** | tray icon with the next lesson, a small always-on-top window, start with the computer |
+| **Week** | current and next lesson, room, holidays and school breaks |
+| **Exams** | ZP, LB and projects with a countdown, estimated where the extranet lists nothing |
+| **Grades** | average over the year, history chart and a calculator for what you still need |
+| **Absences** | open excuses with their 7-day deadline, attendance per module |
+| **Rooms** | free rooms at any time, with floor plans for WISS Zürich |
+| **Reminders** | lessons, absence deadlines and new grades (Android and desktop) |
+| **Your look** | German or English, nine styles, light and dark, your own accent colour |
+| **Desktop extras** | tray icon with the next lesson, a small always-on-top window, start with the computer |
 
 *All pictures use invented demo data. Try it yourself: choose "Try demo account" on first start, no WISS login needed.*
 
