@@ -47,12 +47,12 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 
 <table>
   <tr>
-    <td width="50%"><img src="store-assets/screenshot-2-exams-1280x800.png" alt="Exams with countdown"></td>
-    <td width="50%"><img src="store-assets/screenshot-3-grades-1280x800.png" alt="Grades with calculator"></td>
+    <td width="50%"><img src="docs/readme/screenshot-2-exams-1280x800.png" alt="Exams with countdown"></td>
+    <td width="50%"><img src="docs/readme/screenshot-3-grades-1280x800.png" alt="Grades with calculator"></td>
   </tr>
   <tr>
-    <td width="50%"><img src="store-assets/screenshot-4-absences-1280x800.png" alt="Absences with deadlines"></td>
-    <td width="50%"><img src="store-assets/screenshot-5-rooms-dark-1280x800.png" alt="Free rooms in dark mode"></td>
+    <td width="50%"><img src="docs/readme/screenshot-4-absences-1280x800.png" alt="Absences with deadlines"></td>
+    <td width="50%"><img src="docs/readme/screenshot-5-rooms-dark-1280x800.png" alt="Free rooms in dark mode"></td>
   </tr>
 </table>
 
@@ -67,7 +67,7 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 | 🎨 **Your look** | German or English, nine styles, light and dark, your own accent colour |
 | 🖥️ **Desktop extras** | tray icon with the next lesson, a small always-on-top window, start with the computer |
 
-*All pictures use invented demo data. Try it yourself: choose "Demokonto testen" on first start, no WISS login needed.*
+*All pictures use invented demo data. Try it yourself: choose "Try demo account" on first start, no WISS login needed.*
 
 ## Privacy
 
@@ -80,7 +80,7 @@ Full details: [PRIVACY.md](PRIVACY.md).
 
 ## Updates
 
-Every version updates itself: Chrome and Firefox in the background, Android, Windows, macOS and the Linux AppImage with an "Installieren" button in the app, Linux `.rpm`/`.deb` (installed with the command above) with your normal system updates, and iPhone through the Userscripts app.
+Every version updates itself: Chrome and Firefox in the background, Android, Windows, macOS and the Linux AppImage with an "Install" button in the app, Linux `.rpm`/`.deb` (installed with the command above) with your normal system updates, and iPhone through the Userscripts app.
 
 ## Building it yourself
 

@@ -1,26 +1,26 @@
-# Datenschutzerklärung – WISS Stundenplan
+# Privacy policy: WISS Stundenplan
 
-Stand: 4. November 2026. Gilt für die Chrome-Erweiterung WISS Stundenplan.
+Last updated: 4 November 2026. Applies to the WISS Stundenplan browser extension. A German version is in [PRIVACY-de.md](PRIVACY-de.md).
 
-## Anbieter und Kontakt
-Nicolas Wehrle, Projekt WISS Stundenplan. Kontakt über das öffentliche GitHub-Projekt: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues. Bitte dort keine Zugangsdaten oder persönlichen Schuldaten veröffentlichen. Es handelt sich um ein unabhängiges Schülerprojekt ohne Verbindung zu WISS oder Tocco.
+## Provider and contact
+Nicolas Wehrle, WISS Stundenplan project. Contact through the public GitHub project: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues. Please don't post login details or personal school data there. This is an independent student project with no connection to WISS or Tocco.
 
-## Lokale Verarbeitung
-Die Erweiterung ruft auf deinen Wunsch deinen Stundenplan, Noten, Absenzen, Präsenzangaben, Raumdaten und den Benutzernamen über wiss.tocco.ch ab. Diese Daten sowie eigene Notizen, Prüfungskorrekturen und Einstellungen werden im lokalen Erweiterungsspeicher deines Browserprofils gespeichert. Sie dienen ausschliesslich der Anzeige und Verwaltung deines Schulalltags. Die Erweiterung sendet diese Schuldaten nicht an den Projektanbieter und verwendet keine Werbe- oder Analysewerkzeuge.
+## Local processing
+When you ask it to, the extension loads your timetable, grades, absences, attendance, room data and your username from wiss.tocco.ch. This data, together with your own notes, exam corrections and settings, is stored in the local extension storage of your browser profile. It is only used to show and manage your school day. The extension does not send this school data to the project provider and uses no advertising or analytics tools.
 
-Die Anmeldung findet auf den offiziellen WISS-/Microsoft-Anmeldeseiten statt. Die Erweiterung nutzt die vorhandene authentifizierte Browsersitzung für Anfragen an WISS. Sie liest, erfasst und speichert dein Passwort nicht. Die Erweiterung beendet beim Zurücksetzen nicht automatisch deine WISS-/Microsoft-Browsersitzung; diese kannst du auf den jeweiligen Seiten abmelden.
+Signing in happens on the official WISS and Microsoft sign-in pages. The extension uses the existing signed-in browser session for requests to WISS. It does not read, capture or store your password. Resetting the extension does not end your WISS or Microsoft browser session automatically; you can sign out on those pages.
 
-## Externe Verbindungen
-wiss.tocco.ch liefert die Schuldaten. www.modulbaukasten.ch und ictbb.crm17.dynamics.com liefern öffentliche Informationen zu Lehrberufen und Modulen. api.github.com liefert Versionsinformationen. Bei Netzwerkverbindungen erhalten die jeweiligen Betreiber technisch erforderliche Verbindungsdaten wie die IP-Adresse. Für die Anmeldung können WISS und Microsoft weitere Daten nach ihren eigenen Datenschutzbestimmungen verarbeiten. Es wird kein allgemeiner Browserverlauf erfasst.
+## External connections
+wiss.tocco.ch provides the school data. www.modulbaukasten.ch and ictbb.crm17.dynamics.com provide public information about apprenticeships and modules. api.github.com provides version information. For any network connection, the operator receives technically required connection data such as the IP address. For signing in, WISS and Microsoft may process further data under their own privacy policies. No general browsing history is collected.
 
-## Optionale Gerätesynchronisation
-Die Synchronisation ist standardmässig ausgeschaltet. Erst nach deiner Aktivierung und Berechtigungsfreigabe verbindet sich die Erweiterung mit einem Sync-Server auf onrender.com (standardmässig wiss-stundenplan-sync.onrender.com). Übertragen werden Notizen, Prüfungskorrekturen und ausgewählte Einstellungen einschliesslich der Lehrberufsauswahl in Ende-zu-Ende-verschlüsselten Paketen. Der Server erhält die verschlüsselten Pakete, zufällige technische Kennungen und Verbindungsdaten, jedoch keinen Entschlüsselungsschlüssel, kein WISS-Passwort und keine Stundenplan-, Noten- oder Absenzdaten. Pakete können in einem privaten GitHub-Repository gesichert werden. Ohne deine Geräte bzw. den Wiederherstellungscode können die Inhalte nicht wiederhergestellt werden. Zum Betrieb des gewählten Servers siehe dessen Dokumentation: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/sync-server/README.md.
+## Optional device sync
+Sync is off by default. Only after you turn it on and grant the permission does the extension connect to a sync server on onrender.com (by default wiss-stundenplan-sync.onrender.com). It transfers notes, exam corrections and selected settings, including your chosen apprenticeship, in end-to-end encrypted packages. The server receives the encrypted packages, random technical IDs and connection data, but never the decryption key, your WISS password, or your timetable, grades or absences. Packages may be backed up in a private GitHub repository. Without your devices or the recovery code, the contents cannot be restored. How the server is run: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/sync-server/README.md.
 
-## Speicherdauer und Löschung
-Lokale Daten bleiben bis zum Zurücksetzen in den Einstellungen oder dem Entfernen des Browserprofils bzw. der Erweiterung gespeichert. Unter «Sync» kannst du die Löschung der aktiven Serverdaten anfordern. Das blosse Trennen oder Deinstallieren löscht keine bestehenden Serverdaten. Nach bestätigter Serverlöschung können verschlüsselte Sicherungskopien in der GitHub-Historie verbleiben; es wird keine sofortige Löschung sämtlicher Sicherungen zugesichert.
+## Retention and deletion
+Local data stays stored until you reset it in the settings or remove the browser profile or the extension. Under "Sync" you can ask for the active server data to be deleted. Just disconnecting or uninstalling does not delete existing server data. After a confirmed server deletion, encrypted backup copies can remain in the GitHub history; immediate deletion of every backup is not promised.
 
-## Demokonto
-Das Demokonto erzeugt fiktive Daten lokal. Dafür ist kein WISS-Konto nötig; es ruft keine Schuldaten ab und ermöglicht keine Gerätesynchronisation. Beim Beenden werden die erzeugten Demodaten und Demo-Notizen entfernt. Bereits vorhandene echte Kontodaten werden nicht durch die Demo ersetzt.
+## Demo account
+The demo account creates invented data locally. It needs no WISS account, loads no school data and does not allow device sync. Ending the demo removes the generated demo data and demo notes. Existing real account data is never replaced by the demo.
 
-## Verwendung der Daten
-Daten werden nicht verkauft, nicht für personalisierte Werbung verwendet und nicht zur Bewertung der Kreditwürdigkeit eingesetzt. Die Verwendung erfolgt nur für die beschriebenen Funktionen. Bei wesentlichen Änderungen wird diese Erklärung aktualisiert.
+## Use of data
+Data is not sold, not used for personalised advertising and not used to assess creditworthiness. It is only used for the features described here. This policy will be updated if anything important changes.

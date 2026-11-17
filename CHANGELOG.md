@@ -27,13 +27,13 @@
 - Settings: no more dark strip behind the section buttons.
 - Readme links to the Chrome Web Store.
 
-## 1.12.1 – Demokonto auf allen Plattformen
-- Optionales lokales Demokonto mit fiktiven Daten im vorhandenen Schema.
-- Schutz bestehender Konten und deaktivierter Geräte-Sync in der Demo.
-- Firefox-, Android- und iPhone-Builds inklusive Demo-Laden und dauerhaftem Löschen.
-- Logo über DOM-Parser statt direkter innerHTML-Zuweisung.
-- Store-Bilder, deutsche Beschreibung, Testanweisungen und Datenschutz.
-- Release-Packager entfernt den Chrome-Entwicklungsschlüssel und verweigert veraltete APKs.
+## 1.12.1: demo account on every platform
+- Optional local demo account with invented data, in the same format as real data.
+- Existing accounts are protected, and device sync is turned off in the demo.
+- Firefox, Android and iPhone builds can load the demo and remove it for good.
+- The logo is drawn through the DOM parser instead of setting innerHTML directly.
+- Store pictures, German description, test instructions and privacy policy.
+- The release packager removes the Chrome development key and refuses outdated APKs.
 
 ## 1.12.0
 

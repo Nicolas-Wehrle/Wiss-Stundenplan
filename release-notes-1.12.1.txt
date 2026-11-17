@@ -1,24 +1,24 @@
 # WISS Stundenplan 1.12.1
 
-Diese Version bringt das lokale Demokonto auf Chrome/Edge, Firefox, Android und iPhone/Safari.
+This version brings the local demo account to Chrome/Edge, Firefox, Android and iPhone/Safari.
 
-- Ohne WISS-Anmeldung ausprobieren: «Demokonto testen» während der Einrichtung.
-- Fiktiver Wochenplan, Prüfungen, Noten, Absenzen und Raumbelegung im bisherigen Datenformat.
-- Demo überschreibt keine vorhandenen Konten; Gerätesync bleibt in der Demo deaktiviert.
-- «Demo beenden» entfernt die fiktiven Daten und Demo-Notizen.
-- Mobile Adapter unterstützen den Demo-Kontowechsel und das dauerhafte Entfernen der Demodaten.
-- Direkte innerHTML-Zuweisung beim Zeichnen des mitgelieferten Logos durch die bestehende DOM-Parser-Funktion ersetzt.
-- Chrome-Web-Store-ZIP ohne Entwicklungsschlüssel; Store-Bilder, deutsche Beschreibung und Veröffentlichungshinweise liegen bei.
+- Try it without a WISS login: "Demokonto testen" (Try demo account) during setup.
+- Invented week, exams, grades, absences and room bookings, in the same data format as before.
+- The demo never overwrites an existing account; device sync stays off in the demo.
+- "Demo beenden" (End demo) removes the invented data and demo notes.
+- The mobile adapters support switching to the demo account and removing the demo data for good.
+- Drawing the bundled logo now uses the existing DOM parser function instead of setting innerHTML directly.
+- Chrome Web Store ZIP without the development key; store pictures, German description and publishing notes are included.
 
 ## Downloads
-- Chrome/Edge: `WISS-Stundenplan-Chrome.zip` (entpacken und als lokale Erweiterung laden; dieselbe ZIP ist für den Chrome Web Store geeignet).
-- Firefox: `WISS-Stundenplan-Firefox.xpi` (von Mozilla signiert). Die Firefox-ZIP ist ausschliesslich das Upload-/Quellpaket für Mozilla.
-- Android: `WISS-Stundenplan.apk`. Version 1.12.1 / versionCode 11201, signiert mit demselben Zertifikat wie 1.12.0; als Update installierbar.
-- iPhone/Safari: `WISS-Stundenplan.user.js` für die Userscripts-Erweiterung.
-- `Chrome-Web-Store-Assets.zip`: Screenshots, Werbekacheln, Symbol, Beschreibung, Datenschutz und Anleitung.
-- `SHA256SUMS.txt`: Prüfsummen der Pakete.
+- Chrome/Edge: `WISS-Stundenplan-Chrome.zip` (unzip and load as a local extension; the same ZIP works for the Chrome Web Store).
+- Firefox: `WISS-Stundenplan-Firefox.xpi` (signed by Mozilla). The Firefox ZIP is only the upload/source package for Mozilla.
+- Android: `WISS-Stundenplan.apk`. Version 1.12.1 / versionCode 11201, signed with the same certificate as 1.12.0, so it installs as an update.
+- iPhone/Safari: `WISS-Stundenplan.user.js` for the Userscripts extension.
+- `Chrome-Web-Store-Assets.zip`: screenshots, promo tiles, icon, description, privacy policy and instructions.
+- `SHA256SUMS.txt`: checksums of the packages.
 
-## Validierung
-Android-Release-Build und Signaturprüfung erfolgreich; Signierzertifikat stimmt mit 1.12.0 überein. Browser-Tests für Android und iPhone prüfen Demo, alle Ansichten, lokale Notizen, Sync-Sperre und dauerhafte Demo-Bereinigung. Bestehender plattformübergreifender Sync-Browsertest prüft Opt-in, Verknüpfung, Verschlüsselung, Zusammenführung und Löschung. Die Anmeldung mit einem echten WISS-Konto und ein physisches iPhone wurden in diesem Build nicht getestet.
+## Testing
+Android release build and signature check passed; the signing certificate matches 1.12.0. Browser tests for Android and iPhone check the demo, all views, local notes, the sync lock and removing the demo for good. The existing cross-platform sync browser test checks opt-in, linking, encryption, merging and deletion. Signing in with a real WISS account and a physical iPhone were not tested for this build.
 
-Inoffizielles Schülerprojekt, nicht von WISS oder Tocco entwickelt oder unterstützt.
+Unofficial student project, not developed or endorsed by WISS or Tocco.

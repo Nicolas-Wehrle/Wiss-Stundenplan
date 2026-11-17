@@ -1,12 +1,14 @@
 // Step 1: real screenshots of the add-on in the demo account (invented data only).
-// Writes store-assets-src/shots/*.png, used by make.mjs.
+// Writes store-assets-src/shots/*.png (German) and shots-en/*.png (English, for the README), used by make.mjs.
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 const require = createRequire(import.meta.url), { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const here = path.dirname(fileURLToPath(import.meta.url)), root = path.dirname(here), out = path.join(here, 'shots');
+const here = path.dirname(fileURLToPath(import.meta.url)), root = path.dirname(here);
+for (const lang of ['de', 'en']) {
+const out = path.join(here, lang === 'en' ? 'shots-en' : 'shots');
 fs.mkdirSync(out, { recursive: true });
 const ctx = await chromium.launchPersistentContext(fs.mkdtempSync(path.join(os.tmpdir(), 'wiss-store-')), {
   executablePath: process.env.BROWSER_EXECUTABLE, headless: true, ignoreDefaultArgs: ['--disable-extensions'],
@@ -27,6 +29,10 @@ try {
   await p.goto(`chrome-extension://${id}/popup.html?full`);
   await p.getByRole('button', { name: 'Demokonto testen', exact: true }).click();
   await p.getByRole('button', { name: 'Demo beenden', exact: true }).waitFor();
+  if (lang === 'en') {
+    await worker.evaluate(async () => { const { prefs } = await chrome.storage.local.get('prefs'); await chrome.storage.local.set({ prefs: { ...(prefs || {}), lang: 'en' } }); });
+    await p.reload(); await p.locator('#tabs').waitFor(); await p.waitForTimeout(500);
+  }
   await p.addStyleTag({ content: hide });
   const shoot = async (tab, name) => {
     await p.locator(`#tabs button[data-tab=${tab}]`).click(); await p.waitForTimeout(500);
@@ -37,7 +43,8 @@ try {
     await shoot(t, t);
     if (t === 'exams') facts.exam = await p.evaluate(() => ({ days: document.querySelector('.xcount b')?.textContent, kicker: document.querySelector('.xhm .kicker')?.textContent.trim(), title: document.querySelector('.xhm .title')?.textContent, meta: document.querySelector('.xhm .meta')?.textContent }));
     if (t === 'absences') facts.abs = await p.evaluate(() => document.querySelector('.section-title.todo')?.nextElementSibling?.innerText.split('\n').map((x) => x.trim()).filter(Boolean));
-    if (t === 'grades') Object.assign(facts, await p.evaluate(() => ({ avg: document.querySelector('.gval')?.textContent, done: +(document.body.innerText.match(/Abgeschlossen\s*(\d+)/) || [])[1] })));
+    if (t === 'rooms') facts.rooms = await p.evaluate(() => ({ time: (document.querySelector('.rhero .k')?.textContent.match(/\d{1,2}:\d\d/) || [])[0], free: document.querySelector('.rhero .v')?.firstChild?.textContent.trim(), total: document.querySelector('.rhero .v small')?.textContent.replace(/\D/g, ''), chips: [...document.querySelectorAll('.rhero .rchip b')].map((b) => b.textContent) }));
+    if (t === 'grades') Object.assign(facts, await p.evaluate(() => ({ avg: document.querySelector('.gval')?.textContent, done: +(document.body.innerText.match(/(?:Abgeschlossen|Completed)\s*(\d+)/) || [])[1] })));
   }
   fs.writeFileSync(path.join(out, 'facts.json'), JSON.stringify(facts, null, 1));
   await p.emulateMedia({ colorScheme: 'dark' }); await p.waitForTimeout(300);
@@ -53,3 +60,4 @@ try {
   }
   console.log('shots in', out);
 } finally { await ctx.close(); }
+}

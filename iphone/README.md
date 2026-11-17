@@ -1,36 +1,38 @@
 # WISS Stundenplan (iPhone)
 
-Auf dem iPhone läuft der Stundenplan in Safari, mit der Gratis-App **Userscripts**.
-Du meldest dich mit deinem eigenen WISS-Konto an. Deine Daten bleiben auf deinem iPhone.
+On iPhone, WISS Stundenplan runs in Safari with the free app **Userscripts**.
+You sign in with your own WISS account, and your data stays on your iPhone.
 
-Inoffiziell, nicht von der WISS.
+Unofficial, not made by WISS.
 
-## Einrichten
-1. Im App Store **Userscripts** (von Justin Wasack) installieren.
-2. Userscripts öffnen und auf **Set Userscripts Directory** tippen. Einen Ordner wählen, zum Beispiel *Auf meinem iPhone > Userscripts*.
-3. `WISS-Stundenplan.user.js` in diesen Ordner speichern: Datei antippen, **Teilen > In „Dateien“ sichern**, Ordner wählen.
-4. In *Einstellungen > Apps > Safari > Erweiterungen > Userscripts* die Erweiterung einschalten und bei *wiss.tocco.ch* **Erlauben** wählen.
-5. In Safari **https://wiss.tocco.ch/extranet/?stundenplan** öffnen und auf **Anmelden** tippen. Nach dem Anmelden gehts von selbst zurück zum Stundenplan.
+There's also a step-by-step guide with pictures on the website: https://stundenplan.severinwehrle.dev/#download/iphone
 
-## Schneller öffnen
-- Als Favorit speichern: Teilen > Zu Favoriten hinzufügen.
-- Als Icon auf dem Home-Bildschirm: in der App *Kurzbefehle* einen Kurzbefehl mit **URL öffnen** und der Adresse oben erstellen, dann **Zum Home-Bildschirm**.
-  Safaris eigenes "Zum Home-Bildschirm" geht nicht, dort laufen keine Erweiterungen.
-- Auf jeder Extranet-Seite ist unten rechts ein Knopf **Stundenplan**.
+## Setup
+1. Install **Userscripts** (by Justin Wasack) from the App Store.
+2. Open Userscripts and tap **Set Userscripts Directory**. Pick a folder, for example *On My iPhone > Userscripts*.
+3. Save `WISS-Stundenplan.user.js` into that folder: tap the file, then **Share > Save to Files**, and pick the folder.
+4. In *Settings > Apps > Safari > Extensions > Userscripts*, turn the extension on and choose **Allow** for *wiss.tocco.ch*.
+5. In Safari, open **https://wiss.tocco.ch/extranet/?stundenplan** and tap **Sign in** ("Anmelden" in German). After signing in, you're taken back to the timetable by itself.
 
-## Was geht
-- Woche, Prüfungen, Noten mit Rechner, Absenzen, Räume mit Plänen, Notizen, Lehrpersonen
-- Alle Stile, hell und dunkel, Deutsch und English
-- Wenn die Anmeldung abläuft, gehts kurz über die WISS-Anmeldung und dann zurück
+## Open it faster
+- Save it as a favourite: Share > Add to Favourites.
+- As an icon on the home screen: in the *Shortcuts* app, create a shortcut with **Open URLs** and the address above, then **Add to Home Screen**.
+  Safari's own "Add to Home Screen" doesn't work, because extensions don't run there.
+- Every extranet page has a **Stundenplan** button in the bottom right.
 
-Keine Benachrichtigungen und kein Widget. Das erlaubt Apple nur Apps aus dem App Store.
+## What works
+- Week, exams, grades with calculator, absences, rooms with floor plans, notes, teachers
+- All styles, light and dark, German and English
+- When the sign-in expires, it goes through the WISS sign-in for a moment and then comes back
 
-## Aktualisieren
-Die neue `WISS-Stundenplan.user.js` in denselben Ordner legen und die alte ersetzen. Deine Daten bleiben.
+No notifications and no widget. Apple only allows those for apps from the App Store.
 
-## Probleme
-- **Du siehst das normale Extranet:** Userscripts ist für wiss.tocco.ch noch nicht erlaubt. In Safari auf **aA > Erweiterungen verwalten** tippen, Userscripts einschalten und **Immer erlauben** wählen.
-- **Es steht immer "Anmeldung nötig":** auf **Anmelden** tippen und bei Microsoft "Angemeldet bleiben" wählen.
+## Updating
+The Userscripts app updates the script by itself. To update by hand, put the new `WISS-Stundenplan.user.js` in the same folder and replace the old one. Your data stays.
 
-## Für Entwickler
-`build-ios.py` baut die Datei aus dem Chrome-Add-on: `python3 iphone/build-ios.py "chrome addon" iphone`
+## Problems
+- **You see the normal extranet:** Userscripts isn't allowed on wiss.tocco.ch yet. In Safari, tap **aA > Manage Extensions**, turn Userscripts on and choose **Always Allow**.
+- **It always says "Sign-in needed":** tap **Sign in** and choose "Stay signed in" at Microsoft.
+
+## For developers
+`build-ios.py` builds the file from the Chrome add-on: `python3 iphone/build-ios.py "chrome addon" iphone`

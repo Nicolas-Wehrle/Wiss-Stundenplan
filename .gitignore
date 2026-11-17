@@ -34,3 +34,4 @@ release/
 
 # Raw screenshots for the store pictures (made by store-assets-src/capture.mjs)
 /store-assets-src/shots/
+/store-assets-src/shots-en/
