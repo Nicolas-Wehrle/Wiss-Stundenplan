@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Validate the complete 1.12.1 release and generate SHA-256 checksums."""
+"""Validate the complete release (version from manifest.json) and generate SHA-256 checksums."""
 from pathlib import Path
 import hashlib
 import json
 import re
 import zipfile
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 VERSION = json.loads((ROOT / 'chrome addon/manifest.json').read_text(encoding='utf-8'))['version']
 OUT = ROOT / 'release' / ('v' + VERSION)
 FILES = ['WISS-Stundenplan-Chrome.zip', 'WISS-Stundenplan-Firefox.zip', 'WISS-Stundenplan-Firefox.xpi', 'WISS-Stundenplan.apk', 'WISS-Stundenplan.user.js', 'Chrome-Web-Store-Assets.zip']

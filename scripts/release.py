@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Collects everything for a GitHub release into release/v<version>/ and updates updates.json.
 
-Run it after the build steps (see README). Then upload the files from release/v<version>/
+Run it after the build steps (see DEVELOPMENT.md). Then upload the files from release/v<version>/
 to a new GitHub release with the tag v<version>, and commit + push updates.json and
 iphone/WISS-Stundenplan.user.js (the iPhone and Firefox auto-update read them from the repo).
 """
 import json, os, shutil, zipfile, runpy, re
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parent.parent
 REPO = 'Nicolas-Wehrle/Wiss-Stundenplan'
 version = json.loads((ROOT / 'chrome addon' / 'manifest.json').read_text(encoding='utf-8'))['version']
 out = ROOT / 'release' / f'v{version}'
@@ -21,7 +21,7 @@ def zipdir(src, dst):
                 p = Path(root) / f
                 z.write(p, p.relative_to(src))
 
-runpy.run_path(str(ROOT / 'build-chrome-store.py'))
+runpy.run_path(str(Path(__file__).resolve().parent / 'build-chrome-store.py'))
 shutil.copy2(out / 'WISS-Stundenplan-Chrome-Web-Store.zip', out / 'WISS-Stundenplan-Chrome.zip')
 zipdir(ROOT / 'firefox addon', out / 'WISS-Stundenplan-Firefox.zip')
 zipdir(ROOT / 'store-assets', out / 'Chrome-Web-Store-Assets.zip')   # store pictures + texts, checked by verify-release.py

@@ -1,12 +1,12 @@
 // Step 1: real screenshots of the add-on in the demo account (invented data only).
-// Writes store-assets-src/shots/*.png (German) and shots-en/*.png (English, for the README), used by make.mjs.
+// Writes scripts/store-pictures/shots/*.png (German) and shots-en/*.png (English, for the README), used by make.mjs.
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 const require = createRequire(import.meta.url), { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const here = path.dirname(fileURLToPath(import.meta.url)), root = path.dirname(here);
+const here = path.dirname(fileURLToPath(import.meta.url)), root = path.dirname(path.dirname(here));
 for (const lang of ['de', 'en']) {
 const out = path.join(here, lang === 'en' ? 'shots-en' : 'shots');
 fs.mkdirSync(out, { recursive: true });

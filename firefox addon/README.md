@@ -4,6 +4,8 @@ The same add-on as the Chrome version, for Firefox on the computer and on Androi
 
 Unofficial. Not made by or affiliated with WISS.
 
+Step-by-step guide on the website: https://stundenplan.severinwehrle.dev/#download/firefox
+
 ## Which file do I need?
 **`WISS-Stundenplan-Firefox.xpi`** from the [Releases](https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest) page.
 
@@ -11,7 +13,7 @@ That is the version signed by Mozilla. Firefox only installs signed add-ons, so 
 
 ## Install on the computer
 1. Open the [Releases](https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest) page in Firefox.
-2. Click `WISS-Stundenplan-Firefox.xpi`. Firefox asks if you want to add it; click "Hinzufügen" / "Add".
+2. Click `WISS-Stundenplan-Firefox.xpi`. Firefox asks if you want to add it; click "Add".
    If it just downloads instead, drag the downloaded file into a Firefox window.
 3. Pin the W icon in the toolbar and follow the setup.
 
@@ -30,12 +32,12 @@ Updates come in on their own after that.
 ## For developers
 **Quick test without signing** (removed when Firefox restarts):
 1. Open `about:debugging#/runtime/this-firefox`.
-2. Click "Temporäres Add-on laden…" / "Load Temporary Add-on…" and pick `manifest.json` in this folder.
+2. Click "Load Temporary Add-on…" and pick `manifest.json` in this folder.
 
 **Signing a new version** (free, a few minutes):
 1. Raise the version number. Mozilla never signs the same version twice.
 2. On the [Developer Hub](https://addons.mozilla.org/developers/addons) upload `WISS-Stundenplan-Firefox.zip` as a new version and choose **On your own** (not listed on the store). Tick Firefox and Firefox for Android.
-3. After the automatic check, download the signed `.xpi`, rename it to `WISS-Stundenplan-Firefox.xpi` and continue with "Publishing a release" in the main README.
+3. After the automatic check, download the signed `.xpi`, rename it to `WISS-Stundenplan-Firefox.xpi` and continue with "Publishing a release" in [DEVELOPMENT.md](https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/DEVELOPMENT.md).
 
 ## Privacy
 Same as the Chrome version: everything is loaded with your own WISS login and only stored in your browser.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Builds the Firefox add-on from the Chrome add-on.
 
-Usage:  python3 build-firefox.py "chrome addon" "firefox addon"
+Usage (from the repo folder):  python3 scripts/build-firefox.py "chrome addon" "firefox addon"
 
 The Chrome folder is the source of truth. This script copies it and applies the
 few changes Firefox needs, so both versions always have the same features.

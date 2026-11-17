@@ -1,23 +1,23 @@
-# Chrome Web Store – Veröffentlichung 1.12.1
+# Chrome Web Store: Veröffentlichung 1.12.3
 
 ## Fertige Dateien
-- `WISS-Stundenplan-Chrome-1.12.1.zip`: ausschliesslich die Chrome-Erweiterung; manifest.json liegt direkt im ZIP.
+- `release/v1.12.3/WISS-Stundenplan-Chrome-Web-Store.zip` (von `scripts/release.py` erstellt): ausschliesslich die Chrome-Erweiterung, ohne Entwicklungsschlüssel; manifest.json liegt direkt im ZIP.
 - `store-icon-128.png`: bestehendes Projektlogo mit transparentem Rand.
 - `screenshot-1…5-*-1280x800.png`: fünf gestaltete Store-Bilder (Übersicht, Prüfungen, Noten, Absenzen, Räume im Dunkelmodus), aufgebaut aus echten Screenshots der Erweiterung mit fiktiven Demodaten. In dieser Reihenfolge hochladen.
 - `promo-small-440x280.png`: kleine Werbekachel.
 - `promo-marquee-1400x560.png`: grosse Werbekachel.
 - `beschreibung-de.txt`: fertige ausführliche Beschreibung.
-Alle Screenshots und Werbekacheln sind RGB-PNG ohne Alphakanal. Das Logo bleibt transparent. Gestaltet im Stil der Website, mit dem bestehenden Logo. Neu erzeugen: `node store-assets-src/capture.mjs && node store-assets-src/make.mjs`. Keine WISS-/Tocco-Logos ergänzt.
+Alle Screenshots und Werbekacheln sind RGB-PNG ohne Alphakanal. Das Logo bleibt transparent. Gestaltet im Stil der Website, mit dem bestehenden Logo. Neu erzeugen: `node scripts/store-pictures/capture.mjs && node scripts/store-pictures/make.mjs`. Keine WISS-/Tocco-Logos ergänzt.
 
 ## Fehler «key stimmt nicht mit dem aktuellen Artikel überein»
-Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird von Google für den bestehenden Artikel verwaltet. Der Quellcode behält seinen bisherigen key für lokale Installationen. Neue Store-ZIP jederzeit mit `python build-chrome-store.py` erstellen und die Datei `release/v1.12.1/WISS-Stundenplan-Chrome-Web-Store.zip` hochladen.
+Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird von Google für den bestehenden Artikel verwaltet. Der Quellcode behält seinen bisherigen key für lokale Installationen. Neue Store-ZIP jederzeit mit `python scripts/build-chrome-store.py` erstellen und die Datei `release/v1.12.3/WISS-Stundenplan-Chrome-Web-Store.zip` hochladen.
 
 ## Eintrag
 Name: bestehenden Store-Namen beibehalten («Stundenplan für WISS (inoffiziell)»).
 Kurzbeschreibung (bereits im Manifest): Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.
 Sprache: Deutsch. Kategorie: Bildung. Kosten: kostenlos. Website: https://stundenplan.severinwehrle.dev
 Support: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues
-Datenschutz-URL nach dem Push: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY.md
+Datenschutz-URL: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY-de.md (deutsch) oder …/PRIVACY.md (englisch)
 Vor dem Einreichen prüfen, dass die URL öffentlich ohne Anmeldung erreichbar ist und der Kontaktweg für dich passt.
 
 ## Testanweisungen (direkt einfügen)
@@ -46,19 +46,19 @@ Optional https://*.onrender.com/*: Nur nach Aktivierung und Freigabe für die fr
 «Nein» für remote gehosteten ausführbaren Code: JavaScript, Schriften und QR-Bibliothek werden mitgeliefert. Externe Abfragen liefern Daten und Versionsinformationen; sie laden keinen auszuführenden Erweiterungscode. Die bestehende Scripting-Berechtigung injiziert mitgelieferte Funktionen.
 
 ## Datenschutzformular
-Die Angaben müssen mit PRIVACY.md und dem tatsächlichen Verhalten übereinstimmen. Nicht pauschal «keine Nutzerdaten» wählen: Die Erweiterung verarbeitet Benutzername, Schuldaten und eigene Notizen lokal und überträgt nach freiwilliger Aktivierung verschlüsselte Notizen/Einstellungen.
+Die Angaben müssen mit der Datenschutzerklärung (PRIVACY-de.md / PRIVACY.md) und dem tatsächlichen Verhalten übereinstimmen. Nicht pauschal «keine Nutzerdaten» wählen: Die Erweiterung verarbeitet Benutzername, Schuldaten und eigene Notizen lokal und überträgt nach freiwilliger Aktivierung verschlüsselte Notizen/Einstellungen.
 Relevante Kategorien im jeweiligen Formular prüfen: personenbezogene Informationen (Benutzername), Website-Inhalte (ausgelesene Schulangaben), persönliche Kommunikation (Freitextnotizen). Bei Authentifizierungsinformationen die Nutzung der vorhandenen Sitzung erklären: kein eingegebenes/gespeichertes Passwort, keine Anmeldung am Projektserver. Keine Finanz-, Gesundheits-, Standort- oder allgemeinen Browserverlaufsfunktionen behaupten.
 Die drei Nutzungszusicherungen nur entsprechend dem tatsächlichen Code bestätigen: kein Verkauf, nur notwendige Funktionsverwendung, keine Kreditwürdigkeitsbewertung. Die öffentliche Datenschutzerklärung verlinken.
 
 ## Noch vor dem Einreichen
 1. Publisher-Einstellungen: eigene Kontakt-E-Mail eintragen, Bestätigungslink im Postfach öffnen. Das sind die zwei E-Mail-Fehler in deinem Screenshot; die Adresse wird nicht erfunden.
 2. Google-Konto: Zwei-Faktor-Authentifizierung für das Entwicklerkonto sicherstellen.
-3. Unter «Paket» die neue Chrome-ZIP hochladen; Version 1.12.1 kontrollieren.
+3. Unter «Paket» die neue Chrome-ZIP hochladen; Version 1.12.3 kontrollieren.
 4. Beschreibung, Symbol, mindestens einen Screenshot und kleine Werbekachel hinterlegen. Grosse Kachel ist zusätzlich vorbereitet.
 5. Testanweisungen, Datenschutz-URL und Berechtigungsbegründungen einfügen; Kategorie, Sprache und Vertriebsregionen kontrollieren.
 6. Entwurf speichern, verbleibende Dashboard-Fehler prüfen, dann zur Prüfung einreichen. Google entscheidet über die Freigabe; Upload ist keine Veröffentlichung.
 
-Version 1.12.1 wird auch für Firefox, Android und iPhone gebaut. Die Firefox-XPI muss von Mozilla signiert sein; updates.json wird erst auf die neue Version gesetzt, wenn diese signierte Datei vorliegt. Die Android-APK wird mit dem vorhandenen Zertifikat signiert. Der iPhone-Build ist ein Safari-Userscript, keine native App-Store-App.
+Version 1.12.3 gibt es auch für Firefox, Android, iPhone und als Desktop-App (Windows, macOS, Linux). Die Firefox-XPI muss von Mozilla signiert sein; updates.json wird erst auf die neue Version gesetzt, wenn diese signierte Datei vorliegt. Die Android-APK wird mit dem vorhandenen Zertifikat signiert. Der iPhone-Build ist ein Safari-Userscript, keine native App-Store-App.
 
 ## Offizielle Quellen
 - Bilder: https://developer.chrome.com/docs/webstore/images

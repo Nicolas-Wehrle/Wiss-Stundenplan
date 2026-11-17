@@ -1,13 +1,13 @@
 // Step 2: lays the screenshots from capture.mjs out as designed store pictures.
 // German: the Chrome Web Store images (store-assets/) and the link preview for Discord, WhatsApp, … (docs/og.png).
 // English: the README banner and pictures (docs/readme-banner*.png, docs/readme/).
-//   node store-assets-src/capture.mjs && node store-assets-src/make.mjs
+//   node scripts/store-pictures/capture.mjs && node scripts/store-pictures/make.mjs
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import fs from 'node:fs';
 import path from 'node:path';
 const require = createRequire(import.meta.url), { chromium } = require(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const here = path.dirname(fileURLToPath(import.meta.url)), root = path.dirname(here);
+const here = path.dirname(fileURLToPath(import.meta.url)), root = path.dirname(path.dirname(here));
 let SHOTS = 'shots';
 const shot = (n) => pathToFileURL(path.join(here, SHOTS, n + '.png')).href;
 const font = (n) => pathToFileURL(path.join(root, 'chrome addon', 'fonts', n)).href;

@@ -2,7 +2,9 @@
 
 Everything about this project in one place: what it is, how it's built, how releases work, what's tricky, and what's planned next. Written so a new chat (or a new person) can pick it up without the old conversation.
 
-Current source version: **1.12.0** (new look, tab overviews, privacy page, optional encrypted device sync). Last published release before it: 1.10.1. 1.11.0 was never released; its sync work ships in 1.12.0.
+Current version: **1.12.3** (published). It adds the desktop app for Windows, macOS and Linux. 1.11.0 was never released; its sync work shipped in 1.12.0.
+
+Website: **https://stundenplan.severinwehrle.dev** (GitHub Pages from `docs/`, custom domain via a CNAME record). Developer guide: `DEVELOPMENT.md`.
 
 ---
 
@@ -14,7 +16,7 @@ How it works in one sentence: it shows the last saved data immediately and fetch
 
 - **Author:** Severin Wehrle (student at WISS).
 - **Repo:** https://github.com/Nicolas-Wehrle/Wiss-Stundenplan (public, MIT license).
-- **Local folder:** `C:\Users\sever\Documents\Wiss-Stundenplan` (git repo). The older folder `C:\Users\sever\Documents\tocco chrome addon` is outdated.
+- **Local folder:** `C:\Users\sever\Documents\Wiss-Stundenplan` (git repo). `C:\Users\sever\Documents\tocco chrome addon` is only a drop folder (git bundles, test builds, the signing key files).
 - **Not affiliated with WISS or Tocco.** It only uses each user's own login, the same way the extranet website does.
 
 ---
@@ -23,17 +25,17 @@ How it works in one sentence: it shows the last saved data immediately and fetch
 
 | Platform | How | Update mechanism |
 |---|---|---|
-| Chrome / Edge / Brave | MV3 add-on, "Load unpacked" from the zip | Banner with download link (Chrome blocks auto-update outside the store) |
+| Chrome / Edge / Brave | MV3 add-on in the Chrome Web Store (or "Load unpacked" from the zip) | Store updates it; unpacked installs get a banner with the download link |
 | Firefox (computer + Android 142+) | Self-hosted signed `.xpi` ("On your own" on addons.mozilla.org) | Automatic via `updates.json` in the repo |
 | Android app | Java app with a WebView that runs the add-on code | In-app: downloads the APK, opens the install screen |
 | iPhone | Safari userscript via the free "Userscripts" app | Userscripts app updates it from the repo (`@updateURL`) |
-| Windows / macOS / Linux | Tauri 2 app (Rust) with the system web view, runs the add-on code like the Android app | In-app: downloads the signed update from the release (`latest.json`), installs, restarts |
+| Windows / macOS / Linux | Tauri 2 app (Rust) with the system web view, runs the add-on code like the Android app | In-app: downloads the signed update from the release (`latest.json`), installs, restarts. Linux `.rpm`/`.deb`: own package sources, normal system updates |
 
 All five run **the same web code** (`chrome addon/`). The others are built from it.
 
 ---
 
-## 3. Features (as of 1.10.1)
+## 3. Features (as of 1.12.3)
 
 - **Week:** current and next lesson, week view, holidays and breaks, past lessons folded away, big view in its own tab (desktop).
 - **Exams:** ZP, LB, projects. The extranet has no exam dates, so the app estimates them (ZP rule: every 3rd lesson / once / none; LB and project on the last module day). Users can correct dates by hand.
@@ -48,6 +50,9 @@ All five run **the same web code** (`chrome addon/`). The others are built from 
 - **Privacy:** email blurred until tapped. All data stays on the device.
 - **Auto-update** on every platform (see table above).
 - **Automatic sign-in** in the background, including pressing the extranet's "WISS Office 365" button (details in section 6).
+- **Demo account** with invented data ("Demokonto testen"), no WISS login needed. Used for store reviews and the pictures.
+- **Optional device sync:** notes, exam corrections and some settings, end-to-end encrypted, paired with a short code or QR (section 13).
+- **Desktop app:** own window in the full-page layout, tray with the next lesson, system notifications, mini window (always on top), start with the computer, hidden sign-in windows.
 
 ---
 
@@ -68,7 +73,7 @@ Wiss-Stundenplan/
     floorplans.js      SVG floor plans
     popup.html/.css    markup + all styles (styles are at the end of popup.css)
     fonts/             Doto + Space Mono (SIL OFL)
-  firefox addon/       built by build-firefox.py
+  firefox addon/       built by scripts/build-firefox.py
   android app/         Android project (Java, no libraries)
     app/src/main/java/ch/wisstools/stundenplan/
       MainActivity.java         WebView host, native bridge, cookies, update install
@@ -93,11 +98,12 @@ Wiss-Stundenplan/
   docs/                website (index.html, og.png link preview), served at https://stundenplan.severinwehrle.dev
                        by .github/workflows/pages.yml together with the Linux package sources
   store-assets/        Chrome Web Store pictures + texts (zipped into each release)
-  store-assets-src/    capture.mjs (demo screenshots) + make.mjs (lays them out as store pictures and docs/og.png)
-  build-firefox.py     turns chrome addon/ into firefox addon/
-  release.py           collects release files + writes updates.json
+  scripts/             build-firefox.py (chrome addon/ → firefox addon/, with firefox-README.md), build-chrome-store.py,
+                       release.py (collects release files + writes updates.json), verify-release.py, publish-release.ps1,
+                       store-pictures/ (capture.mjs + make.mjs: store pictures, README pictures, docs/og.png)
+  release-notes/       <version>.txt, the text of each GitHub release
   updates.json         Firefox update manifest (read from the main branch)
-  README.md, CHANGELOG.md, LICENSE (MIT), firefox-README.md, .gitignore
+  README.md, DEVELOPMENT.md, CHANGELOG.md, PRIVACY.md (+ PRIVACY-de.md), LICENSE (MIT), .gitignore
 ```
 
 **Never commit or share:** `android app/wiss-stundenplan.jks` and `android app/keystore.properties` (the Android signing key), `wiss-desktop-updater.key` (signs the desktop updates; lives only on your PC and as the `TAURI_SIGNING_PRIVATE_KEY` secret on GitHub) and `wiss-linux-repo.private.asc` (signs the Linux package sources; `LINUX_REPO_GPG_KEY` secret). `.gitignore` covers them. If the key is lost, existing users can't update the app anymore (they'd have to uninstall first).
@@ -181,7 +187,7 @@ Key constants: `LOGIN_TIMEOUT_MS = 30 s`, `NEEDS_USER_MS = 12 s`, `APP_SHOW_AFTE
 From the repo folder (Python 3, Node for checks; Android needs JDK 17+ and the Android SDK):
 
 ```
-python build-firefox.py "chrome addon" "firefox addon"
+python scripts/build-firefox.py "chrome addon" "firefox addon"
 python "android app/build-android-web.py" "chrome addon" "android app"
 cd "android app" && gradlew assembleRelease && cd ..
 python iphone/build-ios.py "chrome addon" iphone
@@ -196,9 +202,9 @@ python iphone/build-ios.py "chrome addon" iphone
 
 1. Raise the version, run the builds.
 2. Upload `WISS-Stundenplan-Firefox.zip` to addons.mozilla.org as a new version, "On your own". Download the signed file, save it as `WISS-Stundenplan-Firefox.xpi` in the main folder.
-3. `python release.py`. It collects 5 files into `release/v<version>/` (Chrome zip, Firefox zip + signed xpi, APK, iPhone script). It refuses an xpi with the wrong version and only updates `updates.json` when the right xpi is there. It takes the APK from the Android build folder, or from the main folder if there's none.
-4. `git add . && git commit -m "…" && git push`. `updates.json` and `iphone/WISS-Stundenplan.user.js` must be on `main`.
-5. `gh release create v<version> (Get-ChildItem release\v<version>\*).FullName --title "<version>" --notes-file release-notes-<version>.txt` (PowerShell). File names must stay exactly as they are; the update links point to them.
+3. `python scripts/release.py`. It collects 6 files into `release/v<version>/` (Chrome zip, Firefox zip + signed xpi, APK, iPhone script, Chrome-Web-Store-Assets.zip); `python scripts/verify-release.py` then checks them and writes `SHA256SUMS.txt`. It refuses an xpi with the wrong version and only updates `updates.json` when the right xpi is there. It takes the APK from the Android build folder, or from the main folder if there's none.
+4. Commit everything. `updates.json` and `iphone/WISS-Stundenplan.user.js` must end up on `main`.
+5. `scripts/publish-release.ps1` (PowerShell): pushes, creates the release as a draft with `release-notes/<version>.txt` and all files, and publishes it once every upload worked. File names must stay exactly as they are; the update links point to them.
 
 6. Publishing the release starts `.github/workflows/desktop.yml`: it builds Windows (`.exe`, `.msi`), macOS (`.dmg`) and Linux (`.deb`, `.rpm`, `.AppImage`) and uploads them plus `latest.json` (read by the desktop updater) to the same release. When it's done, `.github/workflows/pages.yml` republishes the website with the Linux package sources (`desktop app/linux-repos.sh`: dnf/zypper repo in `rpm/`, apt repo in `apt/`, both signed with `LINUX_REPO_GPG_KEY`). Linux `.deb`/`.rpm` installs get `window.__wissSystemUpdates` and show no update banner (`SYSTEM_UPDATES` in popup.js).
 
@@ -303,10 +309,11 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 - **Public transport:** next connection home after the last lesson (transport.opendata.ch).
 - **GitHub Actions:** run the tests on every push and draft releases automatically (signing stays manual, the key never goes to GitHub).
 
-### Store publishing (discussed, not started)
-- Firefox store is free; Chrome Web Store $5 once; Edge free.
+### Store publishing
+- **Chrome Web Store: published** (store ID `ljhofcahlfajoepidneficpnjckmcomc`). Pictures and texts in `store-assets/`, steps in `store-assets/VEROEFFENTLICHUNG-DE.md`. The store zip leaves out the development `key`.
+- Still open: a listed Firefox add-on (free) and Edge Add-ons (free).
 - Needs: a privacy policy page, no impression of being official (e.g. "Stundenplan für WISS (inoffiziell)"), justification for each permission.
-- Code changes: remove the fixed `key` from the Chrome manifest (new extension ID, users switch once); remove `update_url` for a listed Firefox add-on (Mozilla handles updates).
+- For a listed Firefox add-on, remove `update_url` (Mozilla handles updates).
 - Ask WISS (`ict@wiss.ch`) first; their OK makes the listing much safer.
 
 ---
@@ -315,6 +322,7 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 
 - **1.12.3** Desktop app (Tauri 2, `desktop app/`) for Windows, macOS, Linux: same web code via `desktop-shim.js`; hidden sign-in windows; school requests through a hidden wiss.tocco.ch page; tray, reminders, mini window, autostart, signed updater (`latest.json`); Linux dnf/zypper/apt package sources on GitHub Pages (`pages.yml`, `linux-repos.sh`). Standard style: the tab you leave no longer flashes a white line.
 - **1.12.2** Full-screen layout (side column with today + next exams), no solid header bars on picture styles, light animations with a toggle (`motion`, `data-motion=off`), logo setting (`themeLogo`), calmer Standard hero, Chrome Web Store link. Firefox (`IS_FIREFOX` in background.js): `openHidden` uses a background tab instead of a minimized window (Firefox on Linux shows new windows in front), and browser start refreshes without sign-in. Firefox signs in in a tab hidden with `tabs.hide` (permission `tabHide`, added by build-firefox.py). If Microsoft needs input, the hidden page is parked (`pendingLogin`) and never shown by itself; "Anmelden" (`openLogin`) reveals it, and it closes once the data is in. Pref `bgLogin` (default true) turns the background sign-in off in Chrome/Firefox (`quiet` in `doRefresh`). Android app and iPhone ignore it.
+- **1.12.1** Demo account on every platform, Chrome Web Store package without the development key, store pictures and privacy policy.
 - **1.12.0** New logo and brand (Bricolage Grotesque + Geist, red/ink/gold), Apple glass look, overview card at the top of every tab, absence budget, free rooms first, hideable next exam, much less text, privacy page on first start, encrypted device sync with short-code pairing, hardened sync server.
 - **1.10.1** Widget adapts to its height; fixed green Terminal widget fill.
 - **1.10.0** Every style has its own app layout and widget layout; tab icons.
@@ -322,7 +330,7 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 - **1.9.8** Presses "WISS Office 365" automatically; fixed the non-reloading reload.
 - **1.9.7** Six new styles, style strip, mouse drag-to-scroll, phone tabs on one line.
 - **1.9.6** Sign-in after 30+ minutes away.
-- **1.9.5** Big Android performance fix, blurred email, safer `release.py`. *(latest public release when this was written)*
+- **1.9.5** Big Android performance fix, blurred email, safer `release.py`.
 - **1.9.4** Repo moved to Nicolas-Wehrle; clearer Firefox instructions.
 - **1.9.3** Auto-update on all platforms, `release.py`.
 - Before that: the app itself, iPhone and Firefox versions, Android app with notifications and widget, absences, settings, styles, translations, offline module catalog.
