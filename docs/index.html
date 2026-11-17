@@ -288,14 +288,14 @@ pre.cmd .p { color: var(--faint); user-select: none; }
 .pop-prog { display: flex; gap: 4px; padding: 12px 22px 0; }
 .pop-prog i { flex: 1; height: 3px; border-radius: 2px; background: var(--line); transition: background-color .2s ease; }
 .pop-prog i.on { background: var(--red); }
-.pop-body { padding: 26px 22px 8px; min-height: 230px; }
+.pop-body { padding: 26px 22px 8px; min-height: 236px; }
 .step .no { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--red-soft); color: var(--red); font: 700 15px var(--mono); }
 .step h3 { font-size: 24px; font-weight: 750; margin-top: 16px; }
 .step p { color: var(--muted); font-size: 15.5px; margin-top: 8px; }
 .step .chip { display: inline-block; margin-top: 14px; font: 12.5px/1.5 var(--mono); color: var(--ink); background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
 .step .act { margin-top: 16px; }
 .pop-foot { display: flex; align-items: center; gap: 10px; padding: 14px 22px 20px; }
-.pop-foot [data-step-go="1"] { margin-left: auto; }
+.pop-help { margin-right: auto; }
 .pop-help { font-size: 13px; }
 .pop-help a { color: var(--muted); }
 .plat h2 { font-size: 22px; font-weight: 750; display: flex; align-items: center; gap: 10px; }
@@ -816,13 +816,13 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
   <div class="pop-head"><h2 id="ios-guide-h">iPhone einrichten</h2><span class="pop-count" id="ios-count">1 / 5</span><button type="button" class="pop-x" data-close aria-label="Schliessen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button></div>
   <div class="pop-prog" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="pop-body">
-      <section class="step" data-step="0"><span class="no">1</span><h3>Userscripts installieren</h3><p>Hol dir die kostenlose App «Userscripts» von Justin Wasack aus dem App Store.</p></section>
+      <section class="step" data-step="0"><span class="no">1</span><h3>Userscripts installieren</h3><p>Hol dir die kostenlose App «Userscripts» von Justin Wasack aus dem App Store.</p><a class="btn ghost act" href="https://apps.apple.com/app/userscripts/id1463298887" target="_blank" rel="noopener">Im App Store öffnen</a></section>
       <section class="step" data-step="1" hidden><span class="no">2</span><h3>Ordner wählen</h3><p>Öffne Userscripts, tippe auf «Set Userscripts Directory» und wähle einen Ordner.</p><p class="chip">Auf meinem iPhone › Userscripts</p></section>
       <section class="step" data-step="2" hidden><span class="no">3</span><h3>Skript sichern</h3><p>Lade die Datei und sichere sie mit Teilen › In «Dateien» sichern im gleichen Ordner.</p><a class="btn ghost act" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/WISS-Stundenplan.user.js">.user.js laden</a></section>
       <section class="step" data-step="3" hidden><span class="no">4</span><h3>In Safari erlauben</h3><p>Schalte die Erweiterung ein und wähle bei wiss.tocco.ch «Erlauben».</p><p class="chip">Einstellungen › Apps › Safari › Erweiterungen › Userscripts</p></section>
       <section class="step" data-step="4" hidden><span class="no">5</span><h3>Anmelden</h3><p>Öffne den Stundenplan in Safari und tippe auf «Anmelden». Danach gehts von selbst weiter.</p><a class="btn ghost act" href="https://wiss.tocco.ch/extranet/?stundenplan" target="_blank" rel="noopener">Stundenplan öffnen</a></section>
   </div>
-  <div class="pop-foot"><button type="button" class="btn ghost" data-step-go="-1">Zurück</button><span class="pop-help"><a href="#docs/trouble" data-go="docs" data-close>Probleme?</a></span><button type="button" class="btn primary" data-step-go="1">Weiter</button></div>
+  <div class="pop-foot"><span class="pop-help"><a href="#docs/trouble" data-go="docs" data-close>Probleme?</a></span><button type="button" class="btn ghost" data-step-go="-1">Zurück</button><button type="button" class="btn primary" data-step-go="1">Weiter</button></div>
 </dialog>
 <footer>
   <div class="wrap">
@@ -906,7 +906,7 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
     gBars.forEach((b, i) => b.classList.toggle('on', i <= gAt));
     $('#ios-count').textContent = `${gAt + 1} / ${gSteps.length}`;
     const back = $('[data-step-go="-1"]', guide), next = $('[data-step-go="1"]', guide);
-    back.style.visibility = gAt ? 'visible' : 'hidden';
+    back.style.display = gAt ? '' : 'none';
     next.textContent = gAt === gSteps.length - 1 ? 'Fertig' : 'Weiter';
   };
   $$('[data-step-go]', guide).forEach((btn) => btn.addEventListener('click', () => {
