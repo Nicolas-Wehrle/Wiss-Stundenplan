@@ -3,7 +3,7 @@
 Stand: 4. November 2026. Gilt für die Chrome-Erweiterung WISS Stundenplan.
 
 ## Anbieter und Kontakt
-Nicolas Wehrle, Projekt WISS Stundenplan. Kontakt über das öffentliche GitHub-Projekt: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues. Bitte dort keine Zugangsdaten oder persönlichen Schuldaten veröffentlichen. Es handelt sich um ein unabhängiges Schülerprojekt ohne Verbindung zu WISS oder Tocco.
+Severin Wehrle, Projekt WISS Stundenplan. Kontakt über das öffentliche GitHub-Projekt: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues. Bitte dort keine Zugangsdaten oder persönlichen Schuldaten veröffentlichen. Es handelt sich um ein unabhängiges Schülerprojekt ohne Verbindung zu WISS oder Tocco.
 
 ## Lokale Verarbeitung
 Die Erweiterung ruft auf deinen Wunsch deinen Stundenplan, Noten, Absenzen, Präsenzangaben, Raumdaten und den Benutzernamen über wiss.tocco.ch ab. Diese Daten sowie eigene Notizen, Prüfungskorrekturen und Einstellungen werden im lokalen Erweiterungsspeicher deines Browserprofils gespeichert. Sie dienen ausschliesslich der Anzeige und Verwaltung deines Schulalltags. Die Erweiterung sendet diese Schuldaten nicht an den Projektanbieter und verwendet keine Werbe- oder Analysewerkzeuge.

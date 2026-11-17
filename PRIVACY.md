@@ -3,7 +3,7 @@
 Last updated: 4 November 2026. Applies to the WISS Stundenplan browser extension. A German version is in [PRIVACY-de.md](PRIVACY-de.md).
 
 ## Provider and contact
-Nicolas Wehrle, WISS Stundenplan project. Contact through the public GitHub project: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues. Please don't post login details or personal school data there. This is an independent student project with no connection to WISS or Tocco.
+Severin Wehrle, WISS Stundenplan project. Contact through the public GitHub project: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues. Please don't post login details or personal school data there. This is an independent student project with no connection to WISS or Tocco.
 
 ## Local processing
 When you ask it to, the extension loads your timetable, grades, absences, attendance, room data and your username from wiss.tocco.ch. This data, together with your own notes, exam corrections and settings, is stored in the local extension storage of your browser profile. It is only used to show and manage your school day. The extension does not send this school data to the project provider and uses no advertising or analytics tools.

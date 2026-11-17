@@ -22,7 +22,7 @@
     "category": "Education",
     "shortDescription": "Stundenplan, Raum, Prüfungen, Noten und Absenzen der WISS",
     "longDescription": "Inoffizieller Stundenplan für Lernende der WISS. Liest mit deinem eigenen Login, was du im Extranet siehst, und speichert es nur auf deinem Gerät.",
-    "copyright": "MIT-Lizenz",
+    "copyright": "© 2026 Severin Wehrle · MIT License",
     "publisher": "Severin Wehrle",
     "homepage": "https://github.com/Nicolas-Wehrle/Wiss-Stundenplan",
     "icon": [
