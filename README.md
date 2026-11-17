@@ -56,7 +56,7 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
   </tr>
 </table>
 
-| | |
+| Feature | What you get |
 |---|---|
 | **Week** | current and next lesson, room, holidays and school breaks |
 | **Exams** | ZP, LB and projects with a countdown, estimated where the extranet lists nothing |
