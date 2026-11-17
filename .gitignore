@@ -31,3 +31,6 @@ release/
 .env.*
 !.env.example
 /.build-tools/
+
+# Raw screenshots for the store pictures (made by store-assets-src/capture.mjs)
+/store-assets-src/shots/

@@ -90,6 +90,10 @@ Wiss-Stundenplan/
     entry.js           decides: become the app (/extranet/?stundenplan) or show a helper button
     ios-shim.js        chrome.* APIs for Safari (localStorage, sign-in by navigation)
     build-ios.py       bundles everything into WISS-Stundenplan.user.js
+  docs/                website (index.html, og.png link preview), served at https://stundenplan.severinwehrle.dev
+                       by .github/workflows/pages.yml together with the Linux package sources
+  store-assets/        Chrome Web Store pictures + texts (zipped into each release)
+  store-assets-src/    capture.mjs (demo screenshots) + make.mjs (lays them out as store pictures and docs/og.png)
   build-firefox.py     turns chrome addon/ into firefox addon/
   release.py           collects release files + writes updates.json
   updates.json         Firefox update manifest (read from the main branch)

@@ -3,13 +3,15 @@
 <h1 align="center">WISS Stundenplan</h1>
 
 <p align="center">
-  <b><a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/">Website</a></b> ·
-  <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/#download">Download</a> ·
-  <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/#docs">Docs</a> ·
+  <b><a href="https://stundenplan.severinwehrle.dev/">Website</a></b> ·
+  <a href="https://stundenplan.severinwehrle.dev/#download">Download</a> ·
+  <a href="https://stundenplan.severinwehrle.dev/#docs">Docs</a> ·
   <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc">Chrome Web Store</a>
 </p>
 
-<p align="center"><b>→ <a href="https://nicolas-wehrle.github.io/Wiss-Stundenplan/">nicolas-wehrle.github.io/Wiss-Stundenplan</a></b><br>Downloads for every platform, how everything works, and the Linux install command.</p>
+<p align="center"><b>→ <a href="https://stundenplan.severinwehrle.dev/">stundenplan.severinwehrle.dev</a></b><br>Downloads for every platform, how everything works, and the Linux install command.</p>
+
+<p align="center">Made by <a href="https://severinwehrle.dev">Severin Wehrle</a>.</p>
 
 ---
 
@@ -45,7 +47,7 @@ The project website lives in [`docs/index.html`](docs/index.html). GitHub publis
 | Firefox (computer and Android) | `WISS-Stundenplan-Firefox.xpi` | [firefox addon/README.md](firefox%20addon/README.md) |
 | Windows app | the file ending in `_x64-setup.exe` | [desktop app/README.md](desktop%20app/README.md) |
 | macOS app | the file ending in `_universal.dmg` | [desktop app/README.md](desktop%20app/README.md) |
-| Linux app | best: `wget -qO- https://nicolas-wehrle.github.io/Wiss-Stundenplan/linux.sh \| sh` in a terminal, then it updates with the system. Or `.deb`, `.rpm`, `.AppImage` | [desktop app/README.md](desktop%20app/README.md) |
+| Linux app | best: `wget -qO- https://stundenplan.severinwehrle.dev/linux.sh \| sh` in a terminal, then it updates with the system. Or `.deb`, `.rpm`, `.AppImage` | [desktop app/README.md](desktop%20app/README.md) |
 | Android app | `WISS-Stundenplan.apk` | [android app/README.md](android%20app/README.md) |
 | iPhone | `WISS-Stundenplan.user.js` | [iphone/README.md](iphone/README.md) |
 

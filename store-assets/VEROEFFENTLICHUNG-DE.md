@@ -3,11 +3,11 @@
 ## Fertige Dateien
 - `WISS-Stundenplan-Chrome-1.12.1.zip`: ausschliesslich die Chrome-Erweiterung; manifest.json liegt direkt im ZIP.
 - `store-icon-128.png`: bestehendes Projektlogo mit transparentem Rand.
-- `screenshot-*-1280x800.png`: fünf echte Screenshots der Erweiterung mit fiktiven Demodaten.
+- `screenshot-1…5-*-1280x800.png`: fünf gestaltete Store-Bilder (Übersicht, Prüfungen, Noten, Absenzen, Räume im Dunkelmodus), aufgebaut aus echten Screenshots der Erweiterung mit fiktiven Demodaten. In dieser Reihenfolge hochladen.
 - `promo-small-440x280.png`: kleine Werbekachel.
 - `promo-marquee-1400x560.png`: grosse Werbekachel.
 - `beschreibung-de.txt`: fertige ausführliche Beschreibung.
-Alle Screenshots und Werbekacheln sind RGB-PNG ohne Alphakanal. Das Logo bleibt transparent. Gestaltung aus dem bestehenden SVG-Logo, ohne neue Markenidentität. Keine WISS-/Tocco-Logos ergänzt.
+Alle Screenshots und Werbekacheln sind RGB-PNG ohne Alphakanal. Das Logo bleibt transparent. Gestaltet im Stil der Website, mit dem bestehenden Logo. Neu erzeugen: `node store-assets-src/capture.mjs && node store-assets-src/make.mjs`. Keine WISS-/Tocco-Logos ergänzt.
 
 ## Fehler «key stimmt nicht mit dem aktuellen Artikel überein»
 Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird von Google für den bestehenden Artikel verwaltet. Der Quellcode behält seinen bisherigen key für lokale Installationen. Neue Store-ZIP jederzeit mit `python build-chrome-store.py` erstellen und die Datei `release/v1.12.1/WISS-Stundenplan-Chrome-Web-Store.zip` hochladen.
@@ -15,7 +15,7 @@ Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird v
 ## Eintrag
 Name: bestehenden Store-Namen beibehalten («Stundenplan für WISS (inoffiziell)»).
 Kurzbeschreibung (bereits im Manifest): Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.
-Sprache: Deutsch. Kategorie: Bildung. Kosten: kostenlos. Website: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan
+Sprache: Deutsch. Kategorie: Bildung. Kosten: kostenlos. Website: https://stundenplan.severinwehrle.dev
 Support: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues
 Datenschutz-URL nach dem Push: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY.md
 Vor dem Einreichen prüfen, dass die URL öffentlich ohne Anmeldung erreichbar ist und der Kontaktweg für dich passt.

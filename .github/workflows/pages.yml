@@ -2,6 +2,7 @@
 # Fedora/openSUSE (dnf, zypper) and Ubuntu/Debian/Mint (apt) then update the desktop app with
 # the rest of the system. Runs when docs/ changes, after every desktop build, or by hand.
 #
+# Address: https://stundenplan.severinwehrle.dev (Settings › Pages › Custom domain; DNS: CNAME stundenplan → nicolas-wehrle.github.io).
 # Needs: Settings › Pages › Source: "GitHub Actions", and the repository secret
 # LINUX_REPO_GPG_KEY (the content of wiss-linux-repo.private.asc). Without the secret it
 # publishes the website only.
@@ -51,11 +52,11 @@ jobs:
       - name: Package sources
         env:
           LINUX_REPO_GPG_KEY: ${{ secrets.LINUX_REPO_GPG_KEY }}
+          SITE_URL: https://stundenplan.severinwehrle.dev
         run: |
           if [ -z "$LINUX_REPO_GPG_KEY" ]; then echo "::warning::LINUX_REPO_GPG_KEY is not set, publishing the website only"; exit 0; fi
           echo "$LINUX_REPO_GPG_KEY" | gpg --batch --import
-          owner="${GITHUB_REPOSITORY_OWNER,,}"
-          bash "desktop app/linux-repos.sh" pkgs site "https://$owner.github.io/${GITHUB_REPOSITORY#*/}"
+          bash "desktop app/linux-repos.sh" pkgs site "$SITE_URL"
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

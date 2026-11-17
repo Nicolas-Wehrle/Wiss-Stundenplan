@@ -15,6 +15,6 @@ Du möchtest die Funktionen zuerst ausprobieren? Wähle bei der Einrichtung «De
 
 Deine Schuldaten werden lokal auf deinem Gerät gespeichert. Die optionale Gerätesynchronisation überträgt nur Notizen, Prüfungskorrekturen und ausgewählte Einstellungen Ende-zu-Ende-verschlüsselt. Stundenplan, Noten, Absenzen und WISS-Zugangsdaten werden nicht an den Sync-Server übertragen. Keine Werbung und kein Tracking.
 
-Weitere Versionen für Edge, Firefox, Android und Safari auf dem iPhone findest du im GitHub-Projekt: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan
+Weitere Versionen für Firefox, Windows, macOS, Linux, Android und das iPhone findest du auf der Website: https://stundenplan.severinwehrle.dev
 
 Hinweis: Dies ist ein inoffizielles Schülerprojekt. Es steht in keiner Verbindung zu WISS oder Tocco und wurde von diesen weder entwickelt noch unterstützt. Für echte Schuldaten benötigst du dein eigenes WISS-Konto. Die Demo enthält ausschliesslich fiktive Daten. Massgeblich bleiben die Angaben im offiziellen Extranet.

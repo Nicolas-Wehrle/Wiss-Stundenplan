@@ -65,7 +65,7 @@ What users download from the release page:
 ### Linux: one command, then automatic updates
 
 ```
-wget -qO- https://nicolas-wehrle.github.io/Wiss-Stundenplan/linux.sh | sh
+wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 ```
 
 It works on Fedora, openSUSE, Ubuntu, Debian, Mint and the like: it adds the app's package source (signed with the repository key), then installs the app. After that, new versions arrive with the normal system updates. Without the command, the `.rpm`/`.deb` from the release page work too, but then every update is a manual download. Everything else: the `.AppImage`, which updates itself like the Windows app.

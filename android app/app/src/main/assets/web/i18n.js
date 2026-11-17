@@ -295,7 +295,7 @@
      'keine': 'none', 'Im Hintergrund': 'In the background',
     'Lädt regelmässig neue Daten': 'Loads new data regularly', 'Aus': 'Off', 'Jetzt': 'Now', 'Aktualisieren': 'Refresh',
     'Läuft…': 'Running…', 'Diagnose': 'Diagnostics', 'Notizen': 'Notes', 'Kopieren': 'Copy', 'Exportieren': 'Export', 'Kopiert ✓': 'Copied ✓', 'Nicht möglich': 'Not possible',
-    'Inoffiziell, nicht von der WISS': 'Unofficial, not made by WISS',
+    'Inoffiziell, nicht von der WISS': 'Unofficial, not made by WISS', 'Von Severin Wehrle · inoffiziell, nicht von der WISS': 'By Severin Wehrle · unofficial, not made by WISS', 'Website': 'Website', 'Downloads und Anleitungen': 'Downloads and guides',
     'Daten: wiss.tocco.ch (dein Login) · Module: modulbaukasten.ch · Schriften: Doto, Space Mono (SIL OFL)': 'Data: wiss.tocco.ch (your login) · Modules: modulbaukasten.ch · Fonts: Doto, Space Mono (SIL OFL)',
     'Datum wählen': 'Choose date', '✓ {N} Module geladen': '✓ {N} modules loaded',
     '✓ {N} Module (eingebaut, modulbaukasten.ch ist gerade offline)': '✓ {N} modules (built in, modulbaukasten.ch is offline right now)',
