@@ -87,6 +87,7 @@ Every version updates itself: Chrome and Firefox in the background, Android, Win
 The code is open source under the MIT license. How to build, test and release it is in **[DEVELOPMENT.md](DEVELOPMENT.md)**.
 
 ## Credits
+- Made by [Severin Wehrle](https://severinwehrle.dev). Co-developer [Danylo Kovalenko](https://danylokv.dev) works on the iPhone version.
 - Module descriptions and the list of apprenticeships come from [modulbaukasten.ch](https://www.modulbaukasten.ch) (ICT-Berufsbildung Schweiz). A copy is included so the app also works offline. All rights to that text stay with them.
 - Fonts: [Bricolage Grotesque](https://github.com/ateliertriay/bricolage), [Geist](https://github.com/vercel/geist-font), [Doto](https://github.com/oliverlalan/Doto) and Space Mono, all under the SIL Open Font License (see `chrome addon/fonts/LICENSE-fonts.txt`).
 - The "Nothing" and "GitHub" styles are only inspired by those designs. No logos or brand assets are used.
@@ -96,4 +97,4 @@ The code is open source under the MIT license. How to build, test and release it
 
 ---
 
-<p align="center">Made by <a href="https://severinwehrle.dev"><b>Severin Wehrle</b></a></p>
+<p align="center">Made by <a href="https://severinwehrle.dev"><b>Severin Wehrle</b></a> · iPhone version by <a href="https://danylokv.dev"><b>Danylo Kovalenko</b></a></p>

@@ -131,9 +131,11 @@ function renderSettings({ acc, ab, zp, user }) {
   const ver = hasChrome && browser.runtime.getManifest ? browser.runtime.getManifest().version : '';
   const ui = S.updateInfo;
   const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr(SYSTEM_UPDATES ? 'Version {V} kommt mit den Systemupdates.' : 'Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
-  const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Von Severin Wehrle · inoffiziell, nicht von der WISS')}</small></div></div>
+  const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
     ${row(tr('Updates'), updText, updateAvailable() && !SYSTEM_UPDATES ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
     ${row(tr('Datenschutz'), '', `<button class="btn ghost" data-act="privacy-show">${tr('Lesen')}</button>`)}
+    ${row('Severin Wehrle', tr('Entwickler'), `<button class="btn ghost" data-act="open-severin">${tr('Profil')}</button>`)}
+    ${row('Danylo Kovalenko', tr('Mitentwickler · iPhone-Version'), `<button class="btn ghost" data-act="open-danylo">${tr('Profil')}</button>`)}
     ${row(tr('Website'), tr('Downloads und Anleitungen'), `<button class="btn ghost" data-act="open-site">${tr('Öffnen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}
     <p class="shint">${tr('Daten von wiss.tocco.ch und modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;
@@ -196,6 +198,8 @@ document.addEventListener('click', (ev) => {
   }
   else if (act === 'open-repo') openUrl('https://github.com/Nicolas-Wehrle/Wiss-Stundenplan');
   else if (act === 'open-site') openUrl('https://stundenplan.severinwehrle.dev/');
+  else if (act === 'open-severin') openUrl('https://severinwehrle.dev/');
+  else if (act === 'open-danylo') openUrl('https://danylokv.dev/');
 });
 document.addEventListener('change', (ev) => {
   if (ev.target.id === 'prefStartTab') { setPref('startTab', ev.target.value); render(); }

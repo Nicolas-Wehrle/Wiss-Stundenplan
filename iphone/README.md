@@ -3,7 +3,7 @@
 On iPhone, WISS Stundenplan runs in Safari with the free app **Userscripts**.
 You sign in with your own WISS account, and your data stays on your iPhone.
 
-Unofficial, not made by WISS.
+Unofficial, not made by WISS. The iPhone version is looked after by [Danylo Kovalenko](https://danylokv.dev).
 
 There's also a step-by-step guide with pictures on the website: https://stundenplan.severinwehrle.dev/#download/iphone
 

@@ -320,7 +320,7 @@ body.full .sheet { left: auto; top: 0; bottom: 0; width: 420px; max-height: none
 .mrow:hover { box-shadow: var(--shadow); }
 .mrow .mt { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .mrow .mr { font-size: 11.5px; text-align: right; white-space: nowrap; }
-.mrow.todo { opacity: .65; }
+.mrow.s-todo { opacity: .65; }
 .mini { font-size: 9.5px; font-weight: 700; color: var(--faint); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
 .mst { font-weight: 800; text-align: center; }
 .mst.done { color: var(--ok); } .mst.run { color: var(--accent); } .mst.plan { color: var(--zp); } .mst.todo, .mst.wait { color: var(--faint); }
@@ -1762,3 +1762,68 @@ body.full .tabs button { flex: none; white-space: nowrap; }
 #view::-webkit-scrollbar-track { background: transparent; }
 #view::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--ink) 22%, transparent); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
 body.mobile #view { scrollbar-gutter: auto; }
+
+/* ---------- Grades, redesigned: hero numbers, chart hover card, finished list, all modules ---------- */
+.ghero { align-items: stretch; gap: 18px; padding: 16px 18px; flex-wrap: wrap; }
+.gh-main { display: flex; flex-direction: column; justify-content: center; min-width: 120px; }
+.gscale { position: relative; height: 5px; width: 120px; margin-top: 8px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--bad) 0 60%, color-mix(in srgb, var(--ok) 55%, var(--surface)) 60% 80%, var(--ok) 80%); opacity: .85; }
+.gscale i { position: absolute; top: 50%; width: 11px; height: 11px; border-radius: 50%; background: var(--surface); border: 2.5px solid var(--ink); transform: translate(-50%, -50%); }
+.gstats { flex: 1; display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: 8px; align-content: center; min-width: 220px; }
+.gstat { padding: 9px 12px; border-radius: 10px; background: color-mix(in srgb, var(--ink) 5%, transparent); }
+.gstat b { display: block; font-family: var(--display, var(--font)); font-size: 22px; font-weight: 800; line-height: 1.1; letter-spacing: -.02em; }
+.gstat b small { font-size: 12px; color: var(--muted); font-weight: 600; }
+.gstat span { display: block; font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.tbox { position: relative; }
+.tsvg .thit { fill: transparent; cursor: crosshair; }
+.tsvg .ta { fill: var(--accent); stroke: var(--surface); stroke-width: 1.5; opacity: 0; transition: opacity .12s ease; }
+.tsvg .ta.hot { opacity: 1; }
+.tsvg .td { transition: r .12s ease; }
+.tsvg .td.hot { r: 5.2; stroke-width: 2.6; }
+.tsvg .tguide { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; }
+.tbox.on .tguide { opacity: .6; }
+.tcard { position: absolute; top: 4px; z-index: 3; pointer-events: none; min-width: 170px; max-width: min(300px, 100%); padding: 9px 11px; border-radius: 10px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--shadow-lg); font-size: 12px; line-height: 1.4; }
+.tcard .tc-t { display: flex; gap: 7px; align-items: flex-start; }
+.tcard .tc-t b { font-weight: 700; }
+.tcard .tc-r { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 5px; color: var(--muted); }
+.tcard .tc-r b { color: var(--ink); } .tcard .tc-r b.gval.good { color: var(--ok); } .tcard .tc-r b.gval.bad { color: var(--bad); }
+
+.glist { padding: 4px 0; }
+.gl-row { display: grid; grid-template-columns: 46px minmax(0, 1fr) minmax(60px, 160px) 44px; gap: 12px; align-items: center; padding: 9px 14px; cursor: pointer; position: relative; }
+.gl-row + .gl-row { border-top: 1px solid var(--line); }
+.gl-row:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+.gl-row::before { content: ''; position: absolute; left: 0; top: 10px; bottom: 10px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+.gl-row .badge { justify-self: start; }
+.gl-t { min-width: 0; }
+.gl-n { display: block; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gl-t small { display: block; font-size: 11px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gl-bar { height: 6px; border-radius: 3px; background: color-mix(in srgb, var(--ink) 9%, transparent); overflow: hidden; }
+.gl-bar i { display: block; height: 100%; border-radius: 3px; background: var(--muted); }
+.gl-bar i.good { background: var(--ok); } .gl-bar i.mid { background: color-mix(in srgb, var(--ok) 45%, var(--muted)); } .gl-bar i.bad { background: var(--bad); }
+.gl-row > b { text-align: right; font-family: var(--display, var(--font)); font-size: 17px; font-weight: 800; }
+body:not(.full) .gl-row { grid-template-columns: 42px minmax(0, 1fr) 38px; gap: 10px; padding: 9px 12px; }
+body:not(.full) .gl-bar { display: none; }
+@media (max-width: 560px) { .gl-row { grid-template-columns: 42px minmax(0, 1fr) 38px; } .gl-bar { display: none; } }
+
+.am-head { padding: 12px 14px; margin-bottom: 8px; }
+.am-head .bar { height: 6px; margin: 0; }
+.am-head .bar i { background: var(--ok); }
+.am-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: 11.5px; color: var(--muted); align-items: center; }
+.am-legend span { display: inline-flex; align-items: center; gap: 6px; }
+i.mst { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; justify-self: center; box-sizing: border-box; }
+i.mst.s-done { background: var(--ok); position: relative; }
+i.mst.s-done::after { content: ''; position: absolute; left: 3px; top: 1px; width: 3px; height: 5px; border: solid var(--surface); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+i.mst.s-run { background: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); }
+i.mst.s-plan { border: 2px dashed var(--zp); }
+i.mst.s-todo { border: 1.5px solid var(--faint); }
+i.mst.s-wait { background: var(--faint); opacity: .6; }
+.am-src { font-size: 11px; margin-top: 10px; }
+body.full[data-tab=grades] #view > .allmods { max-width: 920px; }
+@media (max-width: 640px) {
+  .gstats { flex-basis: 100%; min-width: 0; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+  .gstat { padding: 7px 8px; }
+  .gstat b { font-size: 17px; }
+  .gstat span { font-size: 10px; }
+}

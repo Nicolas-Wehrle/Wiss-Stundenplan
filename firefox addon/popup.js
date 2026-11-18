@@ -123,7 +123,7 @@ const holidayOf = (k) => holidays(+k.slice(0, 4))[k] || null;
 // =====================================================================
 function hue(str) { let h = 0; for (const c of str) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % 360; }
 function splitLabel(label) {
-  const m = label.match(/^(\d[\d-]*)\s*-\s*(.+)$/);
+  const m = label.match(/^(\d[\d-]*)\s*-\s*(.+)$/) || label.match(/^M(\d{3}(?:-\d+)?)\s+(.+)$/);
   if (m) return { num: m[1], name: m[2] };
   return { num: '', name: label.replace(/\s*Semester\s*\d+\s*$/i, '').trim() || label };
 }
@@ -644,7 +644,8 @@ function gradeTrend() {
   if (n) series.push({ day: null, avg: s / n, g: null, label: tr('frühere Module') + ' (' + n + ')' });
   for (const p of known) { s += p.g; n++; series.push({ day: p.day, avg: s / n, g: p.g, label: p.label }); }
   if (series.length < 2) return '';
-  const Wd = 640, Hd = 150, padL = 28, padR = 10, padT = 10, padB = 22;
+  const wide = FULL && innerWidth >= 640;
+  const Wd = wide ? 640 : 340, Hd = wide ? 150 : 140, padL = 28, padR = 10, padT = 10, padB = 22; // narrow popup: own scale, so labels stay readable
   const ys = series.flatMap((p) => [p.avg, p.g]).filter((v) => v != null);
   const lo = Math.max(1, Math.floor(Math.min(...ys, 4) * 2) / 2 - 0.5), hi = Math.min(6, Math.ceil(Math.max(...ys) * 2) / 2 + 0.25);
   const X = (i) => padL + (i / (series.length - 1)) * (Wd - padL - padR);
@@ -652,12 +653,19 @@ function gradeTrend() {
   let grid = '';
   for (let v = Math.ceil(lo); v <= hi; v += 0.5) grid += `<line x1="${padL}" x2="${Wd - padR}" y1="${Y(v)}" y2="${Y(v)}" class="tg ${v === 4 ? 'four' : ''}"/><text x="${padL - 6}" y="${Y(v) + 3.5}" class="tl">${fmtG(v)}</text>`;
   const line = series.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)},${Y(p.avg).toFixed(1)}`).join(' ');
-  const dots = series.map((p, i) => p.g == null ? '' : `<circle cx="${X(i)}" cy="${Y(p.g)}" r="3.2" class="td ${gradeCls(p.g)}"><title>${esc(splitLabel(p.label).name)}: ${fmtG(p.g)}</title></circle>`).join('');
+  const dots = series.map((p, i) => `<circle cx="${X(i)}" cy="${Y(p.avg)}" r="3" class="ta" data-i="${i}"/>` + (p.g == null ? '' : `<circle cx="${X(i)}" cy="${Y(p.g)}" r="3.4" class="td ${gradeCls(p.g)}" data-i="${i}"/>`)).join('');
+  // invisible columns, one per point: hovering anywhere above a point shows its card
+  const step = series.length > 1 ? (Wd - padL - padR) / (series.length - 1) : Wd;
+  const hits = series.map((p, i) => {
+    const { num, name } = splitLabel(p.label || '');
+    const info = { n: num, t: name, g: p.g, a: Math.round(p.avg * 100) / 100, d: p.day ? fmtShort(p.day) : '' };
+    return `<rect class="thit" x="${Math.max(0, X(i) - step / 2)}" y="0" width="${step}" height="${Hd}" data-i="${i}" data-x="${X(i) / Wd}" data-pt="${esc(JSON.stringify(info))}"/>`;
+  }).join('');
   let months = '', lastM = '';
   series.forEach((p, i) => { if (!p.day) return; const m = MON[keyDate(p.day).getUTCMonth()]; if (m !== lastM) { months += `<text x="${X(i)}" y="${Hd - 6}" class="tm">${m}</text>`; lastM = m; } });
   const first = series[0].avg, last = series[series.length - 1].avg, diff = last - first;
   return `<div class="card trend"><div class="trend-h"><b>${tr('Schnitt im Verlauf')}</b><small>${tr('aktuell')} <b class="gval ${gradeCls(last)}">${fmtG(Math.round(last * 100) / 100)}</b> · <span class="${diff >= 0 ? 'gval good' : 'gval bad'}">${diff >= 0 ? '▲' : '▼'} ${fmtG(Math.abs(Math.round(diff * 100) / 100))}</span></small></div>
-    <svg viewBox="0 0 ${Wd} ${Hd}" class="tsvg" role="img" aria-label="${esc(tr('Schnitt im Verlauf'))}">${grid}<path d="${line}" class="tline"/>${dots}${months}</svg>
+    <div class="tbox"><svg viewBox="0 0 ${Wd} ${Hd}" class="tsvg" role="img" aria-label="${esc(tr('Schnitt im Verlauf'))}">${grid}<line class="tguide" y1="${padT}" y2="${Hd - padB}" x1="0" x2="0"/><path d="${line}" class="tline"/>${dots}${months}${hits}</svg><div class="tcard" hidden></div></div>
     <div class="trend-l"><span><i class="tli"></i>${tr('Schnitt')}</span><span><i class="tdi"></i>${tr('Modulnote')}</span></div></div>`;
 }
 
@@ -671,9 +679,11 @@ function renderGrades() {
   const open = G.filter((g) => g.grade == null || /offen/i.test(g.status));
   const seen = new Set();
   const prog = moduleProgress(), best = done.length ? Math.max(...done.map((g) => +g.grade)) : null;
+  const finished = done.filter((g) => !/offen/i.test(g.status));
+  const stat = (k, v, cls = '') => `<div class="gstat"><b class="${cls}">${v}</b><span>${k}</span></div>`;
   let h = `<div class="card ghero hero"><div class="gh-main"><div class="k">${tr('Schnitt')}</div><div class="v gval ${gradeCls(avg)}">${fmtG(avg && Math.round(avg * 100) / 100)}</div>
-      ${insuff ? `<div class="k"><b class="gval bad">${tr('{N} ungenügend', { N: insuff })}</b></div>` : ''}</div>
-    ${prog ? `<div class="ring" style="--p:${Math.round((prog.done / Math.max(1, prog.total)) * 100)}" title="${esc(tr('Schulmodule abgeschlossen'))}"><b>${prog.done}<small>/${prog.total}</small></b><span>${tr('Module')}</span></div>` : ''}</div>`;
+      <div class="gscale"><i style="left:${avg == null ? 0 : ((avg - 1) / 5) * 100}%"></i></div></div>
+    <div class="gstats">${stat(tr('Bestnote'), fmtG(best), 'gval ' + gradeCls(best))}${stat(tr('Abgeschlossen'), finished.length)}${prog ? stat(tr('Schulmodule'), `${prog.done}<small>/${prog.total}</small>`) : ''}${stat(tr('Ungenügend'), insuff, insuff ? 'gval bad' : '')}</div></div>`;
   h += gradeTrend();
 
   const card = (g) => {
@@ -711,10 +721,15 @@ function renderGrades() {
   // finished modules as a compact grid: number, name, grade
   const tile = (g) => {
     const { num, name } = splitLabel(g.label);
-    const lid = (D.mods.get(g.event)?.lessons.slice(-1)[0])?.id;
-    return `<div class="card gtile ${gradeCls(+g.grade)}" style="${sv(g.label)}" ${lid ? `data-lid="${lid}"` : ''} title="${esc(name)}">${num ? `<span class="badge">${esc(num)}</span>` : ''}<span class="gt">${esc(g.part && g.part !== name && !num ? name + ' · ' + g.part : name)}</span><b class="gval ${gradeCls(+g.grade)}">${fmtG(+g.grade)}</b></div>`;
+    const m = D.mods.get(g.event), lid = (m?.lessons.slice(-1)[0])?.id, end = m ? m.days[m.days.length - 1] : null;
+    const part = g.part && g.part !== name && !/^modulnote$/i.test(g.part) ? g.part : '';
+    return `<div class="gl-row" style="${sv(g.label)}" ${lid ? `data-lid="${lid}"` : ''}>
+      <span class="badge">${esc(num || '–')}</span>
+      <span class="gl-t"><span class="gl-n">${esc(name)}</span>${part || end ? `<small>${esc([part, end ? tr('bis {D}', { D: fmtShort(end) }) : ''].filter(Boolean).join(' · '))}</small>` : ''}</span>
+      <span class="gl-bar"><i class="${gradeCls(+g.grade)}" style="width:${((+g.grade - 1) / 5) * 100}%"></i></span>
+      <b class="gval ${gradeCls(+g.grade)}">${fmtG(+g.grade)}</b></div>`;
   };
-  if (closed.length) h += `<div class="section-title">Abgeschlossen <small>${closed.length}</small></div><div class="ggrid">${closed.map(tile).join('')}</div>`;
+  if (closed.length) h += `<div class="section-title">Abgeschlossen <small>${closed.length}</small></div><div class="card glist">${closed.map(tile).join('')}</div>`;
   return h + renderAllModules();
 }
 
@@ -756,9 +771,9 @@ function renderAllModules() {
   const schoolDone = school.filter((n) => statusOf(n).s === 'done').length;
   const years = {};
   for (const n of nums) (years[MODS[n].lj || 'Weitere'] = years[MODS[n].lj || 'Weitere'] || []).push(n);
-  let h = `<div class="section-title">Alle Module der Ausbildung <small>${schoolDone}/${school.length} Schulmodule abgeschlossen</small></div>
-    <div class="bar" style="height:6px;margin:0 2px 8px"><i style="width:${(schoolDone / Math.max(1, school.length)) * 100}%;background:var(--ok)"></i></div>
-    <div class="legend" style="margin:0 2px 6px"><span class="mst done">✓</span> abgeschlossen <span class="mst run">●</span> läuft <span class="mst plan">◷</span> geplant <span class="mst todo">○</span> offen · üK = überbetrieblicher Kurs</div>`;
+  let h = `<div class="allmods"><div class="section-title">Alle Module der Ausbildung <small>${schoolDone}/${school.length} Schulmodule abgeschlossen</small></div>
+    <div class="card am-head"><div class="bar"><i style="width:${(schoolDone / Math.max(1, school.length)) * 100}%"></i></div>
+    <div class="am-legend"><span><i class="mst s-done"></i>${tr('abgeschlossen')}</span><span><i class="mst s-run"></i>${tr('läuft')}</span><span><i class="mst s-plan"></i>${tr('geplant')}</span><span><i class="mst s-todo"></i>${tr('offen')}</span><span class="muted">üK = ${tr('überbetrieblicher Kurs')}</span></div></div>`;
   for (const y of Object.keys(years).sort()) {
     const running = years[y].some((n) => statusOf(n).s === 'run');
     const nDone = years[y].filter((n) => statusOf(n).s === 'done').length;
@@ -767,14 +782,14 @@ function renderAllModules() {
       const mi = MODS[n], st = statusOf(n);
       const uk = /üK/.test(mi.ort), wahl = /Wahl/i.test(mi.typ);
       const lid = info[n] && info[n].ev ? (D.mods.get(info[n].ev)?.lessons.find((l) => l._day >= tk) || D.mods.get(info[n].ev)?.lessons.slice(-1)[0])?.id : null;
-      h += `<div class="mrow ${st.s}" ${lid ? `data-lid="${lid}"` : `data-mod="${n}"`} style="${sv(info[n]?.label || n)}">
-        <span class="mst ${st.s}">${{ done: '✓', run: '●', plan: '◷', wait: '…', todo: '○' }[st.s]}</span>
+      h += `<div class="mrow s-${st.s}" ${lid ? `data-lid="${lid}"` : `data-mod="${n}"`} style="${sv(info[n]?.label || n)}">
+        <i class="mst s-${st.s}"></i>
         <span class="badge">${esc(n)}</span><span class="mt">${esc(mi.t)}${uk ? ' <span class="mini">üK</span>' : ''}${wahl ? ' <span class="mini">Wahl</span>' : ''}</span>
         <span class="mr">${st.g != null ? `<b class="gval ${gradeCls(st.g)}">${fmtG(st.g)}</b>` : `<span class="muted">${esc(st.t)}</span>`}</span></div>`;
     }
     h += `</details>`;
   }
-  return h + `<div class="muted" style="font-size:11px;margin-top:8px">Modulbeschreibungen: modulbaukasten.ch (ICT-Berufsbildung Schweiz)</div>`;
+  return h + `<div class="muted am-src">Modulbeschreibungen: modulbaukasten.ch (ICT-Berufsbildung Schweiz)</div></div>`;
 }
 
 function openModuleSheet(n) {
@@ -1415,6 +1430,28 @@ document.addEventListener('mouseover', (ev) => {
     placeTip(el);
   }, TIP_DELAY);
 });
+// chart in the grades view: which module is behind a point
+function trendHover(ev) {
+  const hit = ev.target.closest && ev.target.closest('.thit');
+  for (const box of document.querySelectorAll('.tbox.on')) if (!hit || !box.contains(hit)) {
+    box.classList.remove('on'); box.querySelector('.tcard').hidden = true;
+    box.querySelectorAll('.tsvg .hot').forEach((c) => c.classList.remove('hot'));
+  }
+  if (!hit) return;
+  const box = hit.closest('.tbox'), card = box.querySelector('.tcard'), svg = box.querySelector('.tsvg');
+  let p; try { p = JSON.parse(hit.dataset.pt); } catch (e) { return; }
+  svg.querySelectorAll('.hot').forEach((c) => c.classList.remove('hot'));
+  svg.querySelectorAll(`circle[data-i="${hit.dataset.i}"]`).forEach((c) => c.classList.add('hot'));
+  const vb = svg.viewBox.baseVal.width, x = +hit.dataset.x * vb;
+  const guide = svg.querySelector('.tguide'); guide.setAttribute('x1', x); guide.setAttribute('x2', x);
+  setHTML(card, `<div class="tc-t">${p.n ? `<span class="badge">${esc(p.n)}</span>` : ''}<b>${esc(p.t)}</b></div>
+    <div class="tc-r">${p.g != null ? `<span>${tr('Modulnote')} <b class="gval ${gradeCls(p.g)}">${fmtG(p.g)}</b></span>` : ''}<span>${tr('Schnitt')} <b>${fmtG(p.a)}</b></span>${p.d ? `<span class="muted">${esc(p.d)}</span>` : ''}</div>`);
+  card.hidden = false; box.classList.add('on');
+  const bw = box.clientWidth, cw = card.offsetWidth, px = +hit.dataset.x * bw;
+  card.style.left = (px + 14 + cw <= bw ? px + 14 : Math.max(0, px - 14 - cw)) + 'px';
+}
+document.addEventListener('pointerover', trendHover);
+document.addEventListener('pointerdown', (ev) => { if (ev.target.closest && ev.target.closest('.thit')) trendHover(ev); });
 document.addEventListener('mousedown', hideTip);
 document.addEventListener('wheel', hideTip, { passive: true });
 document.addEventListener('keydown', hideTip);

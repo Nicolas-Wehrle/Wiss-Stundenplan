@@ -15,6 +15,7 @@ An unofficial app for WISS students that shows the timetable, exams, grades, abs
 How it works in one sentence: it shows the last saved data immediately and fetches fresh data in the background, using the student's own login (Microsoft school account via the extranet), and keeps everything on the device.
 
 - **Author:** Severin Wehrle (student at WISS).
+- **Co-developer:** Danylo Kovalenko (https://danylokv.dev), GitHub collaborator. He builds and maintains the iPhone version (a native App Store app is the next step) and publishes it from his own Apple developer account. He asks Severin when he needs access to anything else (store accounts, signing keys).
 - **Repo:** https://github.com/Nicolas-Wehrle/Wiss-Stundenplan (public, MIT license).
 - **Local folder:** `C:\Users\sever\Documents\Wiss-Stundenplan` (git repo). `C:\Users\sever\Documents\tocco chrome addon` is only a drop folder (git bundles, test builds, the signing key files).
 - **Not affiliated with WISS or Tocco.** It only uses each user's own login, the same way the extranet website does.

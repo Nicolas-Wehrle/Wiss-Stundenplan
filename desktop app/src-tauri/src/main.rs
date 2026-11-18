@@ -83,6 +83,7 @@ struct Host {
     has_tray: AtomicBool,
     tray: Mutex<Option<TrayItems>>,
     http: reqwest::Client,
+    zoom: Mutex<f64>,
 }
 
 fn now_ms() -> f64 {
@@ -627,6 +628,23 @@ fn save_window(app: &AppHandle, w: &WebviewWindow) {
     let _ = std::fs::write(&app.state::<Host>().win_path, json!({ "w": s.width, "h": s.height }).to_string());
 }
 
+/// Bigger windows get a bigger page, like pressing Ctrl + Plus: the layout is made for about
+/// 1360 × 900, so a maximised window on a large screen would otherwise look small and empty.
+fn fit_zoom(app: &AppHandle, w: &WebviewWindow) {
+    let (Ok(size), Ok(scale)) = (w.inner_size(), w.scale_factor()) else { return };
+    if size.width == 0 || w.is_minimized().unwrap_or(false) {
+        return;
+    }
+    let s = size.to_logical::<f64>(scale);
+    let z = ((s.width / 1360.0).min(s.height / 900.0).clamp(1.0, 1.75) * 20.0).floor() / 20.0;
+    let host = app.state::<Host>();
+    let mut cur = host.zoom.lock().unwrap();
+    if (*cur - z).abs() > 0.001 {
+        *cur = z;
+        let _ = w.set_zoom(z);
+    }
+}
+
 fn saved_size(path: &std::path::Path) -> (f64, f64) {
     let v: Value = std::fs::read(path).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or(Value::Null);
     let g = |k: &str, d: f64| v.get(k).and_then(Value::as_f64).filter(|x| *x >= 380.0 && *x <= 4000.0).unwrap_or(d);
@@ -677,6 +695,7 @@ fn main() {
                 has_tray: AtomicBool::new(false),
                 tray: Mutex::new(None),
                 http: reqwest::Client::builder().user_agent(format!("WISS-Stundenplan-Desktop/{version}")).build()?,
+                zoom: Mutex::new(1.0),
             };
             if let Some(Value::Object(p)) = host.store.snapshot().get("prefs") {
                 if p.get("lang").and_then(Value::as_str) == Some("en") {
@@ -702,6 +721,9 @@ fn main() {
                     local
                 })
                 .build()?;
+            if let Some(w) = app.get_webview_window("main") {
+                fit_zoom(app.handle(), &w);
+            }
 
             if let Err(e) = build_tray(app.handle()) {
                 eprintln!("no tray icon: {e}");
@@ -758,6 +780,11 @@ fn main() {
                         hide_main(app);
                     } else {
                         quit(app);
+                    }
+                }
+                WindowEvent::Resized(_) | WindowEvent::ScaleFactorChanged { .. } if win.label() == "main" => {
+                    if let Some(w) = app.get_webview_window("main") {
+                        fit_zoom(app, &w);
                     }
                 }
                 WindowEvent::Destroyed => {

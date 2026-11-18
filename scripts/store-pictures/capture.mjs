@@ -44,7 +44,7 @@ try {
     if (t === 'exams') facts.exam = await p.evaluate(() => ({ days: document.querySelector('.xcount b')?.textContent, kicker: document.querySelector('.xhm .kicker')?.textContent.trim(), title: document.querySelector('.xhm .title')?.textContent, meta: document.querySelector('.xhm .meta')?.textContent }));
     if (t === 'absences') facts.abs = await p.evaluate(() => document.querySelector('.section-title.todo')?.nextElementSibling?.innerText.split('\n').map((x) => x.trim()).filter(Boolean));
     if (t === 'rooms') facts.rooms = await p.evaluate(() => ({ time: (document.querySelector('.rhero .k')?.textContent.match(/\d{1,2}:\d\d/) || [])[0], free: document.querySelector('.rhero .v')?.firstChild?.textContent.trim(), total: document.querySelector('.rhero .v small')?.textContent.replace(/\D/g, ''), chips: [...document.querySelectorAll('.rhero .rchip b')].map((b) => b.textContent) }));
-    if (t === 'grades') Object.assign(facts, await p.evaluate(() => ({ avg: document.querySelector('.gval')?.textContent, done: +(document.body.innerText.match(/(?:Abgeschlossen|Completed)\s*(\d+)/) || [])[1] })));
+    if (t === 'grades') Object.assign(facts, await p.evaluate(() => ({ avg: document.querySelector('.gval')?.textContent, done: document.querySelectorAll('.gl-row').length })));
   }
   fs.writeFileSync(path.join(out, 'facts.json'), JSON.stringify(facts, null, 1));
   await p.emulateMedia({ colorScheme: 'dark' }); await p.waitForTimeout(300);
