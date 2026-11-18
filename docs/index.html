@@ -388,7 +388,7 @@ html.scrolling .ncard { pointer-events: none; }
 .article .back:hover { color: var(--ink); }
 .article h1 { font-size: clamp(32px, 5vw, 46px); font-weight: 800; margin: 18px 0 10px; }
 .article .lead { font-size: 19px; color: var(--muted); line-height: 1.55; margin-top: 12px; }
-.article .art { margin: 30px 0 34px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--panel); min-height: 300px; }
+.article .art { margin: 30px 0 34px; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; min-height: 300px; }
 .article h2 { font-size: 24px; font-weight: 800; margin: 34px 0 10px; }
 .article p { font-size: 16.5px; line-height: 1.7; margin: 0 0 14px; }
 .article ul { padding-left: 20px; margin: 0 0 16px; } .article li { margin: 6px 0; font-size: 16.5px; line-height: 1.6; }
@@ -418,7 +418,7 @@ html.scrolling .ncard { pointer-events: none; }
 .g-chart .dt { fill: var(--panel); stroke: var(--ok); stroke-width: 2.2; cursor: pointer; transition: r .12s ease; }
 .g-chart .dt.mid { stroke: var(--muted); }
 .g-chart .dt:hover, .g-chart .dt.on { r: 6.5; stroke-width: 3; }
-.g-tip { position: absolute; top: 26px; padding: 8px 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line2); box-shadow: 0 14px 30px -14px rgba(0,0,0,.35); font-size: 12px; line-height: 1.4; pointer-events: none; transition: left .15s ease; white-space: nowrap; }
+.g-tip { position: absolute; bottom: 8px; padding: 8px 10px; border-radius: 10px; background: var(--panel); border: 1px solid var(--line2); box-shadow: 0 14px 30px -14px rgba(0,0,0,.35); font-size: 12px; line-height: 1.4; pointer-events: none; transition: left .15s ease; white-space: nowrap; }
 .g-tip b { display: block; font-size: 12.5px; } .g-tip span { color: var(--muted); } .g-tip i { font-style: normal; font-weight: 700; color: var(--ok); }
 .g-hint { font: 11.5px var(--mono); color: var(--faint); text-align: center; }
 /* desktop */
@@ -455,6 +455,39 @@ html.scrolling .ncard { pointer-events: none; }
 .y-c { height: 74px; border-radius: 11px; padding: 9px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10.5px; font-weight: 700; border: 1px solid rgba(127,127,127,.25); overflow: hidden; }
 .y-c i { display: block; height: 7px; border-radius: 4px; width: 70%; opacity: .9; }
 .y-c i + i { width: 45%; }
+
+/* figures inside articles */
+.fig { margin: 22px 0 26px; }
+.fig .art { margin: 0 !important; min-height: 0 !important; padding: 24px 18px; }
+.fig figcaption { font-size: 13.5px; color: var(--faint); margin-top: 9px; text-align: center; }
+.f-list { width: min(460px, 100%); padding: 6px 0; }
+.f-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 90px 34px; gap: 10px; align-items: center; padding: 8px 14px; font-size: 13px; position: relative; }
+.f-row + .f-row { border-top: 1px solid var(--line); }
+.f-row::before { content: ''; position: absolute; left: 0; top: 9px; bottom: 9px; width: 3px; border-radius: 0 3px 3px 0; background: var(--c); }
+.f-row .n { font: 700 11px var(--mono); padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--c) 18%, transparent); justify-self: start; }
+.f-row .t b { display: block; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .f-row .t small { color: var(--faint); font-size: 11px; }
+.f-row .bar { height: 6px; border-radius: 3px; background: var(--bg2); overflow: hidden; } .f-row .bar i { display: block; height: 100%; border-radius: 3px; background: var(--ok); }
+.f-row .bar i.mid { background: color-mix(in srgb, var(--ok) 45%, var(--muted)); }
+.f-row > b { text-align: right; font: 800 15px var(--display); }
+.f-zoom { display: flex; gap: 18px; align-items: flex-end; justify-content: center; width: 100%; flex-wrap: wrap; }
+.f-zoom > div { display: grid; justify-items: center; gap: 8px; font: 600 11px var(--mono); color: var(--faint); }
+.f-scr { border: 2px solid var(--line2); border-radius: 8px; background: var(--panel); display: grid; place-items: center; padding: 8px; }
+.f-scr .pg { border-radius: 5px; background: var(--bg2); display: grid; gap: 4px; padding: 6px; align-content: start; }
+.f-scr .pg i { display: block; height: 7px; border-radius: 3px; background: var(--line2); } .f-scr .pg i:first-child { background: var(--red); opacity: .7; }
+.f-flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.f-step { padding: 10px 12px; border-radius: 11px; background: var(--panel); border: 1px solid var(--line2); font-size: 12.5px; max-width: 150px; line-height: 1.35; }
+.f-step b { display: block; font-size: 13px; margin-bottom: 2px; } .f-step.dim { border-style: dashed; color: var(--muted); }
+.f-arr { color: var(--faint); font-size: 18px; }
+.f-term { width: min(520px, 100%); border-radius: 12px; background: #16141d; color: #ecebef; font: 13px/1.6 var(--mono); padding: 14px 16px; box-shadow: 0 20px 40px -24px rgba(0,0,0,.6); }
+.f-term .d { color: #7d7987; } .f-term .ok { color: #4fd18b; } .f-term .pr { color: #ff6b80; }
+.f-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(520px, 100%); }
+.f-two > div { padding: 12px 14px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line2); font-size: 13px; }
+.f-two h5 { margin: 0 0 6px; font: 600 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); }
+.f-two ul { margin: 0; padding-left: 16px; } .f-two li { margin: 3px 0; font-size: 13px !important; }
+.f-wid { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.f-w { width: 150px; height: 74px; border-radius: 18px; padding: 10px 12px; display: flex; flex-direction: column; justify-content: space-between; font-size: 10.5px; overflow: hidden; }
+.f-w b { font-size: 14px; } .f-w .big { font: 800 22px/1 var(--display); }
+@media (max-width: 520px) { .f-two { grid-template-columns: 1fr; } .f-flow { flex-direction: column; gap: 6px; } .f-step { max-width: 240px; width: 100%; } .f-arr { transform: rotate(90deg); } }
 
 /* downloads */
 .dlhead { padding: 56px 0 6px; }
@@ -597,7 +630,9 @@ footer .brand { color: var(--ink); }
 <p>Im Diagramm «Schnitt im Verlauf» kannst du jetzt auf jeden Punkt zeigen (auf dem Handy: tippen). Dann siehst du das Modul, die Modulnote, deinen Schnitt danach und das Datum. Probier es oben im Bild aus.</p>
 <h2>Abgeschlossene Module als Liste</h2>
 <p>Statt kleiner Kacheln mit abgeschnittenen Namen gibt es eine übersichtliche Liste: Modulnummer, voller Name, bis wann es lief und ein Balken für die Note. «Alle Module der Ausbildung» ist aufgeräumt, mit klaren Symbolen für abgeschlossen, läuft, geplant und offen.</p>
+<figure class="fig"><div class="art"><div class="ui f-list"><div class="f-row" style="--c:#8b5cf6"><span class="n">319</span><span class="t"><b>Applikationen entwerfen und implementieren</b><small>bis 27.1.</small></span><span class="bar"><i class="" style="width:90%"></i></span><b>5.5</b></div><div class="f-row" style="--c:#2f6fed"><span class="n">164</span><span class="t"><b>Datenbanken erstellen und Daten einfügen</b><small>bis 28.1.</small></span><span class="bar"><i class="" style="width:90%"></i></span><b>5.5</b></div><div class="f-row" style="--c:#f59e0b"><span class="n">162</span><span class="t"><b>Daten analysieren und modellieren</b><small>bis 29.1.</small></span><span class="bar"><i class="mid" style="width:70%"></i></span><b>4.5</b></div></div></div><figcaption>Abgeschlossene Module als Liste, mit einem Balken für die Note.</figcaption></figure>
 <h2>Ausserdem</h2>
+<figure class="fig"><div class="art"><div class="f-zoom"><div><div class="f-scr" style="width:120px;height:80px"><div class="pg" style="width:90px;height:56px"><i></i><i></i><i style="width:70%"></i><i></i></div></div>Laptop · 100 %</div><div><div class="f-scr" style="width:220px;height:130px"><div class="pg" style="width:190px;height:110px"><i></i><i></i><i style="width:70%"></i><i></i></div></div>Grosser Bildschirm · bis 175 %</div></div></div><figcaption>Die Desktop-App passt die Grösse an das Fenster an.</figcaption></figure>
 <ul><li><b>Desktop-App:</b> wächst mit dem Fenster. Auf grossen Bildschirmen wird alles grösser, statt klein in der Mitte zu bleiben.</li>
 <li><b>Team:</b> Danylo Kovalenko ist neu dabei und kümmert sich um die iPhone-Version. Er steht jetzt auch unter Einstellungen › Über.</li></ul>
   <div class="acta"><a class="btn primary" href="#download" data-go="download">Herunterladen</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Alle Änderungen</a></div>
@@ -623,8 +658,10 @@ footer .brand { color: var(--ink); }
 <li>Auf Wunsch startet die App mit dem Computer.</li></ul>
 <h2>Anmelden, ohne dass etwas aufpoppt</h2>
 <p>Die Anmeldung läuft in versteckten Fenstern. Ein Fenster erscheint nur, wenn Microsoft dich wirklich braucht, und schliesst sich danach selbst. Die App sieht und tippt nie ein Passwort.</p>
+<figure class="fig"><div class="art"><div class="f-flow"><div class="f-step"><b>App startet</b>lädt sofort die letzten Daten</div><span class="f-arr">→</span><div class="f-step"><b>Versteckt</b>Anmeldung im Hintergrund</div><span class="f-arr">→</span><div class="f-step"><b>Fertig</b>neue Daten, ohne Fenster</div></div><div class="f-flow" style="margin-top:12px"><div class="f-step dim"><b>Nur wenn nötig</b>zeigt Microsoft ein Fenster, z.&nbsp;B. nach einem neuen Passwort</div></div></div><figcaption>So läuft die Anmeldung in der Desktop-App.</figcaption></figure>
 <h2>Updates von selbst</h2>
 <p>Unter Windows, macOS und mit dem AppImage installieren sich Updates per Klick. Unter Linux fügt ein einziger Befehl die Paketquelle der App hinzu, danach kommt sie mit den normalen Systemupdates.</p>
+<figure class="fig"><div class="art"><div class="f-term"><span class="pr">$</span> wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh<br><span class="d">Paketquelle hinzugefügt (Fedora, openSUSE, Ubuntu, Debian, Mint)</span><br><span class="ok">✓</span> WISS Stundenplan installiert<br><span class="d">Updates kommen jetzt mit den Systemupdates.</span></div></div><figcaption>Linux: ein Befehl, danach updatet sich die App mit dem System.</figcaption></figure>
 <h2>Seit 1.12.2 auch dabei</h2>
 <ul><li>Vollbild mit «Heute» und den nächsten Prüfungen links, der Woche rechts.</li><li>Neuer Zeit-Schieber bei den Räumen, der beim Ziehen nicht mehr springt.</li><li>Leichte Animationen, die du in den Einstellungen ausschalten kannst.</li><li>Firefox meldet dich in einem versteckten Tab an.</li></ul>
   <div class="acta"><a class="btn primary" href="#download" data-go="download">Herunterladen</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Alle Änderungen</a></div>
@@ -642,6 +679,8 @@ footer .brand { color: var(--ink); }
 <p>Die Woche startet mit einer grossen Karte für die aktuelle oder nächste Lektion, mit dem Raum in grossen Zahlen. Prüfungen zeigen einen Countdown, Noten deinen Schnitt, Absenzen zuerst, was du noch entschuldigen musst, und Räume die, die am längsten frei bleiben.</p>
 <h2>Sync, nur wenn du willst</h2>
 <p>Notizen, Prüfungskorrekturen und ein paar Einstellungen lassen sich zwischen deinen Geräten synchronisieren, Ende-zu-Ende verschlüsselt. Ein neues Gerät verbindest du mit einem Code aus 8 Zeichen, der nur einmal und nur 10 Minuten gilt. Stundenplan, Noten, Absenzen und dein Login verlassen dein Gerät nie. Die Synchronisation ist aus, bis du sie einschaltest.</p>
+<figure class="fig"><div class="art"><div class="f-flow"><div class="f-step"><b>Gerät 1</b>Einstellungen › Sync › Gerät hinzufügen</div><span class="f-arr">→</span><div class="f-step"><b>Code</b><span style="font-family:var(--mono);letter-spacing:.12em">K7Q4·M2XD</span>, gilt 10 Minuten</div><span class="f-arr">→</span><div class="f-step"><b>Gerät 2</b>Code eingeben, verbunden</div></div></div><figcaption>Ein neues Gerät verbinden.</figcaption></figure>
+<figure class="fig"><div class="art"><div class="f-two"><div><h5>Wird synchronisiert</h5><ul><li>Notizen</li><li>Prüfungskorrekturen</li><li>Ein paar Einstellungen</li></ul></div><div><h5>Bleibt auf dem Gerät</h5><ul><li>Stundenplan</li><li>Noten und Absenzen</li><li>Dein Login</li></ul></div></div></div><figcaption>Alles, was synchronisiert wird, ist Ende-zu-Ende verschlüsselt.</figcaption></figure>
 <h2>Demokonto zum Ausprobieren</h2>
 <p>Ohne WISS-Login reinschauen: Beim ersten Start «Demokonto testen» wählen. Alles darin ist frei erfunden, und «Demo beenden» löscht es wieder.</p>
 <h2>Neuer Look</h2>
@@ -664,6 +703,8 @@ footer .brand { color: var(--ink); }
 <li><b>Nothing:</b> Punktraster und Punktmatrix-Schrift, schwarz und rot.</li></ul>
 <h2>Ein Widget pro Stil</h2>
 <p>Auf Android hat jeder Stil sein eigenes Widget: grosse Zeit bei Apple, Status-Pille bei Samsung, leuchtender Rahmen bei Neon, liniertes Papier bei Papier. Flache Widgets mit nur einer Zeile zeigen das Wichtigste auf einen Blick.</p>
+<figure class="fig"><div class="art"><div class="f-wid"><div class="f-w" style="background:#fff;color:#111;border-radius:22px;box-shadow:0 8px 20px -12px rgba(0,0,0,.4)"><span style="color:#e2283f;font-weight:700">Jetzt · Raum 404</span><div><div class="big">13:30</div><span style="opacity:.7">Datenbanken</span></div></div><div class="f-w" style="background:#0b0420;color:#f5e9ff;border-radius:14px;box-shadow:0 0 0 1px #ff2bd6, 0 0 18px -4px #ff2bd6;font-style:italic"><span style="color:#ff2bd6;font-weight:700">NOW · DATENBANKEN</span><div><div class="big">RAUM 404</div><span style="opacity:.7">noch 42 min</span></div></div><div class="f-w" style="background:#fbf7ec;color:#2b2620;border-radius:6px;font-family:Georgia,serif;background-image:repeating-linear-gradient(#fbf7ec 0 17px,#e7dfcc 17px 18px)"><span style="color:#c0392b;font-weight:700">Jetzt · Datenbanken</span><div><div class="big">Raum 404</div><span style="opacity:.7">13:30–15:00</span></div></div></div></div><figcaption>Widgets in den Stilen Apple, Neon und Papier (Beispieldaten).</figcaption></figure>
+
   <div class="acta"><a class="btn primary" href="#download" data-go="download">Herunterladen</a><a class="btn ghost" href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Alle Änderungen</a></div>
 </article>
   </div>
