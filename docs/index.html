@@ -284,7 +284,14 @@ code, kbd, pre { font-family: var(--mono); font-size: .88em; }
 .rtop b { font: 800 34px/1 var(--display); letter-spacing: -.03em; }
 .rtop b em { font-style: normal; font-size: 15px; opacity: .5; }
 .rtop .tt { font: 800 22px var(--display); font-variant-numeric: tabular-nums; }
-.rtop input { width: 100%; margin: 12px 0 0; accent-color: #e8344e; }
+.rtop input { -webkit-appearance: none; appearance: none; width: 100%; height: 26px; margin: 8px 0 0; background: transparent; cursor: pointer; --p: 50%; touch-action: none; }
+.rtop input::-webkit-slider-runnable-track { height: 7px; border-radius: 99px; background: linear-gradient(to right, #e8344e var(--p), color-mix(in srgb, currentColor 14%, transparent) var(--p)); }
+.rtop input::-moz-range-track { height: 7px; border-radius: 99px; background: color-mix(in srgb, currentColor 14%, transparent); }
+.rtop input::-moz-range-progress { height: 7px; border-radius: 99px; background: #e8344e; }
+.rtop input::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; margin-top: -6.5px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 7px rgba(0,0,0,.3); transition: transform .12s ease; }
+.rtop input::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: #fff; border: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.08), 0 2px 7px rgba(0,0,0,.3); }
+.rtop input:active::-webkit-slider-thumb { transform: scale(1.12); }
+.rtop input:focus-visible { outline: none; } .rtop input:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 4px rgba(232,52,78,.3); }
 .syncv { display: grid; grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center; }
 .dev { border: 1px solid var(--line2); border-radius: 10px; padding: 12px; background: var(--panel); font-size: 13px; }
 .dev small { display: block; font: 11px var(--mono); color: var(--faint); margin-bottom: 6px; }
@@ -357,10 +364,13 @@ pre.cmd .p { color: var(--faint); user-select: none; }
 .newshead p { color: var(--muted); margin-top: 10px; font-size: 17px; }
 .nlist { display: grid; gap: 18px; margin: 34px 0 0; }
 .ncard { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 0; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; background: var(--panel); text-decoration: none; transition: border-color .15s ease; }
-.ncard:hover { border-color: var(--ink); color: inherit; }
-.ncard .art * { pointer-events: none; }
+.ncard { transition: border-color .15s ease, transform .2s ease, box-shadow .2s ease; }
+.ncard:hover { border-color: var(--line2); color: inherit; transform: translateY(-2px); box-shadow: 0 16px 34px -22px rgba(20, 10, 20, .45); }
+.ncard:hover h2 { color: var(--red); }
+.ncard h2 { transition: color .15s ease; }
 .ncard .more .ar { display: inline-block; transition: transform .15s ease; }
 .ncard:hover .more .ar { transform: translateX(4px); }
+html.scrolling .ncard { pointer-events: none; }
 .ncard .art { border-right: 1px solid var(--line); min-height: 230px; }
 .ncard .txt { padding: 26px 28px; display: flex; flex-direction: column; gap: 10px; }
 .ncard h2 { font-size: 25px; font-weight: 800; }
@@ -1436,6 +1446,20 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
     let cur = dots[1];
     dots.forEach((d) => { d.addEventListener('pointerenter', () => show(cur = d)); d.addEventListener('click', (e) => { e.preventDefault(); show(cur = d); }); });
     box.redraw = () => show(cur);
+  });
+
+  // while the page scrolls, things under a resting mouse shouldn't light up one after the other
+  let scrollEnd;
+  addEventListener('scroll', () => {
+    document.documentElement.classList.add('scrolling');
+    clearTimeout(scrollEnd);
+    scrollEnd = setTimeout(() => document.documentElement.classList.remove('scrolling'), 160);
+  }, { passive: true });
+
+  // try-it room slider: fill the track up to the knob
+  $$('.rtop input[type=range]').forEach((r) => {
+    const fill = () => r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min)) * 100 + '%');
+    r.addEventListener('input', fill); fill();
   });
 
   // docs: highlight the part you're reading
