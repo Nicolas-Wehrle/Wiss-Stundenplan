@@ -1,3 +1,7 @@
+## Unreleased
+
+- Android: the app now reaches behind the status bar and the navigation bar, in the colours of your style. No more grey stripe at the top, and the clock and icons switch between light and dark with the app.
+
 ## 1.13.0
 
 - Grades: new overview with best grade, finished and school modules and grades below 4 next to the average; finished modules as one list with a grade bar; tidier "all modules" section with clear status icons.

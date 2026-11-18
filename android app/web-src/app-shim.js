@@ -133,7 +133,8 @@
     permission: () => H.notifPermission(),
     requestPermission: () => H.requestNotifPermission(),
     installUpdate: (url) => H.installUpdate(String(url)),
-    openExternal: (url) => H.openExternal(String(url))
+    openExternal: (url) => H.openExternal(String(url)),
+    bars: (dark, rgb) => H.setBars && H.setBars(!!dark, String(rgb || ''))
   };
 
   window.chrome = {

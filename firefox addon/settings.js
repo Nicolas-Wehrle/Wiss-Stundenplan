@@ -31,6 +31,16 @@ function applyLook() {
   window.setLang(P('lang'));
   translateStatic();
   try { localStorage.setItem(LOOK_KEY, JSON.stringify({ style, mode, acc, mono: P('mono'), corners: P('corners'), size: P('size'), lang: P('lang') })); } catch (e) {}
+  tellBars();
+}
+// Android app: status and navigation bar take the page's colour, with readable icons
+function tellBars() {
+  const app = globalThis.__wissApp;
+  if (!app || !app.bars) return;
+  requestAnimationFrame(() => {
+    const m = (getComputedStyle(document.body).backgroundColor || '').match(/\d+(\.\d+)?/g);
+    app.bars(document.documentElement.dataset.mode === 'dark', m && m.length >= 3 ? m.slice(0, 3).map((x) => Math.round(+x)).join(',') : '');
+  });
 }
 if (window.matchMedia) matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (P('theme') === 'system') applyLook(); });
 

@@ -90,8 +90,9 @@ public class MainActivity extends Activity {
         contentJs = readAsset("web/content.js");
 
         root = new FrameLayout(this);
-        root.setBackgroundColor(getColor(R.color.surface));
+        root.setBackgroundColor(getColor(R.color.bg));
         setContentView(root);
+        edgeToEdge();
         applyInsets();
 
         CookieManager.getInstance().setAcceptCookie(true);
@@ -219,22 +220,78 @@ public class MainActivity extends Activity {
         });
     }
 
-    // Android 15 draws edge-to-edge: keep content clear of status/navigation bars and keyboard.
+    // ---------- system bars ----------
+    // The app draws behind the status and navigation bar, in the page's own colours. The page gets the
+    // bar heights as CSS variables (--sat, --sab) and keeps its content clear of them; the keyboard and
+    // side cut-outs are handled here with padding. The page also says if it is dark (setBars), so the
+    // clock and icons in the bars stay readable.
+    private int insetTop, insetBottom;
+    private boolean barsDark;
+
+    @SuppressWarnings("deprecation")
+    private void edgeToEdge() {
+        android.view.Window win = getWindow();
+        win.setStatusBarColor(Color.TRANSPARENT);
+        win.setNavigationBarColor(Color.TRANSPARENT);
+        if (Build.VERSION.SDK_INT >= 29) {
+            win.setStatusBarContrastEnforced(false);
+            win.setNavigationBarContrastEnforced(false);
+        }
+        if (Build.VERSION.SDK_INT >= 30) win.setDecorFitsSystemWindows(false);
+        barsDark = (getResources().getConfiguration().uiMode & android.content.res.Configuration.UI_MODE_NIGHT_MASK)
+                == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+        applyBarIcons();
+    }
+
+    /** Dark icons on a light page, light icons on a dark page. */
+    @SuppressWarnings("deprecation")
+    private void applyBarIcons() {
+        boolean lightIcons = barsDark && !loginOnTop();
+        if (Build.VERSION.SDK_INT >= 30) {
+            android.view.WindowInsetsController c = getWindow().getInsetsController();
+            if (c == null) return;
+            int both = android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+                    | android.view.WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS;
+            c.setSystemBarsAppearance(lightIcons ? 0 : both, both);
+        } else {
+            int f = View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+            if (!lightIcons) f |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR | (Build.VERSION.SDK_INT >= 27 ? View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR : 0);
+            getWindow().getDecorView().setSystemUiVisibility(f);
+        }
+    }
+
+    private boolean loginOnTop() {
+        for (Tab t : tabs.values()) if (t.visible) return true;
+        return false;
+    }
+
+    @SuppressWarnings("deprecation")
     private void applyInsets() {
         root.setOnApplyWindowInsetsListener((v, insets) -> {
-            int l, t, r, b;
+            int l, t, r, b, kb;
             if (Build.VERSION.SDK_INT >= 30) {
-                android.graphics.Insets in = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.ime());
+                android.graphics.Insets in = insets.getInsets(WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
                 l = in.left; t = in.top; r = in.right; b = in.bottom;
-                v.setPadding(l, t, r, b);
-                return WindowInsets.CONSUMED;
+                kb = insets.isVisible(WindowInsets.Type.ime()) ? insets.getInsets(WindowInsets.Type.ime()).bottom : 0;
             } else {
                 l = insets.getSystemWindowInsetLeft(); t = insets.getSystemWindowInsetTop();
                 r = insets.getSystemWindowInsetRight(); b = insets.getSystemWindowInsetBottom();
-                v.setPadding(l, t, r, b);
-                return insets.consumeSystemWindowInsets();
+                kb = b > dp(120) ? b : 0;                       // before Android 11 the keyboard is part of this inset
             }
+            v.setPadding(l, 0, r, kb);                          // keyboard: the page gets smaller
+            insetTop = t;
+            insetBottom = kb > 0 ? 0 : b;                       // nav bar: the page draws behind it
+            for (Tab tab : tabs.values()) if (tab.visible && tab.container != null) tab.container.setPadding(0, insetTop, 0, insetBottom);
+            pushInsets();
+            return Build.VERSION.SDK_INT >= 30 ? WindowInsets.CONSUMED : insets.consumeSystemWindowInsets();
         });
+    }
+
+    private void pushInsets() {
+        if (main == null) return;
+        float d = getResources().getDisplayMetrics().density;
+        main.evaluateJavascript("(function(s){s.setProperty('--sat','" + Math.round(insetTop / d) + "px');s.setProperty('--sab','"
+                + Math.round(insetBottom / d) + "px')})(document.documentElement.style)", null);
     }
 
     // ------------------------------------------------------------------ web views
@@ -258,6 +315,9 @@ public class MainActivity extends Activity {
 
     /** The app's own page: serves assets and proxies modulbaukasten requests. */
     class MainClient extends WebViewClient {
+        @Override
+        public void onPageFinished(WebView view, String url) { pushInsets(); }
+
         @Override
         public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest req) {
             String url = req.getUrl().toString();
@@ -347,12 +407,15 @@ public class MainActivity extends Activity {
         box.addView(bar, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         box.addView(t.view, new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1));
         t.container = box;
+        box.setPadding(0, insetTop, 0, insetBottom);
         root.addView(box, match());                                       // on top
+        applyBarIcons();
     }
 
     private void closeTab(int id) {
         Tab t = tabs.remove(id);
         if (t != null) destroyTab(t);
+        applyBarIcons();
         main.evaluateJavascript("window.__appTabClosed && window.__appTabClosed(" + id + ")", null);
     }
 
@@ -369,6 +432,21 @@ public class MainActivity extends Activity {
 
     /** window.AndroidHost – used by app-shim.js in the app page. */
     class Host {
+        /** The page's look: dark or light, and its background colour ("r,g,b"). */
+        @JavascriptInterface
+        public void setBars(boolean dark, String rgb) {
+            ui.post(() -> {
+                barsDark = dark;
+                applyBarIcons();
+                try {
+                    String[] c = rgb.split(",");
+                    int col = Color.rgb(Integer.parseInt(c[0].trim()), Integer.parseInt(c[1].trim()), Integer.parseInt(c[2].trim()));
+                    root.setBackgroundColor(col);
+                    getWindow().getDecorView().setBackgroundColor(col);
+                } catch (Exception ignored) {}
+            });
+        }
+
         @JavascriptInterface
         public int tabCreate(String url, boolean active) {
             Tab t = new Tab();

@@ -328,7 +328,12 @@ body.full .sheet { left: auto; top: 0; bottom: 0; width: 420px; max-height: none
 @media (max-width: 760px) { body.full .grid { display: none; } }
 
 /* ---------- Firefox for Android: popup is a full-screen page ---------- */
+/* phones: the Android app draws behind the status and navigation bar and passes their heights as
+   --sat / --sab (iPhone Safari: env() when the page covers the whole screen) */
+:root { --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
 body.mobile { width: 100%; height: 100vh; height: 100dvh; font-size: 14px; }
+/* the header's own background continues under the status bar (a transparent border is painted with the background) */
+body.mobile .top { border-top: var(--sat) solid transparent !important; }
 body.mobile .tabs { overflow-x: auto; scrollbar-width: none; }
 body.mobile .tabs button { padding: 11px 12px 12px; font-size: 13.5px; white-space: nowrap; }
 body.mobile .icon { width: 40px; height: 40px; }
@@ -338,8 +343,9 @@ body.mobile .chip { padding: 5px 12px; font-size: 12.5px; }
 body.mobile .btn { padding: 10px 14px; }
 body.mobile .mrow { padding: 9px 10px; }
 body.mobile .room { min-height: 70px; }
-body.mobile .sheet { max-height: 92%; padding-bottom: max(20px, env(safe-area-inset-bottom)); }
-body.mobile #view { padding-bottom: max(18px, env(safe-area-inset-bottom)); }
+body.mobile .sheet { max-height: calc(92% - var(--sat)); padding-bottom: calc(20px + var(--sab)); }
+body.mobile #view { padding-bottom: calc(18px + var(--sab)); }
+body.mobile #toast { bottom: calc(22px + var(--sab)); }
 body.mobile .dd { padding: 8px 10px; font-size: 14px; }
 body.mobile .cal-day { height: 38px; }
 body.mobile .dd-item { padding: 10px 12px; }
