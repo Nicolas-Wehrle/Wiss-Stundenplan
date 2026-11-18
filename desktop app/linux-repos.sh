@@ -37,6 +37,7 @@ enabled=1
 gpgcheck=1
 repo_gpgcheck=1
 gpgkey=$url/wiss-stundenplan.asc
+metadata_expire=1h
 EOF
 fi
 
