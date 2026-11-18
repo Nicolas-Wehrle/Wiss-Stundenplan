@@ -1,0 +1,7 @@
+WISS Stundenplan 1.13.0
+
+- Grades: new overview. Next to your average you now see your best grade, finished modules, school modules done and grades below 4.
+- Grades: the chart shows which module is behind each point. Point at it (or tap on your phone) to see the module, its grade, your average after it and the date.
+- Grades: finished modules as one clear list with a grade bar, and a tidier "all modules" section with clear status icons.
+- Desktop app: grows with the window. On large screens everything gets bigger instead of staying small in the middle.
+- Settings › About: Danylo Kovalenko is credited as co-developer for the iPhone version.

@@ -15,8 +15,8 @@ android {
         applicationId 'ch.wisstools.stundenplan'
         minSdk 26
         targetSdk 35
-        versionCode 11203
-        versionName '1.12.3'
+        versionCode 11300
+        versionName '1.13.0'
     }
 
     signingConfigs {

@@ -1,7 +1,7 @@
-# Chrome Web Store: Veröffentlichung 1.12.3
+# Chrome Web Store: Veröffentlichung 1.13.0
 
 ## Fertige Dateien
-- `release/v1.12.3/WISS-Stundenplan-Chrome-Web-Store.zip` (von `scripts/release.py` erstellt): ausschliesslich die Chrome-Erweiterung, ohne Entwicklungsschlüssel; manifest.json liegt direkt im ZIP.
+- `release/v1.13.0/WISS-Stundenplan-Chrome-Web-Store.zip` (von `scripts/release.py` erstellt): ausschliesslich die Chrome-Erweiterung, ohne Entwicklungsschlüssel; manifest.json liegt direkt im ZIP.
 - `store-icon-128.png`: bestehendes Projektlogo mit transparentem Rand.
 - `screenshot-1…5-*-1280x800.png`: fünf gestaltete Store-Bilder (Übersicht, Prüfungen, Noten, Absenzen, Räume im Dunkelmodus), aufgebaut aus echten Screenshots der Erweiterung mit fiktiven Demodaten. In dieser Reihenfolge hochladen.
 - `promo-small-440x280.png`: kleine Werbekachel.
@@ -10,7 +10,7 @@
 Alle Screenshots und Werbekacheln sind RGB-PNG ohne Alphakanal. Das Logo bleibt transparent. Gestaltet im Stil der Website, mit dem bestehenden Logo. Neu erzeugen: `node scripts/store-pictures/capture.mjs && node scripts/store-pictures/make.mjs`. Keine WISS-/Tocco-Logos ergänzt.
 
 ## Fehler «key stimmt nicht mit dem aktuellen Artikel überein»
-Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird von Google für den bestehenden Artikel verwaltet. Der Quellcode behält seinen bisherigen key für lokale Installationen. Neue Store-ZIP jederzeit mit `python scripts/build-chrome-store.py` erstellen und die Datei `release/v1.12.3/WISS-Stundenplan-Chrome-Web-Store.zip` hochladen.
+Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird von Google für den bestehenden Artikel verwaltet. Der Quellcode behält seinen bisherigen key für lokale Installationen. Neue Store-ZIP jederzeit mit `python scripts/build-chrome-store.py` erstellen und die Datei `release/v1.13.0/WISS-Stundenplan-Chrome-Web-Store.zip` hochladen.
 
 ## Eintrag
 Name: bestehenden Store-Namen beibehalten («Stundenplan für WISS (inoffiziell)»).
@@ -53,12 +53,12 @@ Die drei Nutzungszusicherungen nur entsprechend dem tatsächlichen Code bestäti
 ## Noch vor dem Einreichen
 1. Publisher-Einstellungen: eigene Kontakt-E-Mail eintragen, Bestätigungslink im Postfach öffnen. Das sind die zwei E-Mail-Fehler in deinem Screenshot; die Adresse wird nicht erfunden.
 2. Google-Konto: Zwei-Faktor-Authentifizierung für das Entwicklerkonto sicherstellen.
-3. Unter «Paket» die neue Chrome-ZIP hochladen; Version 1.12.3 kontrollieren.
+3. Unter «Paket» die neue Chrome-ZIP hochladen; Version 1.13.0 kontrollieren.
 4. Beschreibung, Symbol, mindestens einen Screenshot und kleine Werbekachel hinterlegen. Grosse Kachel ist zusätzlich vorbereitet.
 5. Testanweisungen, Datenschutz-URL und Berechtigungsbegründungen einfügen; Kategorie, Sprache und Vertriebsregionen kontrollieren.
 6. Entwurf speichern, verbleibende Dashboard-Fehler prüfen, dann zur Prüfung einreichen. Google entscheidet über die Freigabe; Upload ist keine Veröffentlichung.
 
-Version 1.12.3 gibt es auch für Firefox, Android, iPhone und als Desktop-App (Windows, macOS, Linux). Die Firefox-XPI muss von Mozilla signiert sein; updates.json wird erst auf die neue Version gesetzt, wenn diese signierte Datei vorliegt. Die Android-APK wird mit dem vorhandenen Zertifikat signiert. Der iPhone-Build ist ein Safari-Userscript, keine native App-Store-App.
+Version 1.13.0 gibt es auch für Firefox, Android, iPhone und als Desktop-App (Windows, macOS, Linux). Die Firefox-XPI muss von Mozilla signiert sein; updates.json wird erst auf die neue Version gesetzt, wenn diese signierte Datei vorliegt. Die Android-APK wird mit dem vorhandenen Zertifikat signiert. Der iPhone-Build ist ein Safari-Userscript, keine native App-Store-App.
 
 ## Offizielle Quellen
 - Bilder: https://developer.chrome.com/docs/webstore/images

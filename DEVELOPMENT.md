@@ -1,6 +1,6 @@
 # Developing WISS Stundenplan
 
-Everything for building, testing and releasing the project. Current version: **1.12.3**.
+Everything for building, testing and releasing the project. Current version: **1.13.0**.
 For users, see the [README](README.md) or the [website](https://stundenplan.severinwehrle.dev). Background for anyone taking over the project: [PROJECT.md](PROJECT.md).
 
 ## Project layout

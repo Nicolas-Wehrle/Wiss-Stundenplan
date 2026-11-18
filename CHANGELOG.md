@@ -1,4 +1,5 @@
-## Unreleased
+## 1.13.0
+
 - Grades: new overview with best grade, finished and school modules and grades below 4 next to the average; finished modules as one list with a grade bar; tidier "all modules" section with clear status icons.
 - Grades chart: point at a dot to see the module, its grade, the average after it and the date (tap on phones).
 - Desktop app: grows with the window. On large screens everything gets bigger instead of staying small in the middle.

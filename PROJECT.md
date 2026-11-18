@@ -2,7 +2,7 @@
 
 Everything about this project in one place: what it is, how it's built, how releases work, what's tricky, and what's planned next. Written so a new chat (or a new person) can pick it up without the old conversation.
 
-Current version: **1.12.3** (published). It adds the desktop app for Windows, macOS and Linux. 1.11.0 was never released; its sync work shipped in 1.12.0.
+Current version: **1.13.0** (grades redesign with chart hover, desktop app scales with the window). 1.12.3 added the desktop app for Windows, macOS and Linux. 1.11.0 was never released; its sync work shipped in 1.12.0.
 
 Website: **https://stundenplan.severinwehrle.dev** (GitHub Pages from `docs/`, custom domain via a CNAME record). Developer guide: `DEVELOPMENT.md`.
 
@@ -36,7 +36,7 @@ All five run **the same web code** (`chrome addon/`). The others are built from 
 
 ---
 
-## 3. Features (as of 1.12.3)
+## 3. Features (as of 1.13.0)
 
 - **Week:** current and next lesson, week view, holidays and breaks, past lessons folded away, big view in its own tab (desktop).
 - **Exams:** ZP, LB, projects. The extranet has no exam dates, so the app estimates them (ZP rule: every 3rd lesson / once / none; LB and project on the last module day). Users can correct dates by hand.
@@ -321,6 +321,7 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 
 ## 14. Version history (short)
 
+- **1.13.0** Grades redesign (stats next to the average, hover card on the chart via `.thit` columns and `trendHover`, finished modules as `.glist`, status icons `i.mst.s-*` because `.plan` is the floor plan class). `splitLabel` also reads "M164 Name". Desktop: `fit_zoom` in main.rs sets the webview zoom from the window size. Danylo Kovalenko credited (iPhone).
 - **1.12.3** Desktop app (Tauri 2, `desktop app/`) for Windows, macOS, Linux: same web code via `desktop-shim.js`; hidden sign-in windows; school requests through a hidden wiss.tocco.ch page; tray, reminders, mini window, autostart, signed updater (`latest.json`); Linux dnf/zypper/apt package sources on GitHub Pages (`pages.yml`, `linux-repos.sh`). Standard style: the tab you leave no longer flashes a white line.
 - **1.12.2** Full-screen layout (side column with today + next exams), no solid header bars on picture styles, light animations with a toggle (`motion`, `data-motion=off`), logo setting (`themeLogo`), calmer Standard hero, Chrome Web Store link. Firefox (`IS_FIREFOX` in background.js): `openHidden` uses a background tab instead of a minimized window (Firefox on Linux shows new windows in front), and browser start refreshes without sign-in. Firefox signs in in a tab hidden with `tabs.hide` (permission `tabHide`, added by build-firefox.py). If Microsoft needs input, the hidden page is parked (`pendingLogin`) and never shown by itself; "Anmelden" (`openLogin`) reveals it, and it closes once the data is in. Pref `bgLogin` (default true) turns the background sign-in off in Chrome/Firefox (`quiet` in `doRefresh`). Android app and iPhone ignore it.
 - **1.12.1** Demo account on every platform, Chrome Web Store package without the development key, store pictures and privacy policy.
