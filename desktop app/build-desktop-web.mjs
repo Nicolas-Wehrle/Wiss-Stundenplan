@@ -17,7 +17,7 @@ fs.mkdirSync(web, { recursive: true });
 
 const version = JSON.parse(read(path.join(src, 'manifest.json'))).version;
 
-for (const name of ['demo.js', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js', 'content.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js'])
+for (const name of ['demo.js', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'themes.js', 'catalog.js', 'content.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js'])
   fs.copyFileSync(path.join(src, name), path.join(web, name));
 for (const dir of ['fonts', 'vendor', 'icons']) fs.cpSync(path.join(src, dir), path.join(web, dir), { recursive: true });
 fs.copyFileSync(path.join(here, 'web-src/mini.html'), path.join(web, 'mini.html'));

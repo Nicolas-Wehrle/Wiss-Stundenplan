@@ -14,7 +14,9 @@ let setSec = 'account';
 function systemDark() { return window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches; }
 function applyLook() {
   const r = document.documentElement;
-  const style = P('style'), mode = P('theme');
+  // an own theme may pick the built-in style and the mode it is made for
+  const th = typeof themeShown === 'function' ? (themePreview || themeShown()) : null;
+  const style = (th && th.base) || P('style'), mode = (th && th.mode) || P('theme');
   r.dataset.style = style;
   if (typeof paintLogos === 'function') paintLogos();
   r.dataset.mode = mode === 'system' ? (systemDark() ? 'dark' : 'light') : mode;
@@ -31,6 +33,7 @@ function applyLook() {
   window.setLang(P('lang'));
   translateStatic();
   try { localStorage.setItem(LOOK_KEY, JSON.stringify({ style, mode, acc, mono: P('mono'), corners: P('corners'), size: P('size'), lang: P('lang') })); } catch (e) {}
+  if (typeof applyCustomTheme === 'function') { if (!themePreview) adoptSyncedTheme(); applyCustomTheme(); }
   tellBars();
 }
 // Android app: status and navigation bar take the page's colour, with readable icons
@@ -96,7 +99,8 @@ function renderSettings({ acc, ab, zp, user }) {
     row(tr('Logo'), '', seg('themeLogo', [[true, tr('Passend zum Stil')], [false, tr('Immer rot')]])),
     row(tr('Animationen'), '', sw('motion')),
     row(tr('Ecken'), '', seg('corners', [['round', tr('Rund')], ['square', tr('Eckig')]])),
-    row(tr('Textgrösse'), '', seg('size', [['s', 'S'], ['m', 'M'], ['l', 'L']]))
+    row(tr('Textgrösse'), '', seg('size', [['s', 'S'], ['m', 'M'], ['l', 'L']])),
+    typeof renderThemeSettings === 'function' ? renderThemeSettings() : ''
   ].join('');
 
   const tabs = [['last', tr('Zuletzt offen')], ['week', tr('Woche')], ['exams', tr('Prüfungen')], ['grades', tr('Noten')], ['absences', tr('Absenzen')], ['rooms', tr('Räume')]];
@@ -169,7 +173,7 @@ function renderSettings({ acc, ab, zp, user }) {
 
 // ---------- events ----------
 function parseVal(v) { return v === 'true' ? true : v === 'false' ? false : v !== '' && !isNaN(+v) && !/^#/.test(v) ? +v : v; }
-const LOOK_KEYS = ['style', 'theme', 'accent', 'mono', 'corners', 'size', 'lang'];
+const LOOK_KEYS = ['style', 'theme', 'accent', 'mono', 'corners', 'size', 'lang', 'customTheme'];
 function prefChanged(k) {
   if (LOOK_KEYS.includes(k)) applyLook();
   if (k === 'foldPast') showPast = !P('foldPast');

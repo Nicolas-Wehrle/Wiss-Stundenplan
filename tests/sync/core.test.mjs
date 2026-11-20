@@ -53,3 +53,14 @@ test('object order is irrelevant, so devices do not repeatedly upload equivalent
   assert.equal(C.equal({ a: 1, b: { x: 2, y: 3 } }, { b: { y: 3, x: 2 }, a: 1 }), true);
   assert.equal(C.equal([1, 2], [2, 1]), false);
 });
+test('custom theme setting: shape, id, sizes', () => {
+  const ok = { id: 'abc123', name: 'Mitternacht', author: 'Me', base: 'standard', mode: 'dark', source: ':root{--bg:#000}' };
+  assert.equal(C.validValue('settings', 'customTheme', ok), true);
+  assert.equal(C.validValue('settings', 'customTheme', { id: 'abc123', name: 'Too big to sync' }), true);
+  for (const bad of [null, 'css', [], { ...ok, script: 'x' }, { ...ok, id: 'ABC!' }, { ...ok, name: 'x'.repeat(61) }, { ...ok, author: 5 }, { ...ok, source: 'x'.repeat(61441) }, { name: 'no id' }])
+    assert.equal(C.validValue('settings', 'customTheme', bad), false);
+  const doc = C.empty(); doc.settings.customTheme = { at: 1, device: 'a', deleted: false, value: ok };
+  assert.doesNotThrow(() => C.validate(doc));
+  doc.settings.customTheme = { at: 2, device: 'a', deleted: true };
+  assert.doesNotThrow(() => C.validate(doc));
+});

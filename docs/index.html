@@ -958,6 +958,7 @@ footer .brand { color: var(--ink); }
       <a href="#docs/desktop">Desktop-App</a>
       <a href="#docs/sync">Geräte-Sync</a>
       <a href="#docs/look">Stile und Sprache</a>
+      <a href="#docs/themes">Eigene Themes</a>
       <h4>Mehr</h4>
       <a href="#docs/updates">Updates</a>
       <a href="#docs/linux">Linux-Paketquellen</a>
@@ -1095,6 +1096,63 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
         <h2>Stile und Sprache</h2>
         <p>Einstellungen › Darstellung. Neun Stile mit eigenem Layout, eigenen Schriften und eigenem Logo, jeweils hell und dunkel. Wer die Farben eines Stils mag, aber das rote Logo behalten will: <b>Logo › Immer rot</b>. Animationen lassen sich ausschalten.</p>
         <p>Die App spricht Deutsch und Englisch. Modulnamen und Daten der Schule bleiben, wie sie im Extranet stehen.</p>
+      </section>
+
+      <section id="d-themes">
+        <h2>Eigene Themes</h2>
+        <p>Ein Theme ist eine einzige CSS-Datei, die das ganze Aussehen der App ändert: Farben, Schriften, Abstände, Ecken, was du willst. Einstellungen › Darstellung › <b>Eigenes Theme</b>. Dort kannst du eine Datei importieren oder direkt eins schreiben und siehst jede Änderung sofort.</p>
+        <pre class="cmd">/* @name Mitternacht
+   @author Dein Name
+   @version 1.0
+   @base standard
+   @mode dark
+*/
+:root {
+  --bg: #0a0f1f;
+  --surface: #121a30;
+  --accent: #6c8cff;
+}
+.card { border: 1px solid var(--line); }</pre>
+        <h3>Kopfzeile</h3>
+        <p>Der erste Kommentar beschreibt das Theme. Alles ist freiwillig.</p>
+        <table>
+          <tr><th>Feld</th><th>Bedeutung</th></tr>
+          <tr><td><code>@name</code></td><td style="font-weight:400;white-space:normal">Name in der Liste (sonst der Dateiname)</td></tr>
+          <tr><td><code>@author</code>, <code>@version</code></td><td style="font-weight:400;white-space:normal">Wird nur angezeigt</td></tr>
+          <tr><td><code>@base</code></td><td style="font-weight:400;white-space:normal">Eingebauter Stil darunter: <code>standard</code>, <code>apple</code>, <code>samsung</code>, <code>nothing</code>, <code>github</code>, <code>pastel</code>, <code>neon</code>, <code>paper</code>, <code>terminal</code></td></tr>
+          <tr><td><code>@mode</code></td><td style="font-weight:400;white-space:normal"><code>light</code>, <code>dark</code> oder <code>auto</code> (folgt der Einstellung)</td></tr>
+        </table>
+        <h3>Farben und Schriften</h3>
+        <p>Am einfachsten änderst du die Variablen in <code>:root</code>. Sie gelten in jedem Stil. Für den Dunkelmodus: <code>:root[data-mode=dark]</code>.</p>
+        <table>
+          <tr><th>Variable</th><th>Wofür</th></tr>
+          <tr><td><code>--bg</code>, <code>--surface</code>, <code>--surface-2</code></td><td style="font-weight:400;white-space:normal">Hintergrund, Karten, leicht abgesetzte Flächen</td></tr>
+          <tr><td><code>--ink</code>, <code>--muted</code>, <code>--faint</code></td><td style="font-weight:400;white-space:normal">Text, Nebentext, ganz leiser Text</td></tr>
+          <tr><td><code>--line</code></td><td style="font-weight:400;white-space:normal">Linien und Ränder</td></tr>
+          <tr><td><code>--accent</code>, <code>--accent-soft</code>, <code>--now</code></td><td style="font-weight:400;white-space:normal">Akzent, heller Akzent, Markierung «jetzt»</td></tr>
+          <tr><td><code>--ok</code>, <code>--warn</code>, <code>--bad</code></td><td style="font-weight:400;white-space:normal">Gut, Achtung, schlecht (je mit <code>-soft</code>)</td></tr>
+          <tr><td><code>--zp</code>, <code>--lb</code>, <code>--pj</code>, <code>--hol</code></td><td style="font-weight:400;white-space:normal">ZP, Lernbegleitung, Projekt, Ferien (je mit <code>-soft</code>)</td></tr>
+          <tr><td><code>--gold</code>, <code>--shadow</code>, <code>--shadow-lg</code></td><td style="font-weight:400;white-space:normal">Hervorhebung, Schatten</td></tr>
+          <tr><td><code>--font</code>, <code>--display</code></td><td style="font-weight:400;white-space:normal">Text- und Titelschrift</td></tr>
+        </table>
+        <h3>Nützliche Selektoren</h3>
+        <ul>
+          <li><code>[data-style=nothing]</code>, <code>[data-mode=dark]</code>: nur in einem Stil oder Modus</li>
+          <li><code>body.full</code>: grosse Ansicht (Desktop, Tab), sonst das kleine Popup</li>
+          <li><code>body[data-tab=grades]</code>: nur auf einer Seite (<code>week</code>, <code>exams</code>, <code>grades</code>, <code>absences</code>, <code>rooms</code>)</li>
+          <li><code>.top</code>, <code>.tabs button</code>, <code>#view</code>, <code>.card</code>, <code>.lesson</code>, <code>.btn</code>: Kopf, Tabs, Inhalt, Karten, Lektionen, Knöpfe</li>
+          <li><code>[data-custom-theme]</code> auf <code>html</code>: ein eigenes Theme ist aktiv</li>
+        </ul>
+        <p>Die Variablen und diese Selektoren bleiben stabil. Andere Klassen können sich mit Updates ändern. Wenn eine Regel nicht greift, hilft <code>!important</code>.</p>
+        <h3>Regeln</h3>
+        <ul>
+          <li>Nur CSS, keine Skripte. Ein Theme kann das Aussehen ändern, aber keine Daten lesen oder senden.</li>
+          <li>Nichts aus dem Internet: <code>@import</code> und Links wie <code>url(https://…)</code> werden entfernt. Bilder und Schriften gehen als <code>data:</code>-Adresse direkt in der Datei.</li>
+          <li>Höchstens 200 KB. Bis 60 KB kommt das aktive Theme mit dem Sync auf deine anderen Geräte. Dafür brauchen alle Geräte die neue Version.</li>
+          <li>Versteckt ein Theme den Einstellungen-Knopf, pausiert die App es von selbst.</li>
+        </ul>
+        <div class="note"><b>Theme kaputt?</b> Im Browser: die App mit <code>?safe</code> am Ende der Adresse öffnen (zum Beispiel <code>popup.html?full&amp;safe</code>). Sie startet dann ohne Theme, und du kannst es unter Darstellung ausschalten oder löschen. In den Apps hilft der Schutz oben: solange der Einstellungen-Knopf erreichbar ist, kommst du immer zu «Ohne Theme».</div>
+        <p>Beispiele zum Ausprobieren und Anpassen: <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/tree/main/themes" target="_blank" rel="noopener">themes/ auf GitHub</a>.</p>
       </section>
 
       <section id="d-updates">

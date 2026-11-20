@@ -1,0 +1,13 @@
+/* @name Kompakt
+   @author WISS Stundenplan
+   @version 1.0
+   @base standard
+*/
+
+/* Weniger Abstand, damit mehr auf den Bildschirm passt. Farben bleiben wie im Stil. */
+#view { padding: 0 8px 10px; }
+.lesson { padding: 5px 8px; margin-bottom: 3px; gap: 6px; }
+.card { border-radius: 8px; }
+.tabs { padding: 0 4px; }
+.tabs button { padding: 6px 7px 7px; font-size: 12px; }
+.top { padding-block: 6px; }

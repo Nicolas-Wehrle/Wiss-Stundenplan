@@ -66,6 +66,7 @@ Wiss-Stundenplan/
     background.js      data fetching, sign-in, notifications, update check (~800 lines)
     popup.js           the whole UI: week, exams, grades, absences, rooms (~1570 lines)
     settings.js        settings page, styles list (STYLES), applyLook()
+    themes.js          custom themes: parse/clean CSS, library, editor, guard, sync pref
     i18n.js            German → English dictionary + translateDom()
     controls.js        custom dropdown/date controls + mouse drag-to-scroll
     content.js         runs on extranet pages: teacher names, presses "WISS Office 365"
@@ -176,6 +177,7 @@ Key constants: `LOGIN_TIMEOUT_MS = 30 s`, `NEEDS_USER_MS = 12 s`, `APP_SHOW_AFTE
 
 - Styles are CSS on `<html data-style=… data-mode=…>`. Colours are CSS variables per style; the "signature" layout rules are at the end of `popup.css` ("STYLE SIGNATURES").
 - Adding a style: add to `STYLES` in `settings.js`, CSS variables + signature block in `popup.css`, a preview card `.sp-<id>`, translations in `i18n.js`, and for the widget: `STYLES` + `palette()` in `NextLessonWidget.java`, a layout in `res/layout`, and the list in `WidgetConfigActivity.java`.
+- **Custom themes** (`themes.js`): one CSS file per theme, one active. `sanitizeThemeCss()` removes `@import` and every `url()` that is not a `data:` image/font, refuses CSS escapes that hide such a link, and rewrites `:root` to `:root:root:root:root` so theme variables beat every built-in style. The library (`themeLibrary`) stays on the device; the active theme is the pref `customTheme` (`{id,name,…,source}` up to 60 KB, else only `{id,name}`) and syncs. The cleaned CSS is cached in localStorage `wissTheme` and injected by `i18n.js` before the first paint. `guardTheme()` pauses a theme that hides `#btnSettings`; `?safe` skips it. Documented hooks (keep them stable): the CSS variables, `[data-style]`, `[data-mode]`, `body.full`, `body[data-tab]`, `.top`, `.tabs button`, `#view`, `.card`, `.lesson`, `.btn`, `#btnSettings`, `[data-custom-theme]`. Examples in `themes/`, guide in `docs/index.html#docs/themes`.
 - **Widget sizes:** under 110 dp height = compact (status, one-line title, room/teacher; no "Danach" line), 135+ shows "Danach", 165+ shows two-line titles. Uses `OPTION_APPWIDGET_MAX_HEIGHT`.
 - **Android gotcha:** tinting a shape that has no fill colour makes Android fill it with solid black first and then colour that black (Terminal widget turned fully green). Every outline-only shape needs `<solid android:color="#00000000"/>`.
 - RemoteViews only allow FrameLayout, LinearLayout, TextView, ImageView etc. A plain `<View>` breaks the widget ("Couldn't add widget").

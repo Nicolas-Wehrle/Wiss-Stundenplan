@@ -2,7 +2,8 @@
 (() => {
   'use strict';
   const FORMAT = 1, MAX_BYTES = 256 * 1024;
-  const PREFS = ['targetGrade', 'gradeStep'];
+  const PREFS = ['targetGrade', 'gradeStep', 'customTheme'];
+  const THEME_KEYS = ['id', 'name', 'author', 'version', 'base', 'mode', 'source'];
   const GROUPS = ['notes', 'examOverrides', 'settings'];
   const enc = new TextEncoder(), dec = new TextDecoder('utf-8', { fatal: true });
   const own = (o, k) => Object.prototype.hasOwnProperty.call(o, k);
@@ -85,6 +86,9 @@
     if (key === 'targetGrade') return [4, 4.5, 5, 5.5, 6].includes(v);
     if (key === 'gradeStep') return [0, 0.1, 0.5].includes(v);
     if (key === 'zpRule') return ['every3', 'once3', 'none'].includes(v);
+    if (key === 'customTheme') return plain(v) && Object.keys(v).every((k) => THEME_KEYS.includes(k)) && typeof v.id === 'string' && /^[a-z0-9]{1,16}$/.test(v.id) &&
+      typeof v.name === 'string' && v.name.length <= 60 && ['author', 'version', 'base', 'mode'].every((k) => v[k] === undefined || (typeof v[k] === 'string' && v[k].length <= 60)) &&
+      (v.source === undefined || (typeof v.source === 'string' && v.source.length <= 61440));
     if (key === 'abschluss') return plain(v) && Object.keys(v).every((k) => ['id', 'name'].includes(k)) && typeof v.id === 'string' && v.id.length <= 100 && typeof v.name === 'string' && v.name.length <= 200;
     return false;
   }

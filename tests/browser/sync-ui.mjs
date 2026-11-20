@@ -97,6 +97,12 @@ try {
   await ios.click('[data-act=device-now]'); await waitData(ios, async () => (await chrome.storage.local.get('deviceSync')).deviceSync?.status === 'synced');
   await a.click('[data-act=device-now]'); await a.waitForFunction(() => S.notes.iphone === 'From iPhone');
   assert.equal(await a.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
+  // a theme activated on Android reaches the iPhone, gets added to its library and is painted
+  await a.evaluate(() => { const p = parseTheme('/* @name Sync Test */\n:root{--bg:#102030}'); installTheme(p.theme); });
+  await a.click('[data-act=device-now]'); await a.waitForFunction(() => S.deviceSync?.status === 'synced');
+  await ios.click('[data-act=device-now]'); await ios.waitForFunction(() => getComputedStyle(document.body).backgroundColor === 'rgb(16, 32, 48)');
+  await waitData(ios, async () => ((await chrome.storage.local.get('themeLibrary')).themeLibrary || []).some((t) => t.name === 'Sync Test'));
+  await ios.locator('.theme-sec').scrollIntoViewIfNeeded(); await snap(ios.locator('.theme-sec'), path.join(out, 'theme-synced.png'));
   await a.evaluate(() => document.querySelector('[data-act=device-delete]').click()); await a.waitForSelector('[data-act=device-delete-confirm]', { state: 'attached' }); await a.evaluate(() => document.querySelector('[data-act=device-delete-confirm]').click()); await a.waitForSelector('[data-act=device-enable]');
   assert.equal(repo.records.size, 0);
   await second.click('[data-act=device-now]'); await second.waitForFunction(() => S.deviceSync?.error === 'account-gone');

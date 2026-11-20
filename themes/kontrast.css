@@ -1,0 +1,23 @@
+/* @name Hoher Kontrast
+   @author WISS Stundenplan
+   @version 1.0
+   @base standard
+*/
+
+/* Schwarz auf Weiss (oder umgekehrt im Dunkelmodus), dicke Ränder, klare Fokusrahmen. */
+:root {
+  --bg: #ffffff; --surface: #ffffff; --surface-2: #f0f0f0;
+  --ink: #000000; --muted: #222222; --faint: #444444; --line: #000000;
+  --accent: #0033cc; --accent-soft: #dfe6ff; --now: #0033cc;
+  --shadow: none;
+}
+:root[data-mode=dark] {
+  --bg: #000000; --surface: #000000; --surface-2: #161616;
+  --ink: #ffffff; --muted: #e6e6e6; --faint: #bdbdbd; --line: #ffffff;
+  --accent: #ffd400; --accent-soft: #332b00; --now: #ffd400;
+}
+
+.card { border: 2px solid var(--line); }
+.btn:not(.ghost) { color: var(--bg); }
+:focus-visible { outline: 3px solid var(--accent) !important; outline-offset: 2px; }
+.tabs button.on { border-bottom-width: 3px; }

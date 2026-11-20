@@ -15,7 +15,7 @@ web.mkdir(parents=True, exist_ok=True)
 
 version = json.loads((src / 'manifest.json').read_text(encoding='utf-8'))['version']
 
-for name in ['demo.js', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js', 'content.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js']:
+for name in ['demo.js', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'themes.js', 'catalog.js', 'content.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js']:
     shutil.copy2(src / name, web / name)
 
 shutil.copytree(src / 'fonts', web / 'fonts', dirs_exist_ok=True)

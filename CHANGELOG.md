@@ -1,5 +1,7 @@
 ## Unreleased
 
+- Custom themes: one CSS file can restyle the whole app. Settings › Darstellung › Eigenes Theme: import a file or write one with a live preview, export, switch or delete. The active theme syncs to your other devices (up to 60 KB; all devices need this version). Nothing is loaded from the internet, a theme that hides the settings button is paused, and `?safe` starts without a theme. Example themes in `themes/`, guide on the website under Docs › Eigene Themes.
+- Android: file picker for importing files.
 - Android: the app now reaches behind the status bar and the navigation bar, in the colours of your style. No more grey stripe at the top, and the clock and icons switch between light and dark with the app.
 
 ## 1.13.0

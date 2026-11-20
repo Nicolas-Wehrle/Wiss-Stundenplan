@@ -20,6 +20,12 @@
       lang = L.lang === 'en' ? 'en' : 'de';
       r.lang = lang;
     }
+    // own theme (settings › Darstellung), already cleaned when it was saved; ?safe starts without it
+    const T = !/[?&]safe\b/.test(location.search) && JSON.parse(localStorage.getItem('wissTheme') || 'null');
+    if (T && T.css) {
+      const st = document.createElement('style'); st.id = 'customThemeStyle'; st.textContent = T.css;
+      document.head.appendChild(st); document.documentElement.dataset.customTheme = T.id || '1';
+    }
   } catch (e) {}
 
   const EN = {
@@ -303,7 +309,8 @@
     'modulbaukasten.ch ist gerade offline, darum wird die eingebaute Liste verwendet.': 'modulbaukasten.ch is offline right now, so the built-in list is used.', 'Auf dem iPhone gibt es keine Benachrichtigungen. Das erlaubt Apple nur Apps aus dem App Store.': 'There are no notifications on iPhone. Apple only allows that for App Store apps.', '1 Block': '1 block', '{N} Blöcke': '{N} blocks', '· geschätzt': '· estimated', 'Geschätzt': 'Estimated',
     'Tag der Arbeit': 'Labour Day', 'Neujahr': 'New Year', 'Berchtoldstag': 'St Berchtold’s Day', 'Karfreitag': 'Good Friday', 'Ostermontag': 'Easter Monday',
     'Auffahrt': 'Ascension Day', 'Pfingstmontag': 'Whit Monday', 'Bundesfeier': 'Swiss National Day', 'Weihnachten': 'Christmas', 'Stephanstag': 'St Stephen’s Day',
-    'Noch {F} Lekt. geplant · am Ende max. {R}': '{F} lessons still planned · max. {R} at the end', 'noch {B} Lekt. Puffer': '{B} lessons of buffer left', 'Vorheriger Monat': 'Previous month', 'Nächster Monat': 'Next month'
+    'Noch {F} Lekt. geplant · am Ende max. {R}': '{F} lessons still planned · max. {R} at the end', 'noch {B} Lekt. Puffer': '{B} lessons of buffer left', 'Vorheriger Monat': 'Previous month', 'Nächster Monat': 'Next month',
+    "Datei konnte nicht gelesen werden.": "The file could not be read.", "Die Datei ist leer.": "The file is empty.", "Zu gross: höchstens {N}.": "Too big: {N} at most.", "Das ist keine CSS-Datei.": "This is not a CSS file.", "Der Code versteckt eine Adresse hinter Escape-Zeichen. So ein Theme wird nicht geladen.": "The code hides an address behind escape characters. A theme like that is not loaded.", "Eigenes Theme": "Custom theme", "Theme pausiert: die Einstellungen waren nicht mehr erreichbar.": "Theme paused: the settings could no longer be reached.", "Sicherer Modus": "Safe mode", "Ohne Theme gestartet. Schliess und öffne die App normal, um es wieder zu sehen.": "Started without a theme. Close and open the app normally to see it again.", "Theme pausiert": "Theme paused", "Es hat den Einstellungen-Knopf versteckt oder verdeckt.": "It hid or covered the settings button.", "Trotzdem anwenden": "Apply anyway", "Ist auf einem anderen Gerät aktiv, aber zu gross für den Sync. Importier die Datei auch hier.": "Active on another device, but too big for sync. Import the file here too.", "Basis: {S}": "Base: {S}", "zu gross für Sync": "too big for sync", "Aktiv": "Active", "Anwenden": "Apply", "Bearbeiten": "Edit", "Wirklich?": "Sure?", "Löschen": "Delete", "Abbrechen": "Cancel", "Speichern und anwenden": "Save and apply", "Datei importieren": "Import file", "Neu schreiben": "Write new", "Ohne Theme": "No theme", "Anleitung": "Guide", "CSS des Themes": "Theme CSS", "Änderungen siehst du sofort.": "You see changes right away.", "Eine CSS-Datei, die das ganze Aussehen ändert. Das aktive Theme kommt mit dem Sync auf deine anderen Geräte.": "A CSS file that changes the whole look. The active theme comes to your other devices with sync.", "{N} Verweise ins Internet entfernt (nicht erlaubt).": "{N} links to the internet removed (not allowed).", "Vorschau. Speichern, um es zu behalten.": "Preview. Save to keep it.", "«{N}» installiert.": "«{N}» installed.", "«{N}» gespeichert.": "«{N}» saved.", "Theme": "Theme"
   };
 
   const WD_L = { Montag: 'Monday', Dienstag: 'Tuesday', Mittwoch: 'Wednesday', Donnerstag: 'Thursday', Freitag: 'Friday', Samstag: 'Saturday', Sonntag: 'Sunday' };

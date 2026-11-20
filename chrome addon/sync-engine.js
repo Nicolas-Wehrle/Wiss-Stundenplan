@@ -40,7 +40,7 @@
           stamp(meta, 'settings', k, v); out[k] = patch[k];
         }
         // Other local-only UI fields are deliberately outside the encrypted document.
-        for (const k of ['uiTab', 'roomCache', 'modules', 'setupDone', 'privacyOk']) if (Object.hasOwn(patch, k)) out[k] = patch[k];
+        for (const k of ['uiTab', 'roomCache', 'modules', 'setupDone', 'privacyOk', 'themeLibrary']) if (Object.hasOwn(patch, k)) out[k] = patch[k];
         C.validate(meta.doc, false); out.syncMeta = meta;
         if (meta.revision !== prev && s.deviceSync?.enabled) out.deviceSync = { ...s.deviceSync, status: 'pending', error: null };
         await storage.set(out);

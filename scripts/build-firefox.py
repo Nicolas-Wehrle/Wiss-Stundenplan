@@ -13,7 +13,7 @@ src = Path(sys.argv[1] if len(sys.argv) > 1 else 'chrome addon')
 dst = Path(sys.argv[2] if len(sys.argv) > 2 else 'firefox addon')
 dst.mkdir(parents=True, exist_ok=True)
 
-FILES = ['demo.js', 'background.js', 'content.js', 'popup.html', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'catalog.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js']
+FILES = ['demo.js', 'background.js', 'content.js', 'popup.html', 'popup.css', 'popup.js', 'modules.js', 'floorplans.js', 'controls.js', 'i18n.js', 'settings.js', 'themes.js', 'catalog.js', 'sync-core.js', 'sync-engine.js', 'sync-background.js', 'sync-ui.js']
 
 def to_browser_ns(js: str) -> str:
     # Firefox: the promise-based API lives in `browser.*`

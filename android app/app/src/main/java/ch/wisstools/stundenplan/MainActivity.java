@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.webkit.CookieManager;
 import android.webkit.JavascriptInterface;
+import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
@@ -64,6 +66,8 @@ public class MainActivity extends Activity {
     final Map<Integer, Tab> tabs = new ConcurrentHashMap<>();
     final AtomicInteger nextId = new AtomicInteger(1);
 
+    static final int PICK_FILE = 41;
+    ValueCallback<Uri[]> fileCallback;
     FrameLayout root;
     WebView main;
     Store store;
@@ -102,6 +106,17 @@ public class MainActivity extends Activity {
         main.addJavascriptInterface(new Host(), "AndroidHost");
         main.addJavascriptInterface(new StoreBridge(), "AndroidStore");
         main.setWebViewClient(new MainClient());
+        main.setWebChromeClient(new WebChromeClient() {
+            // <input type=file> (theme import): the system file picker
+            @Override public boolean onShowFileChooser(WebView v, ValueCallback<Uri[]> cb, FileChooserParams p) {
+                if (fileCallback != null) fileCallback.onReceiveValue(null);
+                fileCallback = cb;
+                Intent pick = new Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*");
+                try { startActivityForResult(Intent.createChooser(pick, null), PICK_FILE); }
+                catch (Exception e) { fileCallback = null; cb.onReceiveValue(null); }
+                return true;
+            }
+        });
         root.addView(main, match());
         main.loadUrl(START);
         ui.postDelayed(() -> openTabFrom(getIntent()), 1500);   // opened from a notification
@@ -199,6 +214,15 @@ public class MainActivity extends Activity {
             cm.setCookie(ORIGIN, kv + "; Path=/; Secure; HttpOnly; Max-Age=1800");
         }
         cm.flush();
+    }
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        if (request != PICK_FILE) { super.onActivityResult(request, result, data); return; }
+        if (fileCallback == null) return;
+        Uri u = result == RESULT_OK && data != null ? data.getData() : null;
+        fileCallback.onReceiveValue(u == null ? null : new Uri[] { u });
+        fileCallback = null;
     }
 
     @Override

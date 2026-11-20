@@ -80,6 +80,7 @@ parts = [
     '// ---------- background.js ----------', '(() => {\n' + read('background.js') + '\n})();',
     '// ---------- popup.js ----------', read('popup.js'),
     '// ---------- settings.js ----------', read('settings.js'),
+    '// ---------- themes.js ----------', read('themes.js'),
     '// ---------- sync-ui.js ----------', read('sync-ui.js'),
     '// ---------- controls.js ----------', read('controls.js'),
     '// ---------- start ----------', 'startApp();',

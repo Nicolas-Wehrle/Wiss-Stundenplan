@@ -64,7 +64,7 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 | **Absences** | open excuses with their 7-day deadline, attendance per module |
 | **Rooms** | free rooms at any time, with floor plans for WISS Zürich |
 | **Reminders** | lessons, absence deadlines and new grades (Android and desktop) |
-| **Your look** | German or English, nine styles, light and dark, your own accent colour |
+| **Your look** | German or English, nine styles, light and dark, your own accent colour, or your own theme as a single CSS file ([examples](themes/)) |
 | **Desktop extras** | tray icon with the next lesson, a small always-on-top window, start with the computer |
 
 *All pictures use invented demo data. Try it yourself: choose "Try demo account" on first start, no WISS login needed.*

@@ -30,7 +30,7 @@ let S = {
 const PREF_DEFAULTS = {
   lang: 'de', theme: 'system', style: 'standard', accent: '', mono: false, corners: 'round', size: 'm', startTab: 'last', foldPast: true,
   notifyLessons: false, notifyLessonMin: 15, notifyAbsences: true, notifyGrades: true,
-  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true, bgLogin: true
+  targetGrade: 5, gradeStep: 0.5, syncMinutes: 20, showNextExam: true, motion: true, themeLogo: true, bgLogin: true, customTheme: null
 };
 const P = (k) => (S.prefs && S.prefs[k] !== undefined ? S.prefs[k] : PREF_DEFAULTS[k]);
 function setPref(k, v) {
@@ -1780,7 +1780,7 @@ function initWeekOffset() {
 let loadedOnce = false;
 async function load() {
   const s = await chrome.storage.local.get(['lessons', 'teachers', 'grades', 'rooms', 'notes', 'examOverrides', 'status', 'lastSync', 'error', 'uiTab', 'roomCache',
-    'demoMode', 'user', 'setupDone', 'privacyOk', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts']);
+    'demoMode', 'user', 'setupDone', 'privacyOk', 'zpRule', 'modules', 'abschluss', 'absences', 'attendance', 'lastAttempt', 'syncLog', 'prefs', 'updateInfo', 'deviceSync', 'syncConflicts', 'themeLibrary']);
   const keep = { tab: S.tab, showSetup: S.showSetup, showPrivacy: S.showPrivacy };
   S = { ...S, ...s, lessons: s.lessons || [], teachers: s.teachers || {}, grades: s.grades || [], rooms: s.rooms || [], notes: s.notes || {}, examOverrides: s.examOverrides || {}, absences: s.absences || [], attendance: s.attendance || null,
     user: s.user || null, setupDone: !!s.setupDone, abschluss: s.abschluss || null, prefs: s.prefs || {} };

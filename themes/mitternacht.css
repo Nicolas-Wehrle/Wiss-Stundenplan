@@ -1,0 +1,24 @@
+/* @name Mitternacht
+   @author WISS Stundenplan
+   @version 1.0
+   @base standard
+   @mode dark
+*/
+
+/* Dunkles Blau mit kühlem Akzent. Gilt immer dunkel (@mode dark). */
+:root {
+  --bg: #0a0f1f;
+  --surface: #121a30;
+  --surface-2: #1a2440;
+  --ink: #e8edff;
+  --muted: #9aa6c8;
+  --faint: #66739a;
+  --line: #24304f;
+  --accent: #6c8cff;
+  --accent-soft: #1b2650;
+  --now: #6c8cff;
+  --shadow: 0 1px 0 rgba(0,0,0,.2), 0 8px 22px -10px rgba(0,0,0,.6);
+}
+
+.tabs button.on { color: #fff; }
+.card { border: 1px solid var(--line); }

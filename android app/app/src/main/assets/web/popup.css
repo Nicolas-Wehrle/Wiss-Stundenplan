@@ -1833,3 +1833,22 @@ body.full[data-tab=grades] #view > .allmods { max-width: 920px; }
   .gstat b { font-size: 17px; }
   .gstat span { font-size: 10px; }
 }
+
+/* ---------- own theme (settings › Darstellung) ---------- */
+.theme-sec > .sl small { max-width: 46em; }
+.theme-list { display: grid; gap: 6px; margin-top: 10px; }
+.theme-row { display: flex; gap: 8px 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.theme-row.on { border-color: color-mix(in srgb, var(--accent) 55%, var(--line)); background: var(--accent-soft); }
+.theme-row .sl { min-width: 0; flex: 1 1 160px; }
+.theme-row .sl b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.theme-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.theme-btns .btn, .theme-actions .btn { padding-block: 6px; font-size: 12.5px; }
+.theme-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.theme-file { cursor: pointer; }
+.theme-editor { margin-top: 10px; }
+.theme-editor textarea { display: block; width: 100%; min-height: 280px; resize: vertical; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--surface-2); color: var(--ink); font: 12.5px/1.55 ui-monospace, SFMono-Regular, Menlo, Consolas, "Space Mono", monospace; tab-size: 2; white-space: pre; overflow: auto; }
+.theme-editor textarea:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.theme-ed-bar { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.theme-ed-msg { flex: 1 1 180px; font-size: 12px; color: var(--muted); }
+.theme-ed-msg.bad, .shint.bad { color: var(--bad); }

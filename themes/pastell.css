@@ -1,0 +1,28 @@
+/* @name Pastell
+   @author WISS Stundenplan
+   @version 1.0
+   @base standard
+   @mode light
+*/
+
+/* Weiche Farben, runde Ecken, ein bisschen verspielt. */
+:root {
+  --bg: #fdf6ff;
+  --surface: #ffffff;
+  --surface-2: #f7eefc;
+  --ink: #3a2e4a;
+  --muted: #85789a;
+  --line: #eadff3;
+  --accent: #b46cf0;
+  --accent-soft: #f2e4fd;
+  --now: #ff7aa8;
+  --zp: #6aa8ff; --lb: #ff8fab; --pj: #b46cf0; --hol: #4cc9b0;
+}
+
+body {
+  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--accent) 18%, transparent) 1px, transparent 0);
+  background-size: 18px 18px;
+}
+.card { border-radius: 18px; }
+.lesson { border-radius: 16px; }
+.btn { border-radius: 999px; }
