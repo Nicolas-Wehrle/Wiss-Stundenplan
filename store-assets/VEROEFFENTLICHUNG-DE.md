@@ -17,7 +17,7 @@ Name: bestehenden Store-Namen beibehalten («Stundenplan für WISS (inoffiziell)
 Kurzbeschreibung (bereits im Manifest): Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.
 Sprache: Deutsch. Kategorie: Bildung. Kosten: kostenlos. Website: https://stundenplan.severinwehrle.dev
 Support: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues
-Datenschutz-URL: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY-de.md (deutsch) oder …/PRIVACY.md (englisch)
+Datenschutz-URL: https://stundenplan.severinwehrle.dev/#datenschutz (Nutzungsbedingungen: …/#nutzungsbedingungen; englisch: PRIVACY.md und TERMS.md auf GitHub)
 Vor dem Einreichen prüfen, dass die URL öffentlich ohne Anmeldung erreichbar ist und der Kontaktweg für dich passt.
 
 ## Testanweisungen (direkt einfügen)

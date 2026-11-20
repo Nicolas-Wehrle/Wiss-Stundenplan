@@ -40,6 +40,9 @@ node scripts/store-pictures/capture.mjs && node scripts/store-pictures/make.mjs
 ```
 This loads the add-on in the demo account (German and English), takes screenshots and lays them out as the Chrome Web Store pictures (`store-assets/`), the README banner and pictures (`docs/readme-banner*.png`, `docs/readme/`, each in light and dark) and the link preview (`docs/og.png`).
 
+## Privacy policy and terms
+The text lives in `scripts/legal.py`, in German and English. `python3 scripts/legal.py` writes `PRIVACY.md`, `PRIVACY-de.md`, `TERMS.md`, `TERMS-de.md` and the two pages on the website (`#datenschutz`, `#nutzungsbedingungen`). Change the text there, not in the generated files, and update the date at the top when something real changes.
+
 ## Publishing a release
 1. Raise `version` in `chrome addon/manifest.json` and run the build steps above. Every release needs a new version number; Mozilla won't sign the same one twice.
 2. Add a section to `CHANGELOG.md` and write `release-notes/<version>.txt`.

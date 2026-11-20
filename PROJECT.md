@@ -104,7 +104,7 @@ Wiss-Stundenplan/
                        store-pictures/ (capture.mjs + make.mjs: store pictures, README pictures, docs/og.png)
   release-notes/       <version>.txt, the text of each GitHub release
   updates.json         Firefox update manifest (read from the main branch)
-  README.md, DEVELOPMENT.md, CHANGELOG.md, PRIVACY.md (+ PRIVACY-de.md), LICENSE (MIT), .gitignore
+  README.md, DEVELOPMENT.md, CHANGELOG.md, PRIVACY.md + TERMS.md (+ -de versions; written by scripts/legal.py, which also fills the website's #datenschutz and #nutzungsbedingungen pages), LICENSE (MIT), .gitignore
 ```
 
 **Never commit or share:** `android app/wiss-stundenplan.jks` and `android app/keystore.properties` (the Android signing key), `wiss-desktop-updater.key` (signs the desktop updates; lives only on your PC and as the `TAURI_SIGNING_PRIVATE_KEY` secret on GitHub) and `wiss-linux-repo.private.asc` (signs the Linux package sources; `LINUX_REPO_GPG_KEY` secret). `.gitignore` covers them. If the key is lost, existing users can't update the app anymore (they'd have to uninstall first).

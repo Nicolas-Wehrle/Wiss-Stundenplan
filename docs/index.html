@@ -24,10 +24,12 @@
 <meta name="author" content="Severin Wehrle, Danylo Kovalenko">
 <link rel="canonical" href="https://stundenplan.severinwehrle.dev/">
 <meta name="description" content="Stundenplan, Prüfungen, Noten, Absenzen und freie Räume aus dem WISS-Extranet. Lokal gespeichert, kostenlos, Open Source. Für Windows, macOS, Linux, Android, iPhone, Chrome und Firefox.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap">
+<link rel="preload" href="fonts/geist.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* fonts are served from this site (no third-party requests) */
+@font-face { font-family: "Bricolage Grotesque"; src: url("fonts/bricolage-grotesque.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("fonts/geist.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: "Geist Mono"; src: url("fonts/geist-mono.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
 :root {
   --bg: #f7f5f1; --bg2: #efece6; --panel: #ffffff; --ink: #16141d; --muted: #66626d; --faint: #9a96a2; --line: #e2ddd4; --line2: #d3cdc2;
   --red: #e2283f; --red-soft: #fde8eb; --code: #f1eee8; --ok: #1f8a55;
@@ -496,6 +498,38 @@ html.scrolling .ncard { pointer-events: none; }
 .f-w b { font-size: 14px; } .f-w .big { font: 800 22px/1 var(--display); }
 @media (max-width: 520px) { .f-two { grid-template-columns: 1fr; } .f-flow { flex-direction: column; gap: 6px; } .f-step { max-width: 240px; width: 100%; } .f-arr { transform: rotate(90deg); } }
 
+/* legal pages */
+.legal { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 56px; padding-top: 52px; }
+.ltoc { position: sticky; top: 82px; align-self: start; max-height: calc(100vh - 100px); overflow: auto; font-size: 14px; }
+.ltoc h4 { font: 500 11.5px var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .06em; margin: 0 0 8px; }
+.ltoc a { display: block; text-decoration: none; color: var(--muted); padding: 4px 10px; border-left: 2px solid var(--line); }
+.ltoc a:hover { color: var(--ink); border-left-color: var(--line2); }
+.ldoc { max-width: 760px; }
+.ldoc h1 { font-size: clamp(34px, 5vw, 48px); font-weight: 800; margin-top: 14px; }
+.ldoc .lead { color: var(--muted); font-size: 18px; margin-top: 12px; line-height: 1.55; }
+.lsum { margin-top: 28px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px 18px; position: relative; overflow: hidden;
+  background: radial-gradient(120% 120% at 100% 0%, color-mix(in srgb, var(--red) 10%, transparent), transparent 60%), radial-gradient(var(--line) 1px, transparent 1.2px) 0 0 / 18px 18px, var(--bg2); }
+.lsum h3 { font: 600 12px var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--faint); margin-bottom: 10px; }
+.lsum ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 9px; }
+.lsum li { position: relative; padding-left: 30px; font-size: 15.5px; line-height: 1.5; }
+.lsum li::before { content: "✓"; position: absolute; left: 0; top: 1px; width: 20px; height: 20px; border-radius: 6px; background: var(--red-soft); color: var(--red); display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+.ldoc section { margin-top: 38px; scroll-margin-top: 80px; }
+.ldoc h2 { font-size: 22px; font-weight: 750; display: flex; gap: 12px; align-items: baseline; }
+.ldoc h2 span { font: 500 12.5px var(--mono); color: var(--faint); letter-spacing: 0; }
+.ldoc p { margin-top: 10px; line-height: 1.7; font-size: 16px; color: color-mix(in srgb, var(--ink) 85%, var(--muted)); }
+.ldoc ul { margin: 10px 0 0; padding-left: 20px; } .ldoc li { margin: 6px 0; line-height: 1.6; color: color-mix(in srgb, var(--ink) 85%, var(--muted)); }
+.ldoc p a, .ldoc li a { overflow-wrap: anywhere; }
+.ltable { overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); border-radius: 12px; }
+.ltable table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.ltable th { text-align: left; font: 500 11.5px var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--line); }
+.ltable td { padding: 10px 14px; border-top: 1px solid var(--line); vertical-align: top; }
+.ltable tr:first-child td { border-top: 0; }
+.ltable td:first-child { font-weight: 600; width: 46%; }
+.lfoot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 46px; padding-top: 20px; border-top: 1px solid var(--line); font-size: 14.5px; }
+.lfoot a { font-weight: 600; text-decoration: none; }
+@media (max-width: 860px) { .legal { grid-template-columns: minmax(0, 1fr); gap: 0; padding-top: 32px; } .ltoc { display: none; } .ltable td:first-child { width: auto; } }
+@media (max-width: 560px) { .ltable thead { display: none; } .ltable tr, .ltable td { display: block; } .ltable td { border-top: 0; } .ltable tr + tr { border-top: 1px solid var(--line); } .ltable td:first-child { padding-bottom: 2px; } .ltable td + td { padding-top: 0; color: var(--muted); } }
+
 /* downloads */
 .dlhead { padding: 56px 0 6px; }
 .dlhead h1 { font-size: clamp(34px, 5vw, 50px); font-weight: 800; }
@@ -545,7 +579,7 @@ html.scrolling .ncard { pointer-events: none; }
 .hero .meta a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line2); text-underline-offset: 3px; }
 .hero .meta a:hover { text-decoration-color: currentColor; }
 footer { margin-top: 72px; border-top: 1px solid var(--line); background: var(--bg2); font-size: 14px; color: var(--muted); }
-.fgrid { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr)); gap: 32px; padding-top: 44px; padding-bottom: 36px; }
+.fgrid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(4, minmax(0, 1fr)); gap: 32px; padding-top: 44px; padding-bottom: 36px; }
 .fbrand p { margin-top: 12px; max-width: 30em; line-height: 1.55; }
 footer .brand { color: var(--ink); }
 .fcol { display: flex; flex-direction: column; gap: 9px; align-items: flex-start; }
@@ -1130,7 +1164,7 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
           <li>Sync nur, wenn du ihn einschaltest, und dann Ende-zu-Ende verschlüsselt.</li>
           <li>Der ganze Code ist offen auf <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a>.</li>
         </ul>
-        <p>Die vollständige Datenschutzerklärung steht in <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY-de.md" target="_blank" rel="noopener">PRIVACY.md</a>.</p>
+        <p>Alles im Detail: <a href="#datenschutz" data-go="datenschutz">Datenschutzerklärung</a> und <a href="#nutzungsbedingungen" data-go="nutzungsbedingungen">Nutzungsbedingungen</a>.</p>
       </section>
 
       <section id="d-build">
@@ -1244,6 +1278,36 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
   </div>
   <div class="pop-foot"><span class="pop-help"><a href="#docs/trouble" data-go="docs" data-close>Probleme?</a></span><button type="button" class="btn ghost" data-step-go="-1">Zurück</button><button type="button" class="btn primary" data-step-go="1">Weiter</button></div>
 </dialog>
+<!-- LEGAL:START -->
+<main data-page="datenschutz">
+  <div class="wrap legal">
+    <aside class="ltoc"><h4>Inhalt</h4><a href="#datenschutz/1" data-go="datenschutz">Wer verantwortlich ist</a><a href="#datenschutz/2" data-go="datenschutz">Was die App auf deinem Gerät speichert</a><a href="#datenschutz/3" data-go="datenschutz">Anmeldung</a><a href="#datenschutz/4" data-go="datenschutz">Mit wem die App Verbindung aufnimmt</a><a href="#datenschutz/5" data-go="datenschutz">Erinnerungen und Benachrichtigungen</a><a href="#datenschutz/6" data-go="datenschutz">Synchronisation zwischen deinen Geräten (freiwillig)</a><a href="#datenschutz/7" data-go="datenschutz">Diese Website</a><a href="#datenschutz/8" data-go="datenschutz">Wie lange Daten gespeichert bleiben</a><a href="#datenschutz/9" data-go="datenschutz">Übermittlung ins Ausland</a><a href="#datenschutz/10" data-go="datenschutz">Deine Rechte</a><a href="#datenschutz/11" data-go="datenschutz">Demokonto</a><a href="#datenschutz/12" data-go="datenschutz">Änderungen</a></aside>
+    <div class="ldoc">
+      <div class="nmeta"><b>Rechtliches</b><span>Stand 20. November 2026</span></div>
+      <h1>Datenschutzerklärung</h1>
+      <p class="lead">Wie WISS Stundenplan mit deinen Daten umgeht. Gilt für alle Versionen: die Browser-Erweiterungen für Chrome und Firefox, die Android-App, die Desktop-App für Windows, macOS und Linux, das iPhone-Skript, die optionale Gerätesynchronisation und diese Website.</p>
+      <div class="lsum"><h3>Kurz gesagt</h3><ul><li>Deine Schuldaten (Stundenplan, Noten, Absenzen) bleiben auf deinem Gerät. Wir bekommen sie nie zu sehen.</li><li>Die App sieht und speichert dein Passwort nicht. Du meldest dich direkt bei der WISS und Microsoft an.</li><li>Keine Werbung, kein Tracking, keine Analyse-Tools, kein Konto bei uns.</li><li>Die Synchronisation zwischen deinen Geräten ist freiwillig, ausgeschaltet, bis du sie einschaltest, und Ende-zu-Ende verschlüsselt.</li></ul></div>
+      <section id="datenschutz-1"><h2><span>01</span>Wer verantwortlich ist</h2><p>Severin Wehrle, Schweiz, Entwickler von WISS Stundenplan. Danylo Kovalenko arbeitet an der iPhone-Version mit. WISS Stundenplan ist ein unabhängiges, inoffizielles Projekt von Lernenden und hat keine Verbindung zur WISS oder zu Tocco.</p><p>Kontakt: über die Issues im öffentlichen GitHub-Projekt (<a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues" target="_blank" rel="noopener">github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues</a>). Bitte dort keine Zugangsdaten oder persönlichen Schuldaten posten. Für Anliegen, die nicht öffentlich sein sollen, schreib im Issue, dass du privat Kontakt willst; du bekommst dann eine private Kontaktmöglichkeit.</p></section><section id="datenschutz-2"><h2><span>02</span>Was die App auf deinem Gerät speichert</h2><p>Wenn du dich anmeldest, lädt die App über wiss.tocco.ch genau die Daten, die du auch im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen und Präsenz, Raumbelegungen und deinen Benutzernamen. Dazu kommen deine eigenen Notizen, Korrekturen an Prüfungsterminen und deine Einstellungen.</p><p>Alles davon bleibt lokal auf deinem Gerät:</p><ul><li>Browser-Erweiterungen: im Speicher der Erweiterung in deinem Browserprofil.</li><li>Android-App: im privaten Speicher der App.</li><li>Desktop-App: in ihrem Datenordner (Windows: %APPDATA%\ch.wisstools.stundenplan, macOS: ~/Library/Application Support/ch.wisstools.stundenplan, Linux: ~/.local/share/ch.wisstools.stundenplan).</li><li>iPhone: im Speicher von Safari für wiss.tocco.ch; der Schlüssel für die Synchronisation im privaten Speicher der App «Userscripts».</li></ul><p>Die Daten werden nur gebraucht, um dir deinen Schulalltag anzuzeigen. Sie werden nicht an uns oder an Dritte geschickt, nicht ausgewertet und nicht verkauft.</p></section><section id="datenschutz-3"><h2><span>03</span>Anmeldung</h2><p>Die Anmeldung läuft auf den offiziellen Seiten der WISS und von Microsoft. Die App benutzt danach die angemeldete Sitzung, so wie dein Browser, um deine Daten bei der WISS abzurufen. Sie liest, speichert oder tippt dein Passwort nie. In der Android- und der Desktop-App passiert die Anmeldung in einem versteckten Fenster; ein sichtbares Fenster erscheint nur, wenn Microsoft dich wirklich braucht.</p><p>Beim Zurücksetzen der App wird deine Sitzung bei der WISS oder bei Microsoft nicht automatisch beendet. Abmelden kannst du dich jederzeit auf deren Seiten.</p></section><section id="datenschutz-4"><h2><span>04</span>Mit wem die App Verbindung aufnimmt</h2><p>Bei jeder Verbindung sieht der Betreiber technisch nötige Daten wie deine IP-Adresse und die Uhrzeit. Was diese Dienste damit machen, regeln ihre eigenen Datenschutzerklärungen.</p><div class="ltable"><table><thead><tr><th>Dienst</th><th>Wofür</th></tr></thead><tbody><tr><td>wiss.tocco.ch (WISS / Tocco)</td><td>deine Schuldaten, mit deiner Anmeldung</td></tr><tr><td>login.microsoftonline.com (Microsoft)</td><td>die Anmeldung mit deinem WISS-Konto</td></tr><tr><td>modulbaukasten.ch und ictbb.crm17.dynamics.com (ICT-Berufsbildung Schweiz)</td><td>öffentliche Beschreibungen der Lehrberufe und Module, ohne Bezug zu dir</td></tr><tr><td>api.github.com und github.com (GitHub, USA)</td><td>nachsehen, ob es eine neue Version gibt, und Updates herunterladen</td></tr><tr><td>stundenplan.severinwehrle.dev (auf GitHub Pages)</td><td>diese Website und die Paketquelle für Linux</td></tr><tr><td>wiss-stundenplan-sync.onrender.com (Render, Rechenzentrum in Frankfurt)</td><td>nur wenn du die Synchronisation einschaltest, siehe unten</td></tr></tbody></table></div><p>Auf dem iPhone werden Updates des Skripts über die App «Userscripts» von GitHub geladen.</p></section><section id="datenschutz-5"><h2><span>05</span>Erinnerungen und Benachrichtigungen</h2><p>Erinnerungen an Lektionen, Fristen für Absenzen und Hinweise auf neue Noten werden auf deinem Gerät aus deinen gespeicherten Daten berechnet und als normale Benachrichtigung deines Systems angezeigt. Es gibt keinen Push-Dienst und keinen Server, der dafür deine Daten bekommt. Neue Noten werden gemeldet, sobald die App deine Daten bei der WISS aktualisiert.</p></section><section id="datenschutz-6"><h2><span>06</span>Synchronisation zwischen deinen Geräten (freiwillig)</h2><p>Die Synchronisation ist ausgeschaltet, bis du sie in den Einstellungen einschaltest. Dann werden Notizen, Korrekturen an Prüfungsterminen und einige Einstellungen (zum Beispiel deine Lehre) zwischen deinen Geräten abgeglichen.</p><ul><li>Die Daten werden auf deinem Gerät verschlüsselt, bevor sie es verlassen. Der Schlüssel bleibt auf deinen Geräten und im Wiederherstellungscode, den nur du hast.</li><li>Der Server (Render, Frankfurt) speichert nur die verschlüsselten Pakete, zufällige technische Kennungen und Verbindungsdaten. Er kann den Inhalt nicht lesen.</li><li>Die verschlüsselten Pakete werden zusätzlich in einem privaten GitHub-Repository gesichert.</li><li>Stundenplan, Noten, Absenzen, dein Benutzername und dein Login werden nie synchronisiert.</li><li>Ein neues Gerät verbindest du mit einem Code, der nur einmal und nur 10 Minuten gilt.</li></ul></section><section id="datenschutz-7"><h2><span>07</span>Diese Website</h2><p>Die Website liegt auf GitHub Pages. GitHub speichert dabei technisch nötige Zugriffsdaten wie deine IP-Adresse, um die Seite auszuliefern und vor Missbrauch zu schützen. Die Website setzt keine Cookies, nutzt kein Tracking und lädt keine Schriften oder Skripte von Dritten. Um die aktuelle Versionsnummer und die Download-Links anzuzeigen, fragt dein Browser die öffentliche Schnittstelle von GitHub (api.github.com) ab.</p></section><section id="datenschutz-8"><h2><span>08</span>Wie lange Daten gespeichert bleiben</h2><ul><li>Auf deinem Gerät: bis du sie unter Einstellungen › Daten löschst, die App deinstallierst oder dein Browserprofil entfernst.</li><li>Synchronisation: Unter «Sync» kannst du die Daten auf dem Server löschen lassen. Konten, die 365 Tage lang nicht synchronisiert haben, werden automatisch gelöscht. Nur trennen oder deinstallieren löscht die Serverdaten nicht. Nach dem Löschen können verschlüsselte Kopien noch eine Weile in der Versionsgeschichte der GitHub-Sicherung bleiben; lesbar sind sie ohne deinen Schlüssel nicht.</li></ul></section><section id="datenschutz-9"><h2><span>09</span>Übermittlung ins Ausland</h2><p>GitHub ist ein Dienst aus den USA. Wenn die App nach Updates sucht oder du diese Website besuchst, gehen technische Verbindungsdaten an GitHub. Der Sync-Server läuft in der EU (Frankfurt). Schuldaten werden an keinen dieser Dienste übermittelt.</p></section><section id="datenschutz-10"><h2><span>10</span>Deine Rechte</h2><p>Du hast nach dem Schweizer Datenschutzgesetz (und, wo anwendbar, der DSGVO) das Recht auf Auskunft, Berichtigung und Löschung deiner Daten. Weil fast alles nur auf deinem Gerät liegt, kannst du es dort selbst einsehen und löschen. Für Fragen melde dich über den Kontakt oben. Du kannst dich auch beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB) beschweren.</p></section><section id="datenschutz-11"><h2><span>11</span>Demokonto</h2><p>Das Demokonto erzeugt frei erfundene Daten auf deinem Gerät. Es braucht kein WISS-Konto, lädt keine Schuldaten und kann nicht synchronisieren. «Demo beenden» löscht die erfundenen Daten wieder; echte Daten werden von der Demo nie überschrieben.</p></section><section id="datenschutz-12"><h2><span>12</span>Änderungen</h2><p>Wenn sich an der App etwas Wichtiges ändert, wird diese Erklärung angepasst. Das Datum oben zeigt den aktuellen Stand. Frühere Fassungen findest du in der Versionsgeschichte auf GitHub.</p></section>
+      <div class="lfoot"><a href="#nutzungsbedingungen" data-go="nutzungsbedingungen">Nutzungsbedingungen →</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY.md" target="_blank" rel="noopener">English version</a></div>
+    </div>
+  </div>
+</main>
+
+<main data-page="nutzungsbedingungen">
+  <div class="wrap legal">
+    <aside class="ltoc"><h4>Inhalt</h4><a href="#nutzungsbedingungen/1" data-go="nutzungsbedingungen">Wer anbietet</a><a href="#nutzungsbedingungen/2" data-go="nutzungsbedingungen">Was die App ist</a><a href="#nutzungsbedingungen/3" data-go="nutzungsbedingungen">Angaben ohne Gewähr</a><a href="#nutzungsbedingungen/4" data-go="nutzungsbedingungen">Dein Konto und faire Nutzung</a><a href="#nutzungsbedingungen/5" data-go="nutzungsbedingungen">Synchronisation</a><a href="#nutzungsbedingungen/6" data-go="nutzungsbedingungen">Verfügbarkeit und Updates</a><a href="#nutzungsbedingungen/7" data-go="nutzungsbedingungen">Open Source und Stores</a><a href="#nutzungsbedingungen/8" data-go="nutzungsbedingungen">Haftung</a><a href="#nutzungsbedingungen/9" data-go="nutzungsbedingungen">Datenschutz</a><a href="#nutzungsbedingungen/10" data-go="nutzungsbedingungen">Änderungen und anwendbares Recht</a></aside>
+    <div class="ldoc">
+      <div class="nmeta"><b>Rechtliches</b><span>Stand 20. November 2026</span></div>
+      <h1>Nutzungsbedingungen</h1>
+      <p class="lead">Die Regeln für WISS Stundenplan, in allen Versionen. Kurz und so verständlich wie möglich.</p>
+      <div class="lsum"><h3>Kurz gesagt</h3><ul><li>WISS Stundenplan ist kostenlos, inoffiziell und nicht von der WISS.</li><li>Massgebend sind immer die Angaben der Schule im Extranet, nicht die App.</li><li>Du benutzt die App mit deinem eigenen Konto und nach den Regeln deiner Schule.</li><li>Die App kommt ohne Garantie. Wir geben uns Mühe, können aber nicht für jeden Fehler einstehen.</li></ul></div>
+      <section id="nutzungsbedingungen-1"><h2><span>01</span>Wer anbietet</h2><p>WISS Stundenplan wird von Severin Wehrle (Schweiz) entwickelt, die iPhone-Version zusammen mit Danylo Kovalenko. Es ist ein unabhängiges Projekt von Lernenden. Es wird nicht von der WISS, von Tocco oder von Microsoft angeboten, unterstützt oder geprüft. «WISS» und andere Namen gehören ihren jeweiligen Inhabern und werden nur verwendet, um zu beschreiben, wofür die App gedacht ist.</p><p>Kontakt: über die Issues im öffentlichen GitHub-Projekt (<a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues" target="_blank" rel="noopener">github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues</a>). Bitte dort keine Zugangsdaten oder persönlichen Schuldaten posten. Für Anliegen, die nicht öffentlich sein sollen, schreib im Issue, dass du privat Kontakt willst; du bekommst dann eine private Kontaktmöglichkeit.</p></section><section id="nutzungsbedingungen-2"><h2><span>02</span>Was die App ist</h2><p>Die App zeigt deine Daten aus dem WISS-Extranet schneller und übersichtlicher an. Sie ist kostenlos, ohne Werbung und ohne Konto bei uns. Wenn du sie installierst oder benutzt, gelten diese Bedingungen. Wenn du nicht einverstanden bist, benutze die App bitte nicht.</p></section><section id="nutzungsbedingungen-3"><h2><span>03</span>Angaben ohne Gewähr</h2><p>Die App zeigt an, was das Extranet liefert, und rechnet manches daraus aus. Massgebend sind aber immer die offiziellen Angaben der Schule.</p><ul><li>Geschätzte Prüfungstermine sind Schätzungen und als solche markiert.</li><li>Schnitt, Notenrechner und Fristen für Absenzen sind Hilfen. Prüf wichtige Termine und Fristen im Extranet oder bei der Schule.</li><li>Wenn die WISS oder Tocco etwas am Extranet ändert, kann die App zeitweise falsche, alte oder gar keine Daten zeigen.</li></ul></section><section id="nutzungsbedingungen-4"><h2><span>04</span>Dein Konto und faire Nutzung</h2><ul><li>Melde dich nur mit deinem eigenen WISS-Konto an. Du bist für dein Konto und dein Gerät verantwortlich.</li><li>Halte dich an die Regeln deiner Schule für das Extranet und deine Zugangsdaten.</li><li>Benutze die App nicht, um Daten anderer abzurufen, Sicherheitsmassnahmen zu umgehen oder die Systeme der WISS übermässig zu belasten, zum Beispiel mit automatisierten Massenabfragen.</li></ul></section><section id="nutzungsbedingungen-5"><h2><span>05</span>Synchronisation</h2><p>Die Synchronisation ist freiwillig und kann jederzeit ausfallen oder eingestellt werden. Bewahr deinen Wiederherstellungscode gut auf: Ohne ihn und ohne ein verbundenes Gerät können deine synchronisierten Daten nicht wiederhergestellt werden, auch nicht von uns.</p></section><section id="nutzungsbedingungen-6"><h2><span>06</span>Verfügbarkeit und Updates</h2><p>Wir entwickeln die App in unserer Freizeit. Es gibt keinen Anspruch darauf, dass sie immer funktioniert, weiterentwickelt oder in den Stores angeboten wird. Funktionen können sich ändern oder wegfallen, und das Projekt kann jederzeit eingestellt werden. Updates kommen automatisch oder über die Stores.</p></section><section id="nutzungsbedingungen-7"><h2><span>07</span>Open Source und Stores</h2><p>Der Quellcode ist unter der MIT-Lizenz veröffentlicht (<a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">github.com/Nicolas-Wehrle/Wiss-Stundenplan</a>). Für den Code gilt diese Lizenz. Wenn du die App über einen Store installierst (zum Beispiel den Chrome Web Store, Mozilla oder den App Store), gelten zusätzlich die Bedingungen dieses Stores.</p></section><section id="nutzungsbedingungen-8"><h2><span>08</span>Haftung</h2><p>Die App wird so angeboten, wie sie ist, ohne Garantie für Richtigkeit, Vollständigkeit oder Verfügbarkeit. Soweit das Gesetz es erlaubt, haften wir nicht für Schäden durch die Nutzung der App, zum Beispiel durch verpasste Termine oder falsch angezeigte Noten. Nicht ausgeschlossen ist die Haftung für Absicht und grobe Fahrlässigkeit.</p></section><section id="nutzungsbedingungen-9"><h2><span>09</span>Datenschutz</h2><p>Wie die App mit deinen Daten umgeht, steht in der <a href="#datenschutz" data-go="datenschutz">Datenschutzerklärung</a>.</p></section><section id="nutzungsbedingungen-10"><h2><span>10</span>Änderungen und anwendbares Recht</h2><p>Diese Bedingungen können angepasst werden, wenn sich an der App etwas Wichtiges ändert. Das Datum oben zeigt den aktuellen Stand. Es gilt Schweizer Recht.</p></section>
+      <div class="lfoot"><a href="#datenschutz" data-go="datenschutz">Datenschutzerklärung →</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/TERMS.md" target="_blank" rel="noopener">English version</a></div>
+    </div>
+  </div>
+</main>
+<!-- LEGAL:END -->
+
 <footer>
   <div class="wrap fgrid">
     <div class="fbrand">
@@ -1251,7 +1315,8 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
       <p>Stundenplan, Prüfungen, Noten und Absenzen, schneller als im Extranet. Inoffiziell, nicht von der WISS oder Tocco.</p>
     </div>
     <nav class="fcol" aria-label="App"><h4>App</h4><a href="#news" data-go="news">News</a><a href="#docs" data-go="docs">Docs</a><a href="#download" data-go="download">Download</a></nav>
-    <nav class="fcol" aria-label="Projekt"><h4>Projekt</h4><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/PRIVACY-de.md" target="_blank" rel="noopener">Datenschutz</a></nav>
+    <nav class="fcol" aria-label="Projekt"><h4>Projekt</h4><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan" target="_blank" rel="noopener">GitHub</a><a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Changelog</a></nav>
+    <nav class="fcol" aria-label="Rechtliches"><h4>Rechtliches</h4><a href="#datenschutz" data-go="datenschutz">Datenschutz</a><a href="#nutzungsbedingungen" data-go="nutzungsbedingungen">Nutzungsbedingungen</a></nav>
     <nav class="fcol" aria-label="Team"><h4>Team</h4><a href="https://severinwehrle.dev" target="_blank" rel="noopener">Severin Wehrle<small>Entwickler</small></a><a href="https://danylokv.dev" target="_blank" rel="noopener">Danylo Kovalenko<small>iPhone-Version</small></a></nav>
   </div>
   <div class="wrap fbottom"><span>© 2026 · MIT-Lizenz</span><span>Version <span data-ver>1.13.0</span></span></div>
@@ -1453,10 +1518,10 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
   function route(hash) {
     const h = decodeURIComponent((hash != null ? hash : location.hash).replace(/^#/, ''));
     const [page, part] = h.split('/');
-    const which = page === 'docs' || page === 'download' || page === 'news' ? page : 'home';
+    const which = ['docs', 'download', 'news', 'datenschutz', 'nutzungsbedingungen'].includes(page) ? page : 'home';
     pages.forEach((p) => p.classList.toggle('on', p.dataset.page === which));
     $$('.nav nav a').forEach((a) => a.classList.toggle('on', a.dataset.go === which && which !== 'home'));
-    document.title = which === 'docs' ? 'Docs · WISS Stundenplan' : which === 'download' ? 'Download · WISS Stundenplan' : which === 'news' ? 'News · WISS Stundenplan' : 'WISS Stundenplan';
+    document.title = { docs: 'Docs', download: 'Download', news: 'News', datenschutz: 'Datenschutz', nutzungsbedingungen: 'Nutzungsbedingungen' }[which] ? { docs: 'Docs', download: 'Download', news: 'News', datenschutz: 'Datenschutz', nutzungsbedingungen: 'Nutzungsbedingungen' }[which] + ' · WISS Stundenplan' : 'WISS Stundenplan';
     if (which === 'news') {
       const art = part && $(`[data-article="${part}"]`);
       $$('[data-article]').forEach((a) => a.classList.toggle('on', a === art));
@@ -1467,6 +1532,7 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
     let target = null;
     if (which === 'docs' && part) target = document.getElementById('d-' + part);
     else if (which === 'download' && part) target = document.getElementById('dl-' + part);
+    else if ((which === 'datenschutz' || which === 'nutzungsbedingungen') && part) target = document.getElementById(which + '-' + part);
     else if (which === 'home' && page) target = document.getElementById(page);
     if (which === 'news') target = null;
     scrollToEl(target);

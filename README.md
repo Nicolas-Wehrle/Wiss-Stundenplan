@@ -76,7 +76,7 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 - No ads, no tracking, no account.
 - **Optional sync** between your devices transfers notes, exam corrections and some settings, end-to-end encrypted. It is off until you turn it on, and your timetable, grades, absences and login never leave your device. Keep the recovery code safe: without it and without a linked device, synced data can't be recovered.
 
-Full details: [PRIVACY.md](PRIVACY.md).
+Full details: [privacy policy](PRIVACY.md) and [terms of use](TERMS.md), also on the [website](https://stundenplan.severinwehrle.dev/#datenschutz) in German.
 
 ## Updates
 
