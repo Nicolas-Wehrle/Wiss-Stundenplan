@@ -30,7 +30,7 @@ async function device(style, platform = 'android') {
     window.AndroidTab = { result: (id, json) => window.__hostResult(id, json) };
     window.AndroidHost = {
       tabCreate: () => 1, tabInfo: () => JSON.stringify({ id: 1, url: 'https://wiss.tocco.ch/extranet/', status: 'complete' }), tabUpdate() {}, tabShow() {}, tabRemove() {},
-      exec: (_tab, _id, code) => { (0, eval)(code); }, notify() {}, schedule() {}, widgetData() {}, setLang() {}, notifPermission: () => 'granted', requestNotifPermission() {}, installUpdate() {}, openExternal() {}
+      exec: (_tab, _id, code) => { (0, eval)(code); }, notify() {}, schedule() {}, widgetData(d) { (window.__widget = window.__widget || []).push(JSON.parse(d)); }, setLang() {}, notifPermission: () => 'granted', requestNotifPermission() {}, installUpdate() {}, openExternal() {}
     };
   }, { style });
   if (platform === 'ios') {
@@ -98,7 +98,9 @@ try {
   await a.click('[data-act=device-now]'); await a.waitForFunction(() => S.notes.iphone === 'From iPhone');
   assert.equal(await a.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
   // a theme activated on Android reaches the iPhone, gets added to its library and is painted
-  await a.evaluate(() => { const p = parseTheme('/* @name Sync Test */\n:root{--bg:#102030}'); installTheme(p.theme); });
+  await a.evaluate(() => { const p = parseTheme('/* @name Sync Test\n   @base nothing */\n:root{--bg:#102030; --accent: #c3a}'); installTheme(p.theme); });
+  // the home-screen widget gets the theme's base style and accent
+  await a.waitForFunction(() => (window.__widget || []).some((d) => d.style === 'nothing' && d.accent === '#cc33aa'));
   await a.click('[data-act=device-now]'); await a.waitForFunction(() => S.deviceSync?.status === 'synced');
   await ios.click('[data-act=device-now]'); await ios.waitForFunction(() => getComputedStyle(document.body).backgroundColor === 'rgb(16, 32, 48)');
   await waitData(ios, async () => ((await chrome.storage.local.get('themeLibrary')).themeLibrary || []).some((t) => t.name === 'Sync Test'));

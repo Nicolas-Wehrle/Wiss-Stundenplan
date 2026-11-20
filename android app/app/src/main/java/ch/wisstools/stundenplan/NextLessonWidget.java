@@ -62,7 +62,7 @@ public class NextLessonWidget extends AppWidgetProvider {
     /** What the widget shows right now (independent of the look). */
     static final class Content {
         boolean en, empty, running;
-        String appStyle = "standard", appAccent = "";
+        String appStyle = "standard", appAccent = "", appMode = "";   // appMode: light/dark forced by a custom theme
         String kicker = "", title = "", meta = "", after = "", time = "";
         long nextTick;
     }
@@ -126,6 +126,7 @@ public class NextLessonWidget extends AppWidgetProvider {
                 k.en = "en".equals(d.optString("lang"));
                 k.appStyle = d.optString("style", "standard");
                 k.appAccent = d.optString("accent", "");
+                k.appMode = d.optString("mode", "");
                 JSONArray ls = d.getJSONArray("lessons");
                 for (int i = 0; i < ls.length(); i++) {
                     JSONObject l = ls.getJSONObject(i);
@@ -210,7 +211,8 @@ public class NextLessonWidget extends AppWidgetProvider {
         boolean tall = hDp == 0 || hDp >= 165;               // room for everything
         String style = "app".equals(f.style) ? k.appStyle : f.style;
         if (!java.util.Arrays.asList(STYLES).contains(style)) style = "standard";   // new styles from a newer web part
-        boolean dark = isDark(c, f);
+        // "App" look + "System" mode: a custom theme that is always light or dark wins
+        boolean dark = "app".equals(f.style) && "system".equals(f.mode) && ("light".equals(k.appMode) || "dark".equals(k.appMode)) ? "dark".equals(k.appMode) : isDark(c, f);
         int[] p = palette(style, dark);
         int surface = p[0], ink = p[1], muted = p[2], faint = p[3], accent = p[4], border = p[5];
         if ("app".equals(f.style) && k.appAccent.matches("#[0-9a-fA-F]{6}")) accent = Color.parseColor(k.appAccent);

@@ -1150,6 +1150,7 @@ nötig = (5.0 − 0.25 − (4.5 × 0.3 + 5.5 × 0.3)) / 0.4
           <li>Nichts aus dem Internet: <code>@import</code> und Links wie <code>url(https://…)</code> werden entfernt. Bilder und Schriften gehen als <code>data:</code>-Adresse direkt in der Datei.</li>
           <li>Höchstens 200 KB. Bis 60 KB kommt das aktive Theme mit dem Sync auf deine anderen Geräte. Dafür brauchen alle Geräte die neue Version.</li>
           <li>Versteckt ein Theme den Einstellungen-Knopf, pausiert die App es von selbst.</li>
+          <li>Das Android-Widget ist keine Webseite, darum wirkt das CSS dort nicht. Steht das Widget auf «App», übernimmt es vom Theme den Stil aus <code>@base</code>, die Akzentfarbe (das erste <code>--accent: #…</code> in <code>:root</code>) und <code>@mode</code>, wenn das Widget auf «System» steht.</li>
         </ul>
         <div class="note"><b>Theme kaputt?</b> Im Browser: die App mit <code>?safe</code> am Ende der Adresse öffnen (zum Beispiel <code>popup.html?full&amp;safe</code>). Sie startet dann ohne Theme, und du kannst es unter Darstellung ausschalten oder löschen. In den Apps hilft der Schutz oben: solange der Einstellungen-Knopf erreichbar ist, kommst du immer zu «Ohne Theme».</div>
         <p>Beispiele zum Ausprobieren und Anpassen: <a href="https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/tree/main/themes" target="_blank" rel="noopener">themes/ auf GitHub</a>.</p>

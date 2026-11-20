@@ -733,7 +733,26 @@ async function pushWidget(pr) {
   const next = lessons.filter((l) => new Date(l.end).getTime() > now).slice(0, 25).map((l) => ({
     s: l.start, e: l.end, t: cleanLabel(l.label), r: (l.room || '').split(',')[0].trim(), p: teachers['l:' + l.label] || ''
   }));
-  globalThis.__wissApp.widget({ lang: pr.lang, accent: pr.accent || '', style: pr.style || 'standard', lessons: next });
+  const th = await widgetTheme(pr);
+  globalThis.__wissApp.widget({ lang: pr.lang, accent: th.accent || pr.accent || '', style: th.base || pr.style || 'standard', mode: th.mode || '', lessons: next });
+}
+// The widget is native, so a custom theme only gives it what it can use: base style, accent, light/dark.
+// The accent is the first `--accent: #hex` in a plain `:root { }` block of the theme's CSS.
+async function widgetTheme(pr) {
+  let t = pr.customTheme;
+  if (!t || !t.id) return {};
+  if (typeof t.source !== 'string') {
+    const { themeLibrary = [] } = await chrome.storage.local.get('themeLibrary');
+    t = themeLibrary.find((x) => x.id === t.id);
+    if (!t) return {};
+  }
+  let accent = '';
+  const css = String(t.source || '').replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const m of css.matchAll(/(?:^|[}\s,])(?:html|:root)\s*\{([^}]*)\}/g)) {
+    const a = m[1].match(/--accent\s*:\s*#([0-9a-f]{6}|[0-9a-f]{3})\b/i);
+    if (a) { accent = '#' + (a[1].length === 3 ? a[1].replace(/./g, '$&$&') : a[1]); break; }
+  }
+  return { base: t.base || '', mode: t.mode || '', accent };
 }
 
 async function fireReminder(name) {
