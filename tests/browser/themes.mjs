@@ -22,14 +22,14 @@ try {
   await p.locator('#btnSettings').click(); await p.locator('[data-act=setnav][data-sec=look]').click();
   await p.locator('#themeFile').setInputFiles(root + '/themes/mitternacht.css');
   await p.locator('.theme-row.on').getByText('Mitternacht').waitFor();
-  assert.equal(await bg(), 'rgb(10, 15, 31)');
+  assert.equal(await bg(), 'rgb(7, 11, 24)');
   assert.equal(await p.evaluate(() => document.documentElement.dataset.mode), 'dark');
   let st = await worker.evaluate(() => chrome.storage.local.get(['prefs', 'themeLibrary']));
-  assert.equal(st.themeLibrary.length, 1); assert.equal(st.prefs.customTheme.name, 'Mitternacht'); assert.ok(st.prefs.customTheme.source.includes('--bg: #0a0f1f'));
+  assert.equal(st.themeLibrary.length, 1); assert.equal(st.prefs.customTheme.name, 'Mitternacht'); assert.ok(st.prefs.customTheme.source.includes('--bg: #070b18'));
   await p.locator('.theme-sec').scrollIntoViewIfNeeded(); await p.screenshot({ path: out + '/imported.png' });
 
   // the cache paints it before the first render
-  await p.reload(); assert.equal(await p.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(10, 15, 31)');
+  await p.reload(); assert.equal(await p.evaluate(() => getComputedStyle(document.body).backgroundColor), 'rgb(7, 11, 24)');
 
   // editor: live preview + removal of internet links
   await p.locator('#btnSettings').click(); await p.locator('[data-act=setnav][data-sec=look]').click();
@@ -44,7 +44,7 @@ try {
   await p.locator('[data-act=theme-save]').click();
   await p.locator('.theme-ed-msg.bad, .shint.bad').first().waitFor();
   await p.locator('[data-act=theme-cancel]').click();
-  assert.equal(await bg(), 'rgb(10, 15, 31)'); // preview gone, active theme back
+  assert.equal(await bg(), 'rgb(7, 11, 24)'); // preview gone, active theme back
 
   // guard: a theme that hides the settings button is paused
   await p.locator('[data-act=theme-new]').click();

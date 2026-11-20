@@ -1,28 +1,168 @@
 /* @name Pastell
    @author WISS Stundenplan
-   @version 1.0
+   @version 2.0
    @base standard
    @mode light
+
+   Verspielt und weich: Bonbonfarben, runde Schrift, Pillen überall und Punkte-Muster.
+   Neues Layout wie ein Notizbuch: Logo und Titel in der Mitte, Tabs als Pillen-Leiste,
+   Prüfungen als schräge Notizzettel mit Klebeband in einem Raster, alles mittig.
 */
 
-/* Weiche Farben, runde Ecken, ein bisschen verspielt. */
+/* ---------- Farben und Schrift ---------- */
 :root {
-  --bg: #fdf6ff;
+  --bg: #fff5fb;
   --surface: #ffffff;
-  --surface-2: #f7eefc;
-  --ink: #3a2e4a;
-  --muted: #85789a;
-  --line: #eadff3;
-  --accent: #b46cf0;
-  --accent-soft: #f2e4fd;
-  --now: #ff7aa8;
-  --zp: #6aa8ff; --lb: #ff8fab; --pj: #b46cf0; --hol: #4cc9b0;
+  --surface-2: #fdeefa;
+  --ink: #4a3560;
+  --muted: #8d7aa6;
+  --faint: #c3b5d4;
+  --line: #f1dff0;
+  --accent: #c06cf0;
+  --accent-soft: #f6e6ff;
+  --now: #ff6fa5;
+  --gold: #ffc65c;
+  --ok: #3fbf8f;  --ok-soft: #dcf7ec;
+  --warn: #e39b2d; --warn-soft: #fff1d6;
+  --bad: #f2557a; --bad-soft: #ffe1ea;
+  --zp: #6aa0ff;  --zp-soft: #e3edff;
+  --lb: #ff7aa2;  --lb-soft: #ffe4ee;
+  --pj: #a77bff;  --pj-soft: #efe6ff;
+  --hol: #36c2b4; --hol-soft: #dcf6f3;
+  --shadow: 0 2px 0 #f3d9ee, 0 10px 24px -14px rgba(192,108,240,.45);
+  --shadow-lg: 0 20px 50px -18px rgba(192,108,240,.55);
+  --tint-l: 94%; --s: 80%; --l: 50%;
+  --font: ui-rounded, "SF Pro Rounded", "Nunito", "Varela Round", "Segoe UI", system-ui, sans-serif;
+  --display: var(--font);
+  --candy: linear-gradient(135deg, #ff9ac8, #c06cf0 55%, #7fb2ff);
 }
 
+/* ---------- Hintergrund: Punkte und Farbwolken ---------- */
 body {
-  background-image: radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--accent) 18%, transparent) 1px, transparent 0);
-  background-size: 18px 18px;
+  background:
+    radial-gradient(circle at 1px 1px, color-mix(in srgb, var(--accent) 22%, transparent) 1.2px, transparent 0) 0 0 / 18px 18px,
+    radial-gradient(60% 40% at 100% 0%, #ffe1f0 0%, transparent 70%),
+    radial-gradient(50% 40% at 0% 100%, #e5f0ff 0%, transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
 }
-.card { border-radius: 18px; }
-.lesson { border-radius: 16px; }
-.btn { border-radius: 999px; }
+
+/* ---------- Kopf und Tabs ---------- */
+.top, .tabs { background: color-mix(in srgb, #fff 80%, transparent); }
+.tabs { border-bottom: 2px dashed var(--line); gap: 4px; padding-block: 4px; }
+h1 { font-weight: 800; background: var(--candy); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.logo { border-radius: 50% !important; transform: rotate(-6deg); }
+.tabs button { border-radius: 999px; border-bottom: 0; padding: 5px 12px; }
+.tabs button:hover { background: var(--accent-soft); }
+.tabs button.on { background: var(--candy); color: #fff; box-shadow: 0 4px 12px -4px rgba(192,108,240,.7); }
+.tabs button.on .count { background: #fff; color: var(--accent); }
+.count { background: var(--now); }
+
+/* ---------- Karten ---------- */
+.card { border-radius: 22px; border: 2px solid var(--line); }
+.section-title, .dayhead { color: var(--accent); letter-spacing: .1em; }
+.dayhead::before { content: "✿"; color: var(--now); }
+.day.today .dayhead { color: var(--now); }
+.dayhead .pill { background: var(--candy); }
+
+/* ---------- Lektionen als Kärtchen in ihrer Farbe ---------- */
+.lesson {
+  border-radius: 20px;
+  background: linear-gradient(120deg, hsl(var(--h) 90% 96%), var(--surface) 70%);
+  border: 2px solid hsl(var(--h) 70% 90%);
+  transition: transform .2s cubic-bezier(.3,1.6,.5,1), box-shadow .2s ease;
+}
+.lesson::before { top: 10px; bottom: 10px; left: 6px; width: 5px; border-radius: 9px; }
+.lesson:hover { transform: rotate(-.6deg) scale(1.015); }
+.lesson.current { outline: 3px dashed var(--now); outline-offset: 2px; }
+.badge, .xtag { border-radius: 999px; padding: 1px 8px; }
+.note { border-radius: 12px; }
+.nowcard { border-left: 0; background: linear-gradient(135deg, #fff, var(--accent-soft)); }
+.nowcard .kicker { color: var(--now); }
+.nowcard .kicker::after { content: " ♡"; }
+.bar { height: 7px; background: var(--surface-2); }
+.bar > i { background: var(--candy); border-radius: 9px; }
+.vac { border-radius: 22px; border: 2px dashed var(--hol); }
+
+/* ---------- Raster ---------- */
+.gev { border-radius: 14px; border: 2px solid hsl(var(--h) 70% 88%); }
+.gev:hover { transform: rotate(-1deg) scale(1.03); }
+.gcol.today { background: color-mix(in srgb, var(--now) 7%, transparent); }
+.nowline { background: var(--now); height: 3px; border-radius: 3px; }
+.hline { border-top-style: dotted; }
+
+/* ---------- Prüfungen, Noten, Absenzen, Räume ---------- */
+.xrow { border-radius: 20px; }
+.xdate { border-radius: 16px; background: var(--candy); color: #fff; }
+.xdate small { color: #fff; opacity: .9; }
+.pbar { height: 10px; border-radius: 99px; border-width: 2px; }
+.pbar i { border-radius: 99px; }
+.room { border-radius: 16px; }
+
+/* ---------- Knöpfe, Chips, Schalter ---------- */
+.btn { border-radius: 999px; padding: 7px 16px; transition: transform .2s cubic-bezier(.3,1.6,.5,1); }
+.btn:not(.ghost) { background: var(--candy); box-shadow: 0 6px 14px -6px rgba(192,108,240,.8); }
+.btn:hover { transform: translateY(-2px) scale(1.03); }
+.btn.ghost { border: 2px solid var(--line); }
+.chip, .set-nav button { border-width: 2px; }
+.chip.on, .set-nav button.on { background: var(--candy); color: #fff; border-color: transparent; }
+.seg { border-radius: 999px; }
+.seg button { border-radius: 999px; }
+.seg button.on { background: var(--candy); color: #fff; }
+.sw.on { background: var(--candy); }
+.dd { border-radius: 999px !important; }
+.sheet { border-radius: 28px 28px 0 0; border-top: 3px solid var(--line); }
+.sheet .stripe { width: 60px; height: 7px; border-radius: 9px; }
+
+::selection { background: #ffc6e0; color: var(--ink); }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+/* ---------- Kopf: Logo über dem Titel, alles mittig ---------- */
+.top { position: relative; justify-content: center; padding-top: 14px; padding-bottom: 6px; }
+.brand { flex-direction: column; gap: 4px; text-align: center; }
+.brand .status { justify-content: center; }
+.logo { width: 40px; height: 40px; }
+h1 { font-size: 20px; }
+.actions { position: absolute; right: 10px; top: 10px; }
+body.full .actions { right: max(14px, calc((100vw - 1320px) / 2)); }
+
+/* ---------- Tabs: Pillen-Leiste in der Mitte ---------- */
+.tabs { justify-content: safe center; border-bottom: 0; padding-bottom: 10px; }
+body:not(.full):not(.mobile) .tabs { gap: 2px; padding-left: 6px; padding-right: 6px; }
+body:not(.full):not(.mobile) .tabs button { padding: 5px 8px; }
+body.full .tabs { padding-left: 14px; padding-right: 14px; }
+.tabs button.on::after { display: none; }
+body.mobile .tabs { padding: 4px; }
+
+/* ---------- Inhalt: schmale Spalte in der Mitte ---------- */
+body.full #view { padding-left: max(14px, calc((100vw - 1120px) / 2)); padding-right: max(14px, calc((100vw - 1120px) / 2)); }
+#banner .banner { border-radius: 999px; justify-content: center; }
+
+/* ---------- Prüfungen: Notizzettel im Raster ---------- */
+body[data-tab=exams] #view, .fside {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); gap: 14px 12px; align-content: start;
+}
+body[data-tab=exams] #view > :not(.xrow), .fside > :not(.xrow) { grid-column: 1 / -1; }
+.xrow {
+  position: relative; margin: 0;
+  grid-template-columns: 54px 1fr; grid-template-areas: "d m" "d r";
+  align-items: start; row-gap: 4px; padding: 16px 12px 12px;
+  background: linear-gradient(#fffdf2, #fff8dc); border-color: #f5e7b5; border-radius: 6px 6px 18px 6px;
+  box-shadow: 0 10px 18px -12px rgba(120, 90, 20, .45);
+  transform: rotate(-1.2deg);
+}
+.xrow:nth-of-type(3n+2) { transform: rotate(1deg); background: linear-gradient(#fdf2ff, #f7e6ff); border-color: #ecd3fb; }
+.xrow:nth-of-type(3n) { transform: rotate(-.4deg); background: linear-gradient(#eef7ff, #e2f0ff); border-color: #cfe3fb; }
+.xrow:hover { transform: rotate(0) scale(1.03); z-index: 2; }
+.xrow::before {
+  content: ""; position: absolute; top: -8px; left: 50%; width: 56px; height: 16px; margin-left: -28px;
+  background: color-mix(in srgb, var(--now) 35%, #fff 30%); opacity: .75; transform: rotate(-3deg); border-radius: 2px;
+}
+.xrow .xdate { grid-area: d; }
+.xrow .xmain { grid-area: m; }
+.xrow .xright { grid-area: r; text-align: left; }
+.fside { position: static; }
+.fside .nowcard { transform: rotate(-.6deg); }

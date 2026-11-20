@@ -1,24 +1,173 @@
 /* @name Mitternacht
    @author WISS Stundenplan
-   @version 1.0
+   @version 2.0
    @base standard
    @mode dark
+
+   Tiefes Nachtblau mit Glas-Effekt, Sternenhimmel und leuchtenden Akzenten. Immer dunkel.
+   Neues Layout: der Titel steht in der Mitte, die Tabs schweben als Dock mit Symbolen
+   unten, und in der grossen Ansicht steht die Seitenspalte rechts statt links.
 */
 
-/* Dunkles Blau mit kühlem Akzent. Gilt immer dunkel (@mode dark). */
+/* ---------- Farben ---------- */
 :root {
-  --bg: #0a0f1f;
-  --surface: #121a30;
-  --surface-2: #1a2440;
-  --ink: #e8edff;
-  --muted: #9aa6c8;
-  --faint: #66739a;
-  --line: #24304f;
-  --accent: #6c8cff;
-  --accent-soft: #1b2650;
-  --now: #6c8cff;
-  --shadow: 0 1px 0 rgba(0,0,0,.2), 0 8px 22px -10px rgba(0,0,0,.6);
+  --bg: #070b18;
+  --surface: #0f1630;
+  --surface-2: #17203f;
+  --ink: #e9edff;
+  --muted: #98a3c7;
+  --faint: #5f6a91;
+  --line: #222d52;
+  --accent: #7c9cff;
+  --accent-soft: #1a2552;
+  --now: #5ef0d0;
+  --gold: #ffd479;
+  --ok: #4fd69a;  --ok-soft: #0f2a24;
+  --warn: #ffbe5c; --warn-soft: #2b2312;
+  --bad: #ff6b81; --bad-soft: #2e1420;
+  --zp: #7cb4ff;  --zp-soft: #13254a;
+  --lb: #ff7aa0;  --lb-soft: #2e1530;
+  --pj: #b892ff;  --pj-soft: #22194a;
+  --hol: #4fd1c5; --hol-soft: #0e2a33;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 10px 30px -14px rgba(0,0,0,.9);
+  --shadow-lg: 0 24px 60px -18px rgba(0,0,0,.95);
+  --tint-l: 22%; --l: 74%;
+  --font: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --display: "Segoe UI Variable Display", "SF Pro Display", "Inter", system-ui, sans-serif;
+  --glow: 0 0 18px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
-.tabs button.on { color: #fff; }
-.card { border: 1px solid var(--line); }
+/* ---------- Hintergrund: Verlauf und Sterne ---------- */
+body {
+  background:
+    radial-gradient(1px 1px at 12% 18%, #fff8 50%, transparent 51%),
+    radial-gradient(1px 1px at 72% 9%, #fff6 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 38% 62%, #fff5 50%, transparent 51%),
+    radial-gradient(1px 1px at 88% 44%, #fff7 50%, transparent 51%),
+    radial-gradient(1px 1px at 22% 86%, #fff4 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 62% 78%, #fff5 50%, transparent 51%),
+    radial-gradient(120% 70% at 80% -10%, #1d2a6b 0%, transparent 60%),
+    radial-gradient(90% 60% at -10% 110%, #10305a 0%, transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+  letter-spacing: .005em;
+}
+
+/* ---------- Kopf und Tabs: Glas ---------- */
+.top, .tabs {
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+}
+.tabs { border-bottom: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line)); }
+h1 {
+  font-family: var(--display); font-weight: 750; letter-spacing: -.01em;
+  background: linear-gradient(90deg, #fff, var(--accent) 70%, var(--now));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.logo { box-shadow: var(--glow); }
+.status .dot { box-shadow: 0 0 8px var(--ok); }
+.icon:hover { background: var(--accent-soft); color: var(--ink); }
+.tabs button { color: var(--muted); }
+.tabs button.on { color: #fff; border-bottom-color: var(--now); text-shadow: 0 0 12px color-mix(in srgb, var(--now) 60%, transparent); }
+.count { background: var(--now); color: #04201b; font-weight: 800; }
+
+/* ---------- Karten ---------- */
+.card {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, #fff 3%), var(--surface));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.section-title, .dayhead { color: var(--accent); letter-spacing: .14em; }
+.day.today .dayhead { color: var(--now); }
+.dayhead .pill { background: var(--now); color: #04201b; }
+
+/* ---------- Lektionen ---------- */
+.lesson { border-radius: 14px; }
+.lesson::before { width: 3px; box-shadow: 0 0 10px var(--c); }
+.lesson:hover { box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 50%, transparent), 0 14px 30px -14px #000; }
+.lesson.current { outline: 0; box-shadow: 0 0 0 1px var(--now), 0 0 24px -4px color-mix(in srgb, var(--now) 55%, transparent); }
+.lesson.exam { background: linear-gradient(90deg, color-mix(in srgb, var(--lb) 14%, var(--surface)), var(--surface) 70%); }
+.badge { border: 1px solid color-mix(in srgb, currentColor 30%, transparent); }
+.nowcard { border-left-color: var(--now); box-shadow: 0 0 0 1px color-mix(in srgb, var(--now) 35%, transparent), 0 0 30px -10px var(--now); }
+.nowcard .kicker { color: var(--now); text-shadow: 0 0 10px color-mix(in srgb, var(--now) 60%, transparent); }
+.bar > i { box-shadow: 0 0 10px var(--c, var(--accent)); }
+
+/* ---------- Wochenraster ---------- */
+.gev { border-radius: 10px; backdrop-filter: blur(4px); }
+.gcol.today { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%); }
+.nowline { box-shadow: 0 0 10px var(--now); }
+.hline { border-top-color: color-mix(in srgb, var(--line) 60%, transparent); }
+
+/* ---------- Prüfungen, Noten, Absenzen, Räume ---------- */
+.xdate { background: linear-gradient(160deg, var(--accent-soft), var(--surface-2)); border: 1px solid var(--line); }
+.xdate b { color: #fff; }
+.xtag { border-radius: 999px; }
+.pbar { background: var(--bg); }
+.pbar i { box-shadow: 0 0 10px currentColor; }
+.room { border-radius: 12px; }
+.room:hover { box-shadow: var(--glow); }
+
+/* ---------- Knöpfe, Chips, Schalter ---------- */
+.btn { border-radius: 10px; }
+.btn:not(.ghost) { background: linear-gradient(135deg, var(--accent), #5b6cff); color: #fff; box-shadow: var(--glow); }
+.btn.ghost { background: color-mix(in srgb, var(--surface-2) 70%, transparent); border-color: var(--line); }
+.chip.on, .set-nav button.on { background: var(--accent); border-color: var(--accent); color: #fff; box-shadow: var(--glow); }
+.seg { background: var(--bg); }
+.seg button.on { background: var(--accent-soft); color: #fff; box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent); }
+.sw.on { background: var(--accent); box-shadow: var(--glow); }
+
+/* ---------- Fenster und Einstellungen ---------- */
+.sheet { background: color-mix(in srgb, var(--surface) 88%, transparent); backdrop-filter: blur(18px); border-top: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); }
+.set-nav { background: transparent; }
+.srow { border-top-color: color-mix(in srgb, var(--line) 70%, transparent); }
+
+/* ---------- Scrollbalken und Auswahl ---------- */
+::selection { background: color-mix(in srgb, var(--accent) 45%, transparent); color: #fff; }
+#view { scrollbar-color: var(--accent-soft) transparent; }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+/* ---------- Kopf: Titel in der Mitte, Knöpfe rechts ---------- */
+.top { position: relative; justify-content: center; padding-top: 14px; padding-bottom: 12px; border-bottom: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line)); }
+.brand { flex-direction: column; gap: 6px; text-align: center; }
+.brand .status { justify-content: center; }
+.logo { width: 34px; height: 34px; }
+h1 { font-size: 18px; }
+.actions { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); }
+body.full .actions { right: max(14px, calc((100vw - 1320px) / 2)); }
+
+/* ---------- Tabs: schwebendes Dock unten ---------- */
+.tabs {
+  order: 10; align-self: center; position: relative; z-index: 5;
+  margin: 6px auto calc(12px + var(--sab, 0px));
+  padding: 5px; gap: 4px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: 999px;
+  box-shadow: 0 16px 40px -12px #000, 0 0 0 1px rgba(255,255,255,.03) inset;
+}
+body.full .tabs { padding: 6px; }
+.tabs button {
+  position: relative; flex-direction: column; gap: 2px;
+  padding: 6px 13px 5px; border: 0; border-radius: 999px;
+  font-size: 10.5px; letter-spacing: .02em;
+}
+body.full .tabs button { padding: 7px 20px 6px; font-size: 11.5px; }
+body.mobile .tabs button { flex: 1 1 0; padding: 7px 4px 5px; font-size: min(10.5px, 2.8vw); }
+.tabs button .ti { display: block; }
+.tabs button .ti svg { width: 19px; height: 19px; }
+.tabs button.on { background: var(--accent-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent), var(--glow); }
+.tabs button.on::after, .tabs button.on::before { display: none; }
+.tabs .count { position: absolute; top: 1px; right: 4px; font-size: 9px; line-height: 14px; padding: 0 5px; }
+body.mobile .tabs { width: calc(100% - 16px); }
+
+/* ---------- grosse Ansicht: Seitenspalte rechts ---------- */
+.fwrap { grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); }
+.fside { order: 2; }
+.fmain { order: 1; }
+
+/* ---------- Woche: Tage als Glasblöcke ---------- */
+body:not(.full) .day { padding: 10px; border-radius: 18px; background: color-mix(in srgb, var(--surface) 40%, transparent); border: 1px solid color-mix(in srgb, var(--line) 70%, transparent); }
+body:not(.full) .day.today { border-color: color-mix(in srgb, var(--now) 50%, transparent); box-shadow: 0 0 30px -14px var(--now); }

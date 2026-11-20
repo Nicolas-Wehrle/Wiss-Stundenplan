@@ -34,9 +34,64 @@ function sanitizeThemeCss(css) {
   cut(/(-webkit-)?image-set\s*\(/gi, 'x-removed(');
   cut(/\bsrc\s*\(/gi, 'x-removed(');
   cut(/expression\s*\(|-moz-binding|behavior\s*:/gi, 'x-removed:');
-  // a theme's :root beats the built-in styles (those go up to :root[data-style][data-mode])
-  css = css.replace(/(^|[\s,{}>+~(])(:root)(?![\w-])/g, '$1:root:root:root:root');
-  return { css, removed };
+  return { css: boostThemeCss(css), removed };
+}
+
+// Theme rules have to win over the built-in styles, whose selectors get fairly specific
+// (`:is([data-style=standard], …) .hero .daystrip b`). Every selector of the theme is put under a
+// boosted :root, which adds the same specificity to all of them, so a plain `.card {}` just works.
+// Selectors that start on <html> itself (:root, html, [data-mode=…], [data-style=…]) get the boost
+// on that same element instead of as an ancestor.
+const THEME_BOOST = ':root:root:root:root:root:root';
+const THEME_ON_HTML = /^(:root(?![\w-])|html(?![\w-])|\[(data-(mode|style|custom-theme|corners|size|mono)|lang)\b)/i;
+function boostSelector(sel) {
+  const lead = sel.match(/^(\s|\/\*[\s\S]*?\*\/)*/)[0], s = sel.slice(lead.length);
+  if (!s) return sel;
+  if (/^:root(?![\w-])/i.test(s)) return lead + THEME_BOOST + s.slice(5);
+  if (/^html(?![\w-])/i.test(s)) return lead + 'html' + THEME_BOOST + s.slice(4);
+  if (THEME_ON_HTML.test(s)) return lead + THEME_BOOST + s;
+  return lead + THEME_BOOST + ' ' + s;
+}
+function splitSelectors(prelude) {
+  const out = []; let depth = 0, cur = '', q = '';
+  for (let i = 0; i < prelude.length; i++) {
+    const ch = prelude[i];
+    if (q) { cur += ch; if (ch === q) q = ''; continue; }
+    if (ch === '/' && prelude[i + 1] === '*') { const end = prelude.indexOf('*/', i + 2), c = end < 0 ? prelude.slice(i) : prelude.slice(i, end + 2); cur += c; i += c.length - 1; continue; }
+    if (ch === '"' || ch === "'") q = ch;
+    else if (ch === '(' || ch === '[') depth++;
+    else if (ch === ')' || ch === ']') depth--;
+    else if (ch === ',' && depth === 0) { out.push(cur); cur = ''; continue; }
+    cur += ch;
+  }
+  out.push(cur); return out;
+}
+function boostThemeCss(css) {
+  // walk the text; `stack` says what each open block contains: 'rules' (top level, @media, @supports …),
+  // 'decl' (a style rule) or 'raw' (@font-face, @keyframes … : left alone)
+  let out = '', buf = '', i = 0, q = '';
+  const stack = ['rules'];
+  while (i < css.length) {
+    const ch = css[i];
+    if (q) { buf += ch; if (ch === '\\') { buf += css[i + 1] || ''; i += 2; continue; } if (ch === q) q = ''; i++; continue; }
+    if (ch === '/' && css[i + 1] === '*') { const end = css.indexOf('*/', i + 2); const c = end < 0 ? css.slice(i) : css.slice(i, end + 2); buf += c; i += c.length; continue; }
+    if (ch === '"' || ch === "'") { q = ch; buf += ch; i++; continue; }
+    if (ch === '\\') { buf += ch + (css[i + 1] || ''); i += 2; continue; }
+    const ctx = stack[stack.length - 1];
+    if (ch === '{') {
+      if (ctx === 'rules') {
+        const pre = buf.replace(/\/\*[\s\S]*?\*\//g, ' ');
+        const at = pre.trim().match(/^@([\w-]+)/);
+        if (at) stack.push(/^(media|supports|container|layer|document|scope|starting-style)$/i.test(at[1]) ? 'rules' : 'raw');
+        else { buf = splitSelectors(buf).map(boostSelector).join(','); stack.push('decl'); }
+      } else stack.push(ctx === 'decl' ? 'decl' : 'raw');
+      out += buf + ch; buf = ''; i++; continue;
+    }
+    if (ch === '}') { if (stack.length > 1) stack.pop(); out += buf + ch; buf = ''; i++; continue; }
+    if (ch === ';' && ctx === 'rules') { out += buf + ch; buf = ''; i++; continue; }   // e.g. @charset
+    buf += ch; i++;
+  }
+  return out + buf;
 }
 
 // Reads a theme file. Header (optional): /* @name … @author … @version … @base nothing @mode dark */

@@ -1,13 +1,159 @@
 /* @name Kompakt
    @author WISS Stundenplan
-   @version 1.0
+   @version 2.0
    @base standard
+
+   Dicht und sachlich, wie ein Werkzeug: kleinere Schrift, flache Karten mit feinen Linien,
+   Lektionen als Tabellenzeilen. Neues Layout: in der grossen Ansicht eine Seitenleiste links
+   mit Logo, Knöpfen und den Tabs untereinander; im Popup Tabs als Segmente.
+   Funktioniert hell und dunkel.
 */
 
-/* Weniger Abstand, damit mehr auf den Bildschirm passt. Farben bleiben wie im Stil. */
+/* ---------- Farben und Schrift ---------- */
+:root {
+  --bg: #f3f4f6;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
+  --ink: #111827;
+  --muted: #5b6474;
+  --faint: #9aa3b2;
+  --line: #e2e5ea;
+  --accent: #2563eb;
+  --accent-soft: #e6eeff;
+  --now: #dc2626;
+  --shadow: none;
+  --shadow-lg: 0 10px 30px -12px rgba(17,24,39,.35);
+  --font: "Inter", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  --display: var(--font);
+}
+:root[data-mode=dark] {
+  --bg: #0d1015;
+  --surface: #151a21;
+  --surface-2: #1b2129;
+  --ink: #e6e9ef;
+  --muted: #9aa3b2;
+  --faint: #626b79;
+  --line: #262d37;
+  --accent: #5b8cff;
+  --accent-soft: #18233a;
+  --now: #ff5c5c;
+}
+body { font-size: 12px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+
+/* ---------- Kopf und Tabs ---------- */
+.top { padding: 5px 10px; border-bottom: 1px solid var(--line); }
+.logo { width: 22px; height: 22px; border-radius: 5px; }
+h1 { font-size: 13px; font-weight: 700; letter-spacing: 0; }
+.status { font-size: 10.5px; }
+.icon { width: 26px; height: 26px; border-radius: 5px; }
+.icon svg { width: 15px; height: 15px; }
+.tabs { padding: 0 4px; gap: 0; }
+.tabs button { padding: 5px 8px 6px; font-size: 11.5px; border-bottom-width: 2px; }
+.count { font-size: 9.5px; line-height: 14px; padding: 0 5px; }
 #view { padding: 0 8px 10px; }
-.lesson { padding: 5px 8px; margin-bottom: 3px; gap: 6px; }
-.card { border-radius: 8px; }
-.tabs { padding: 0 4px; }
-.tabs button { padding: 6px 7px 7px; font-size: 12px; }
-.top { padding-block: 6px; }
+
+/* ---------- Karten: flach mit Linie ---------- */
+.card { border: 1px solid var(--line); border-radius: 6px; box-shadow: none; }
+.section-title { margin: 10px 2px 5px; font-size: 10.5px; letter-spacing: .08em; }
+
+/* ---------- Woche: eine Lektion pro Zeile ---------- */
+.weeknav { padding: 6px 0 0; }
+.day { margin-top: 8px; }
+.dayhead { margin-bottom: 3px; font-size: 10.5px; }
+.lesson { grid-template-columns: 76px 1fr; gap: 6px; padding: 4px 8px 4px 8px; margin-bottom: 2px; border-radius: 4px; }
+.lesson::before { width: 3px; }
+.lesson:hover { transform: none; background: var(--surface-2); box-shadow: none; }
+.time { font-size: 11px; padding-left: 2px; }
+.time small { display: inline; margin-left: 3px; font-size: 10px; }
+.ltitle { font-size: 12px; }
+.lmeta { font-size: 11px; margin-top: 0; gap: 2px 8px; }
+.badge, .xtag { font-size: 9.5px; padding: 0 4px; border-radius: 3px; }
+.note, .tnote { font-size: 11px; margin-top: 2px; padding: 1px 5px; }
+.nowcard { margin-top: 8px; padding: 7px 10px; border-left-width: 3px; }
+.nowcard .title { font-size: 13px; margin: 1px 0; }
+.nowcard .foot { margin-top: 5px; padding-top: 5px; font-size: 11px; }
+.bar { height: 3px; margin-top: 5px; }
+.vac { margin-top: 8px; padding: 8px 10px; border-radius: 6px; }
+
+/* ---------- Raster (grosse Ansicht) ---------- */
+.ghead { padding: 6px 4px; font-size: 11.5px; }
+.gev { left: 2px; right: 2px; border-radius: 4px; padding: 3px 5px; font-size: 11px; }
+.gev:hover { transform: none; }
+.gev .t, .gev .m { font-size: 10px; }
+
+/* ---------- Prüfungen, Absenzen, Noten ---------- */
+.xrow { grid-template-columns: 44px 1fr auto; gap: 8px; padding: 5px 8px; margin-bottom: 3px; }
+.xdate { border-radius: 4px; padding: 2px 0; }
+.xdate b { font-size: 14px; }
+.xdate small { font-size: 9.5px; }
+.xmain .m { font-size: 11px; margin-top: 0; }
+.pbar { height: 5px; margin-top: 5px; border-radius: 2px; }
+.pbar i { border-radius: 2px; }
+.room { min-height: 48px; border-radius: 4px; padding: 4px 6px; }
+
+/* ---------- Knöpfe und Einstellungen ---------- */
+.btn { border-radius: 5px; padding: 4px 9px; font-size: 11.5px; }
+.chip { padding: 1px 8px; font-size: 10.5px; border-radius: 4px; }
+.seg { border-radius: 6px; padding: 2px; margin-top: 8px; }
+.seg button { padding: 3px 6px; font-size: 11.5px; border-radius: 4px; }
+.sw { width: 32px; height: 19px; }
+.set-nav { padding: 5px 0; gap: 4px; }
+.set-nav button { border-radius: 5px; padding: 3px 8px; font-size: 11px; }
+.srow { padding: 6px 0; gap: 8px; }
+.srow .sl small { font-size: 10.5px; }
+.sheet { border-radius: 8px 8px 0 0; padding: 10px 12px 14px; }
+.sheet h2 { font-size: 15px; }
+.dd { border-radius: 5px; }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+/* ---------- grosse Ansicht: Seitenleiste links ---------- */
+body.full:not(.mobile) {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  grid-template-rows: auto auto minmax(0, 1fr);
+}
+body.full:not(.mobile) .top {
+  grid-column: 1; grid-row: 1;
+  flex-direction: column; align-items: stretch; gap: 10px;
+  padding: 14px 12px 10px; border-bottom: 0; border-right: 1px solid var(--line);
+}
+body.full:not(.mobile) .actions { justify-content: flex-start; gap: 2px; }
+body.full:not(.mobile) .tabs {
+  grid-column: 1; grid-row: 2 / 4;
+  flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 2px;
+  padding: 4px 8px; border-bottom: 0; border-right: 1px solid var(--line);
+}
+body.full:not(.mobile) .tabs button {
+  justify-content: flex-start; gap: 9px; padding: 7px 10px; border: 0; border-radius: 5px; font-size: 12.5px;
+}
+body.full:not(.mobile) .tabs button .ti { display: block; order: -1; }
+body.full:not(.mobile) .tabs button .ti svg { width: 16px; height: 16px; }
+body.full:not(.mobile) .tabs button .count { margin-left: auto; }
+body.full:not(.mobile) .tabs button.on { background: var(--accent-soft); color: var(--accent); }
+body.full:not(.mobile) .tabs button.on::after { display: none; }
+body.full:not(.mobile) #banner { grid-column: 2; grid-row: 1; }
+body.full:not(.mobile) #banner .banner { margin: 8px 16px 0; }
+body.full:not(.mobile) #view { grid-column: 2; grid-row: 2 / 4; padding: 0 16px 16px; }
+body.full:not(.mobile):has(#banner:empty) #view { grid-row: 1 / 4; }
+.fwrap { grid-template-columns: minmax(260px, 300px) minmax(0, 1fr); gap: 14px; }
+
+/* ---------- Popup und Handy: Tabs als Segmente ---------- */
+body:not(.full) .tabs, body.mobile .tabs { padding: 4px 6px; background: var(--bg); }
+body:not(.full) .tabs button, body.mobile .tabs button {
+  flex: 1 1 0; justify-content: center; border: 1px solid var(--line); border-radius: 0; margin-left: -1px;
+  background: var(--surface); padding: 4px 2px;
+}
+body:not(.full) .tabs button:first-child, body.mobile .tabs button:first-child { border-radius: 5px 0 0 5px; }
+body:not(.full) .tabs button:last-child, body.mobile .tabs button:last-child { border-radius: 0 5px 5px 0; }
+body:not(.full) .tabs button.on, body.mobile .tabs button.on { background: var(--ink); color: var(--surface); border-color: var(--ink); z-index: 1; }
+body:not(.full) .tabs button.on::after, body.mobile .tabs button.on::after { display: none; }
+
+/* ---------- Woche: Lektionen als Tabellenzeilen ---------- */
+.day { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); overflow: hidden; }
+.dayhead { margin: 0; padding: 4px 8px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+.day .lesson { margin: 0; border-radius: 0; border: 0; border-bottom: 1px solid var(--line); background: transparent; }
+.day .lesson:last-child { border-bottom: 0; }
+.day .free { padding: 4px 8px; }

@@ -1,23 +1,140 @@
 /* @name Hoher Kontrast
    @author WISS Stundenplan
-   @version 1.0
+   @version 2.0
    @base standard
+
+   Für beste Lesbarkeit: reines Schwarz und Weiss, dicke Ränder, grössere und fettere Schrift,
+   unterstrichene Links, deutliche Fokusrahmen und keine Animationen. Neues Layout: grosse
+   Tab-Kacheln mit Symbolen und in der grossen Ansicht alles in einer breiten Spalte.
+   Hell: Schwarz auf Weiss mit Blau. Dunkel: Weiss auf Schwarz mit Gelb.
 */
 
-/* Schwarz auf Weiss (oder umgekehrt im Dunkelmodus), dicke Ränder, klare Fokusrahmen. */
+/* ---------- Farben ---------- */
 :root {
-  --bg: #ffffff; --surface: #ffffff; --surface-2: #f0f0f0;
-  --ink: #000000; --muted: #222222; --faint: #444444; --line: #000000;
-  --accent: #0033cc; --accent-soft: #dfe6ff; --now: #0033cc;
-  --shadow: none;
+  --bg: #ffffff; --surface: #ffffff; --surface-2: #ececec;
+  --ink: #000000; --muted: #1a1a1a; --faint: #3d3d3d; --line: #000000;
+  --accent: #0030c0; --accent-soft: #d6e0ff; --now: #c00000; --gold: #8a5a00;
+  --ok: #005c1e; --ok-soft: #d4f0dc;
+  --warn: #7a4a00; --warn-soft: #ffe9b8;
+  --bad: #b00000; --bad-soft: #ffd9d9;
+  --zp: #0030c0; --zp-soft: #d6e0ff;
+  --lb: #b00000; --lb-soft: #ffd9d9;
+  --pj: #5a00a8; --pj-soft: #ead9ff;
+  --hol: #005a54; --hol-soft: #ccefec;
+  --shadow: none; --shadow-lg: 0 0 0 3px var(--ink);
+  --tint-l: 93%; --l: 25%; --s: 90%;
+  --font: "Atkinson Hyperlegible", Verdana, "Segoe UI", system-ui, sans-serif;
+  --display: var(--font);
+  --ring: 3px solid var(--accent);
 }
 :root[data-mode=dark] {
-  --bg: #000000; --surface: #000000; --surface-2: #161616;
-  --ink: #ffffff; --muted: #e6e6e6; --faint: #bdbdbd; --line: #ffffff;
-  --accent: #ffd400; --accent-soft: #332b00; --now: #ffd400;
+  --bg: #000000; --surface: #000000; --surface-2: #1c1c1c;
+  --ink: #ffffff; --muted: #f0f0f0; --faint: #cfcfcf; --line: #ffffff;
+  --accent: #ffe600; --accent-soft: #3a3400; --now: #00e5ff; --gold: #ffe600;
+  --ok: #4dff88; --ok-soft: #003314;
+  --warn: #ffc94d; --warn-soft: #3a2a00;
+  --bad: #ff6b6b; --bad-soft: #3d0000;
+  --zp: #7fb2ff; --zp-soft: #00204d;
+  --lb: #ff8fa3; --lb-soft: #3d0010;
+  --pj: #d0a6ff; --pj-soft: #25004d;
+  --hol: #5cf2e3; --hol-soft: #00302c;
+  --tint-l: 12%; --l: 82%;
 }
 
-.card { border: 2px solid var(--line); }
-.btn:not(.ghost) { color: var(--bg); }
-:focus-visible { outline: 3px solid var(--accent) !important; outline-offset: 2px; }
-.tabs button.on { border-bottom-width: 3px; }
+/* ---------- Schrift ---------- */
+body { font-size: 14px; line-height: 1.5; font-weight: 500; }
+h1 { font-size: 17px; font-weight: 800; }
+.muted, .lmeta, .time small, .status, .srow .sl small { color: var(--muted); }
+a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+
+/* ---------- keine Bewegung ---------- */
+*, *::before, *::after { animation-duration: 0s !important; transition-duration: 0s !important; }
+.lesson:hover, .gev:hover, .room:hover { transform: none !important; }
+
+/* ---------- Fokus immer sichtbar ---------- */
+:focus-visible { outline: var(--ring) !important; outline-offset: 2px !important; }
+
+/* ---------- Kopf und Tabs ---------- */
+.top { border-bottom: 2px solid var(--line); }
+.tabs { border-bottom: 2px solid var(--line); }
+.tabs button { color: var(--ink); font-weight: 700; font-size: 13.5px; }
+.tabs button.on { background: var(--ink); color: var(--bg); border-bottom-color: var(--ink); }
+.icon { color: var(--ink); border: 2px solid transparent; }
+.icon:hover { border-color: var(--ink); background: transparent; }
+.count { background: var(--now); color: var(--bg); font-weight: 800; }
+
+/* ---------- Karten und Linien ---------- */
+.card { border: 2px solid var(--line); border-radius: 6px; }
+.section-title, .dayhead { color: var(--ink); font-weight: 800; font-size: 12.5px; }
+.day.today .dayhead { color: var(--ink); text-decoration: underline 3px var(--accent); text-underline-offset: 4px; }
+.dayhead .pill { background: var(--ink); color: var(--bg); }
+.srow, .nowcard .foot, .ghead, .gaxis, .gcol { border-color: var(--line) !important; }
+
+/* ---------- Lektionen ---------- */
+.lesson::before { width: 6px; }
+.lesson.past { opacity: 1; }
+.lesson.past .ltitle { text-decoration: line-through; text-decoration-thickness: 2px; }
+.lesson.current { outline: 4px solid var(--now); outline-offset: -4px; }
+.badge, .xtag { font-size: 11.5px; font-weight: 800; border: 1.5px solid currentColor; }
+.note { border: 1.5px solid var(--warn); }
+.nowcard { border-left-width: 8px; }
+.nowcard .kicker { color: var(--ink); text-decoration: underline 3px var(--now); }
+.gev { border: 2px solid var(--ink); }
+.gev.past { opacity: 1; }
+.nowline { height: 4px; }
+.hline { border-top: 1px solid var(--faint); }
+
+/* ---------- Prüfungen, Noten, Absenzen ---------- */
+.xdate { border: 2px solid var(--line); background: var(--surface); }
+.pbar { height: 10px; border: 2px solid var(--line); }
+.room { border: 2px solid var(--line); }
+
+/* ---------- Knöpfe, Chips, Schalter ---------- */
+.btn { border: 2px solid var(--ink); border-radius: 6px; font-weight: 800; }
+.btn:not(.ghost) { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.btn.ghost { background: var(--bg); color: var(--ink); }
+.btn:hover { text-decoration: underline; }
+.chip, .set-nav button { border: 2px solid var(--line); color: var(--ink); font-weight: 700; }
+.chip.on, .set-nav button.on { background: var(--ink); color: var(--bg); }
+.seg { border: 2px solid var(--line); }
+.seg button { color: var(--ink); }
+.seg button.on { background: var(--ink); color: var(--bg); }
+.sw { border: 2px solid var(--ink); background: var(--bg); }
+.sw.on { background: var(--accent); }
+.dd, input, textarea, select { border: 2px solid var(--line) !important; }
+.sheet { border-top: 3px solid var(--line); }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+
+/* ---------- Tabs: grosse, gleich breite Kacheln mit Symbol ---------- */
+.tabs { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 6px; padding: 8px 10px; }
+.tabs button {
+  position: relative; flex-direction: column; justify-content: center; gap: 3px;
+  padding: 8px 2px; border: 2px solid var(--line); border-radius: 6px;
+}
+.tabs button .ti { display: block; }
+.tabs button .ti svg { width: 22px; height: 22px; }
+.tabs button.on::after { display: none; }
+.tabs .count { position: absolute; top: -8px; right: -6px; border: 2px solid var(--bg); }
+body.full .tabs button { flex-direction: row; gap: 8px; padding: 12px 6px; font-size: 15px; }
+body:not(.full):not(.mobile) .tabs { gap: 4px; padding: 8px 6px; }
+body:not(.full):not(.mobile) .tabs button { font-size: 11.5px; }
+body.mobile .tabs button { font-size: min(12.5px, 3.2vw); padding: 6px 1px; }
+
+/* ---------- Kopf: Knöpfe mit Rahmen ---------- */
+.actions { gap: 6px; }
+.icon { border: 2px solid var(--line); width: 36px; height: 36px; }
+
+/* ---------- grosse Ansicht: eine breite Spalte ---------- */
+.fwrap { grid-template-columns: minmax(0, 1fr); max-width: 1040px; margin: 0 auto; gap: 16px; }
+.fside { position: static; display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; align-items: start; }
+.fside > .nowcard, .fside > .section-title { grid-column: 1 / -1; }
+.fside .xrow { margin: 0; }
+
+/* ---------- Lektionen: Zeit gross über dem Titel ---------- */
+.lesson { grid-template-columns: 1fr; gap: 2px; padding: 10px 12px 10px 16px; }
+.time { display: flex; gap: 8px; align-items: baseline; font-size: 15px; padding: 0; }
+.time small { font-size: 14px; }
+.ltitle { font-size: 16px; }

@@ -27,13 +27,27 @@
     const { deviceSync } = await browser.storage.local.get('deviceSync');
     if (!deviceSync?.enabled || deviceSync.status === 'synced') browser.alarms.clear?.('device-sync-retry');
   };
+  let demoWrites = Promise.resolve();   // demo-mode writes, one after the other
   const trusted = (sender) => !sender.tab || (sender.url && sender.url.startsWith(browser.runtime.getURL('popup.html')));
   browser.runtime.onMessage.addListener((msg, sender, respond) => {
     if (!msg || !['deviceSyncWrite', 'deviceSyncConnect', 'deviceSyncNow', 'deviceSyncDisconnect', 'deviceSyncDelete', 'deviceSyncRecovery', 'deviceSyncReset', 'deviceSyncPairOffer', 'deviceSyncPairJoin'].includes(msg.type)) return;
     if (!trusted(sender)) { respond({ error: 'permission-denied' }); return false; }
     const task = async () => {
       if ((await browser.storage.local.get('demoMode')).demoMode) {
-        if (msg.type === 'deviceSyncWrite') { await browser.storage.local.set(msg.patch || {}); return; }
+        if (msg.type === 'deviceSyncWrite') {
+          // same merge as engine.write: prefs and the note maps are patches, not replacements
+          const run = demoWrites.then(async () => {
+            const patch = { ...(msg.patch || {}) }, maps = ['prefs', 'notes', 'examOverrides'].filter((k) => patch[k]);
+            const cur = maps.length ? await browser.storage.local.get(maps) : {};
+            for (const k of maps) {
+              const m = { ...(cur[k] || {}), ...patch[k] };
+              if (k !== 'prefs') for (const [n, v] of Object.entries(patch[k])) if (v == null) delete m[n];
+              patch[k] = m;
+            }
+            await browser.storage.local.set(patch);
+          });
+          demoWrites = run.catch(() => {}); await run; return;
+        }
         if (msg.type !== 'deviceSyncReset') throw new Error('demo-mode');
       }
       if (msg.type === 'deviceSyncWrite') return engine.write(msg.patch || {});
