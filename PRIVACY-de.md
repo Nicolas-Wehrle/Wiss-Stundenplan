@@ -2,90 +2,66 @@
 
 Stand: 20. November 2026. English version: [PRIVACY.md](PRIVACY.md).
 
-Wie WISS Stundenplan mit deinen Daten umgeht. Gilt für alle Versionen: die Browser-Erweiterungen für Chrome und Firefox, die Android-App, die Desktop-App für Windows, macOS und Linux, das iPhone-Skript, die optionale Gerätesynchronisation und diese Website.
+Gilt für alle Versionen von WISS Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.
 
 **Kurz gesagt**
 
-- Deine Schuldaten (Stundenplan, Noten, Absenzen) bleiben auf deinem Gerät. Wir bekommen sie nie zu sehen.
-- Die App sieht und speichert dein Passwort nicht. Du meldest dich direkt bei der WISS und Microsoft an.
-- Keine Werbung, kein Tracking, keine Analyse-Tools, kein Konto bei uns.
-- Die Synchronisation zwischen deinen Geräten ist freiwillig, ausgeschaltet, bis du sie einschaltest, und Ende-zu-Ende verschlüsselt.
+- Deine Schuldaten bleiben auf deinem Gerät.
+- Die App sieht und speichert dein Passwort nie.
+- Keine Werbung, kein Tracking, kein Konto bei uns.
+- Sync ist freiwillig und Ende-zu-Ende verschlüsselt.
 
-## Wer verantwortlich ist
+## Verantwortlich
 
-Severin Wehrle, Schweiz, Entwickler von WISS Stundenplan. Danylo Kovalenko arbeitet an der iPhone-Version mit. WISS Stundenplan ist ein unabhängiges, inoffizielles Projekt von Lernenden und hat keine Verbindung zur WISS oder zu Tocco.
+Severin Wehrle, Schweiz. Die iPhone-Version macht Danylo Kovalenko mit. Ein inoffizielles Projekt von Lernenden, ohne Verbindung zur WISS oder zu Tocco.
 
-Kontakt: über die Issues im öffentlichen GitHub-Projekt (https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues). Bitte dort keine Zugangsdaten oder persönlichen Schuldaten posten. Für Anliegen, die nicht öffentlich sein sollen, schreib im Issue, dass du privat Kontakt willst; du bekommst dann eine private Kontaktmöglichkeit.
+Kontakt: stundenplan@severinwehrle.dev
 
-## Was die App auf deinem Gerät speichert
+## Was gespeichert wird
 
-Wenn du dich anmeldest, lädt die App über wiss.tocco.ch genau die Daten, die du auch im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen und Präsenz, Raumbelegungen und deinen Benutzernamen. Dazu kommen deine eigenen Notizen, Korrekturen an Prüfungsterminen und deine Einstellungen.
+Die App lädt über wiss.tocco.ch dieselben Daten, die du im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen, Räume und deinen Benutzernamen. Dazu deine Notizen und Einstellungen.
 
-Alles davon bleibt lokal auf deinem Gerät:
-
-- Browser-Erweiterungen: im Speicher der Erweiterung in deinem Browserprofil.
-- Android-App: im privaten Speicher der App.
-- Desktop-App: in ihrem Datenordner (Windows: %APPDATA%\ch.wisstools.stundenplan, macOS: ~/Library/Application Support/ch.wisstools.stundenplan, Linux: ~/.local/share/ch.wisstools.stundenplan).
-- iPhone: im Speicher von Safari für wiss.tocco.ch; der Schlüssel für die Synchronisation im privaten Speicher der App «Userscripts».
-
-Die Daten werden nur gebraucht, um dir deinen Schulalltag anzuzeigen. Sie werden nicht an uns oder an Dritte geschickt, nicht ausgewertet und nicht verkauft.
+Alles bleibt auf deinem Gerät und wird nur dafür gebraucht, es dir anzuzeigen. Wir bekommen nichts davon, und nichts wird ausgewertet oder verkauft.
 
 ## Anmeldung
 
-Die Anmeldung läuft auf den offiziellen Seiten der WISS und von Microsoft. Die App benutzt danach die angemeldete Sitzung, so wie dein Browser, um deine Daten bei der WISS abzurufen. Sie liest, speichert oder tippt dein Passwort nie. In der Android- und der Desktop-App passiert die Anmeldung in einem versteckten Fenster; ein sichtbares Fenster erscheint nur, wenn Microsoft dich wirklich braucht.
+Du meldest dich auf den offiziellen Seiten der WISS und von Microsoft an. Die App nutzt danach die Sitzung wie ein Browser und kommt nie an dein Passwort.
 
-Beim Zurücksetzen der App wird deine Sitzung bei der WISS oder bei Microsoft nicht automatisch beendet. Abmelden kannst du dich jederzeit auf deren Seiten.
+## Verbindungen
 
-## Mit wem die App Verbindung aufnimmt
-
-Bei jeder Verbindung sieht der Betreiber technisch nötige Daten wie deine IP-Adresse und die Uhrzeit. Was diese Dienste damit machen, regeln ihre eigenen Datenschutzerklärungen.
+Jeder Dienst sieht dabei technische Daten wie deine IP-Adresse.
 
 | Dienst | Wofür |
 |---|---|
-| wiss.tocco.ch (WISS / Tocco) | deine Schuldaten, mit deiner Anmeldung |
-| login.microsoftonline.com (Microsoft) | die Anmeldung mit deinem WISS-Konto |
-| modulbaukasten.ch und ictbb.crm17.dynamics.com (ICT-Berufsbildung Schweiz) | öffentliche Beschreibungen der Lehrberufe und Module, ohne Bezug zu dir |
-| api.github.com und github.com (GitHub, USA) | nachsehen, ob es eine neue Version gibt, und Updates herunterladen |
-| stundenplan.severinwehrle.dev (auf GitHub Pages) | diese Website und die Paketquelle für Linux |
-| wiss-stundenplan-sync.onrender.com (Render, Rechenzentrum in Frankfurt) | nur wenn du die Synchronisation einschaltest, siehe unten |
+| wiss.tocco.ch | deine Schuldaten |
+| Microsoft | Anmeldung |
+| modulbaukasten.ch, ictbb.crm17.dynamics.com | öffentliche Modulbeschreibungen |
+| GitHub (USA) | Updates und diese Website |
+| Render (Frankfurt) | nur Sync, wenn du ihn einschaltest |
 
-Auf dem iPhone werden Updates des Skripts über die App «Userscripts» von GitHub geladen.
+## Benachrichtigungen
 
-## Erinnerungen und Benachrichtigungen
+Erinnerungen und Hinweise auf neue Noten berechnet die App auf deinem Gerät. Dafür bekommt kein Server deine Daten.
 
-Erinnerungen an Lektionen, Fristen für Absenzen und Hinweise auf neue Noten werden auf deinem Gerät aus deinen gespeicherten Daten berechnet und als normale Benachrichtigung deines Systems angezeigt. Es gibt keinen Push-Dienst und keinen Server, der dafür deine Daten bekommt. Neue Noten werden gemeldet, sobald die App deine Daten bei der WISS aktualisiert.
+## Sync (freiwillig)
 
-## Synchronisation zwischen deinen Geräten (freiwillig)
-
-Die Synchronisation ist ausgeschaltet, bis du sie in den Einstellungen einschaltest. Dann werden Notizen, Korrekturen an Prüfungsterminen und einige Einstellungen (zum Beispiel deine Lehre) zwischen deinen Geräten abgeglichen.
-
-- Die Daten werden auf deinem Gerät verschlüsselt, bevor sie es verlassen. Der Schlüssel bleibt auf deinen Geräten und im Wiederherstellungscode, den nur du hast.
-- Der Server (Render, Frankfurt) speichert nur die verschlüsselten Pakete, zufällige technische Kennungen und Verbindungsdaten. Er kann den Inhalt nicht lesen.
-- Die verschlüsselten Pakete werden zusätzlich in einem privaten GitHub-Repository gesichert.
-- Stundenplan, Noten, Absenzen, dein Benutzername und dein Login werden nie synchronisiert.
-- Ein neues Gerät verbindest du mit einem Code, der nur einmal und nur 10 Minuten gilt.
+- Aus, bis du ihn einschaltest.
+- Übertragen werden nur Notizen, Prüfungskorrekturen und einige Einstellungen. Nie Noten, Absenzen, Stundenplan oder Login.
+- Alles wird auf deinem Gerät verschlüsselt. Der Server und die Sicherung auf GitHub sehen nur verschlüsselte Daten.
+- Nach 365 Tagen ohne Sync wird dein Konto automatisch gelöscht. Unter «Sync» kannst du es jederzeit selbst löschen.
 
 ## Diese Website
 
-Die Website liegt auf GitHub Pages. GitHub speichert dabei technisch nötige Zugriffsdaten wie deine IP-Adresse, um die Seite auszuliefern und vor Missbrauch zu schützen. Die Website setzt keine Cookies, nutzt kein Tracking und lädt keine Schriften oder Skripte von Dritten. Um die aktuelle Versionsnummer und die Download-Links anzuzeigen, fragt dein Browser die öffentliche Schnittstelle von GitHub (api.github.com) ab.
+Läuft auf GitHub Pages. Keine Cookies, kein Tracking, keine Schriften oder Skripte von Dritten. Für die Versionsnummer fragt dein Browser bei GitHub nach.
 
-## Wie lange Daten gespeichert bleiben
+## Löschen
 
-- Auf deinem Gerät: bis du sie unter Einstellungen › Daten löschst, die App deinstallierst oder dein Browserprofil entfernst.
-- Synchronisation: Unter «Sync» kannst du die Daten auf dem Server löschen lassen. Konten, die 365 Tage lang nicht synchronisiert haben, werden automatisch gelöscht. Nur trennen oder deinstallieren löscht die Serverdaten nicht. Nach dem Löschen können verschlüsselte Kopien noch eine Weile in der Versionsgeschichte der GitHub-Sicherung bleiben; lesbar sind sie ohne deinen Schlüssel nicht.
-
-## Übermittlung ins Ausland
-
-GitHub ist ein Dienst aus den USA. Wenn die App nach Updates sucht oder du diese Website besuchst, gehen technische Verbindungsdaten an GitHub. Der Sync-Server läuft in der EU (Frankfurt). Schuldaten werden an keinen dieser Dienste übermittelt.
+Unter Einstellungen › Daten oder durch Deinstallieren ist alles auf deinem Gerät weg. Sync-Daten löschst du unter «Sync».
 
 ## Deine Rechte
 
-Du hast nach dem Schweizer Datenschutzgesetz (und, wo anwendbar, der DSGVO) das Recht auf Auskunft, Berichtigung und Löschung deiner Daten. Weil fast alles nur auf deinem Gerät liegt, kannst du es dort selbst einsehen und löschen. Für Fragen melde dich über den Kontakt oben. Du kannst dich auch beim Eidgenössischen Datenschutz- und Öffentlichkeitsbeauftragten (EDÖB) beschweren.
-
-## Demokonto
-
-Das Demokonto erzeugt frei erfundene Daten auf deinem Gerät. Es braucht kein WISS-Konto, lädt keine Schuldaten und kann nicht synchronisieren. «Demo beenden» löscht die erfundenen Daten wieder; echte Daten werden von der Demo nie überschrieben.
+Du hast das Recht auf Auskunft, Berichtigung und Löschung (Schweizer Datenschutzgesetz, wo anwendbar DSGVO). Schreib uns, oder wende dich an den EDÖB.
 
 ## Änderungen
 
-Wenn sich an der App etwas Wichtiges ändert, wird diese Erklärung angepasst. Das Datum oben zeigt den aktuellen Stand. Frühere Fassungen findest du in der Versionsgeschichte auf GitHub.
+Wenn sich Wichtiges ändert, passen wir diese Seite an. Das Datum oben zeigt den Stand.
