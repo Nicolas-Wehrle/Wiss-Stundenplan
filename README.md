@@ -30,7 +30,7 @@
   <a href="https://chromewebstore.google.com/detail/wiss-stundenplan/ljhofcahlfajoepidneficpnjckmcomc"><img alt="Chrome Web Store" src="https://img.shields.io/badge/Chrome-Web_Store-e2283f?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=16141d"></a>
   <a href="https://stundenplan.severinwehrle.dev/#download/firefox"><img alt="Firefox Add-on" src="https://img.shields.io/badge/Firefox-Add--on-e2283f?style=for-the-badge&logo=firefoxbrowser&logoColor=white&labelColor=16141d"></a>
   <a href="https://stundenplan.severinwehrle.dev/#download/android"><img alt="Android APK" src="https://img.shields.io/badge/Android-APK-e2283f?style=for-the-badge&logo=android&logoColor=white&labelColor=16141d"></a>
-  <a href="https://stundenplan.severinwehrle.dev/#download/iphone"><img alt="iPhone Safari" src="https://img.shields.io/badge/iPhone-Safari-e2283f?style=for-the-badge&logo=safari&logoColor=white&labelColor=16141d"></a>
+  <a href="https://apps.apple.com/ch/app/wiss-stundenplan/id6836220893"><img alt="iPhone App Store" src="https://img.shields.io/badge/iPhone-App_Store-e2283f?style=for-the-badge&logo=appstore&logoColor=white&labelColor=16141d"></a>
   <br>
   <a href="https://stundenplan.severinwehrle.dev/#download/windows"><img alt="Windows App" src="https://img.shields.io/badge/Windows-App-e2283f?style=for-the-badge&logo=windows&logoColor=white&labelColor=16141d"></a>
   <a href="https://stundenplan.severinwehrle.dev/#download/macos"><img alt="macOS App" src="https://img.shields.io/badge/macOS-App-e2283f?style=for-the-badge&logo=apple&logoColor=white&labelColor=16141d"></a>
@@ -80,7 +80,7 @@ Full details: [privacy policy](PRIVACY.md) and [terms of use](TERMS.md), also on
 
 ## Updates
 
-Every version updates itself: Chrome and Firefox in the background, Android, Windows, macOS and the Linux AppImage with an "Install" button in the app, Linux `.rpm`/`.deb` (installed with the command above) with your normal system updates, and iPhone through the Userscripts app.
+Every version updates itself: Chrome and Firefox in the background, Android, Windows, macOS and the Linux AppImage with an "Install" button in the app, Linux `.rpm`/`.deb` (installed with the command above) with your normal system updates, and iPhone through the App Store (or the Userscripts app, if you use the Safari userscript).
 
 ## Building it yourself
 
