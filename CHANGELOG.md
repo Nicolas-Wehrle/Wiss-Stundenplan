@@ -1,5 +1,6 @@
 ## Unreleased
 
+- iPhone: native app in the App Store by Danylo Kovalenko (`ios app/`), with home and lock-screen widgets and reminders. It runs the same app code. The website now links to it; the Safari userscript stays as an alternative.
 - Custom themes: one CSS file can restyle the whole app. Settings › Darstellung › Eigenes Theme: import a file or write one with a live preview, export, switch or delete. The active theme syncs to your other devices (up to 60 KB; all devices need this version). Nothing is loaded from the internet, a theme that hides the settings button is paused, and `?safe` starts without a theme. Theme rules win over the built-in styles on their own, so themes can also rebuild the layout. Four example themes in `themes/` (each with its own layout), guide on the website under Docs › Eigene Themes.
 - Android widget: with the look "App" it follows the custom theme's base style, accent colour and light/dark mode.
 - Demo account: changing a setting no longer resets the other settings.

@@ -15,7 +15,7 @@ An unofficial app for WISS students that shows the timetable, exams, grades, abs
 How it works in one sentence: it shows the last saved data immediately and fetches fresh data in the background, using the student's own login (Microsoft school account via the extranet), and keeps everything on the device.
 
 - **Author:** Severin Wehrle (student at WISS).
-- **Co-developer:** Danylo Kovalenko (https://danylokv.dev), GitHub collaborator. He builds and maintains the iPhone version (a native App Store app is the next step) and publishes it from his own Apple developer account. He asks Severin when he needs access to anything else (store accounts, signing keys).
+- **Co-developer:** Danylo Kovalenko (https://danylokv.dev), GitHub collaborator. He builds and maintains the native iPhone app (`ios app/`, in the App Store since November 2026: https://apps.apple.com/ch/app/wiss-stundenplan/id6836220893) and publishes it from his family's Apple developer account (seller shown as Viktoriia Kovalenko). He asks Severin when he needs access to anything else (store accounts, signing keys).
 - **Repo:** https://github.com/Nicolas-Wehrle/Wiss-Stundenplan (public, MIT license).
 - **Local folder:** `C:\Users\sever\Documents\Wiss-Stundenplan` (git repo). `C:\Users\sever\Documents\tocco chrome addon` is only a drop folder (git bundles, test builds, the signing key files).
 - **Not affiliated with WISS or Tocco.** It only uses each user's own login, the same way the extranet website does.
@@ -29,7 +29,8 @@ How it works in one sentence: it shows the last saved data immediately and fetch
 | Chrome / Edge / Brave | MV3 add-on in the Chrome Web Store (or "Load unpacked" from the zip) | Store updates it; unpacked installs get a banner with the download link |
 | Firefox (computer + Android 142+) | Self-hosted signed `.xpi` ("On your own" on addons.mozilla.org) | Automatic via `updates.json` in the repo |
 | Android app | Java app with a WebView that runs the add-on code | In-app: downloads the APK, opens the install screen |
-| iPhone | Safari userscript via the free "Userscripts" app | Userscripts app updates it from the repo (`@updateURL`) |
+| iPhone (App Store) | Native app in `ios app/` by Danylo: a `WKWebView` that runs the iPhone build (`iphone/WISS-Stundenplan.user.js`, copied to `ios app/Wiss_Stundenplan/Web/`), plus Swift for reminders, home/lock-screen widgets (iOS 17+) and the sync key in the Keychain | App Store. Danylo runs `ios app/scripts/update-web.sh <tag>` after each release, then uploads |
+| iPhone (Safari) | Safari userscript via the free "Userscripts" app, still offered as an alternative | Userscripts app updates it from the repo (`@updateURL`) |
 | Windows / macOS / Linux | Tauri 2 app (Rust) with the system web view, runs the add-on code like the Android app | In-app: downloads the signed update from the release (`latest.json`), installs, restarts. Linux `.rpm`/`.deb`: own package sources, normal system updates |
 
 All five run **the same web code** (`chrome addon/`). The others are built from it.
@@ -209,7 +210,9 @@ python iphone/build-ios.py "chrome addon" iphone
 4. Commit everything. `updates.json` and `iphone/WISS-Stundenplan.user.js` must end up on `main`.
 5. `scripts/publish-release.ps1` (PowerShell): pushes, creates the release as a draft with `release-notes/<version>.txt` and all files, and publishes it once every upload worked. File names must stay exactly as they are; the update links point to them.
 
-6. Publishing the release starts `.github/workflows/desktop.yml`: it builds Windows (`.exe`, `.msi`), macOS (`.dmg`) and Linux (`.deb`, `.rpm`, `.AppImage`) and uploads them plus `latest.json` (read by the desktop updater) to the same release. When it's done, `.github/workflows/pages.yml` republishes the website with the Linux package sources (`desktop app/linux-repos.sh`: dnf/zypper repo in `rpm/`, apt repo in `apt/`, both signed with `LINUX_REPO_GPG_KEY`). Linux `.deb`/`.rpm` installs get `window.__wissSystemUpdates` and show no update banner (`SYSTEM_UPDATES` in popup.js).
+6. Tell Danylo: he runs `ios app/scripts/update-web.sh v<version>` and uploads the iPhone app to App Store review.
+
+7. Publishing the release starts `.github/workflows/desktop.yml`: it builds Windows (`.exe`, `.msi`), macOS (`.dmg`) and Linux (`.deb`, `.rpm`, `.AppImage`) and uploads them plus `latest.json` (read by the desktop updater) to the same release. When it's done, `.github/workflows/pages.yml` republishes the website with the Linux package sources (`desktop app/linux-repos.sh`: dnf/zypper repo in `rpm/`, apt repo in `apt/`, both signed with `LINUX_REPO_GPG_KEY`). Linux `.deb`/`.rpm` installs get `window.__wissSystemUpdates` and show no update banner (`SYSTEM_UPDATES` in popup.js).
 
 Users on versions before 1.9.3 don't have auto-update and need one manual install.
 
@@ -235,7 +238,8 @@ Run Android tests on their own: when run right after a Gradle build, the "server
 
 ## 12. Known limits and decisions
 
-- **iPhone:** no notifications, no widget (Apple only allows that for App Store apps). Sign-in happens in the open page; Safari can't do Microsoft's sign-in in the background.
+- **iPhone Safari userscript:** no notifications, no widget (Apple only allows that for App Store apps; the App Store app has both). Sign-in happens in the open page; Safari can't do Microsoft's sign-in in the background.
+- **iPhone App Store app** lags behind until Danylo pulls a new release with `update-web.sh` (it pins a tag and applies one small patch). New web features (themes etc.) reach it only then.
 - **Chrome:** no automatic updates outside the Chrome Web Store.
 - **Exam dates** are estimates.
 - Styles named **Apple, Samsung, Nothing, GitHub** are only inspired by those designs, no logos. For a store release they may need renaming (e.g. "iOS-Stil").
