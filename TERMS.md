@@ -1,19 +1,19 @@
-# Terms of use: WISS Stundenplan
+# Terms of use: Extranet Stundenplan
 
 Last updated: 20 November 2026. Deutsche Fassung: [TERMS-de.md](TERMS-de.md).
 
-The rules for WISS Stundenplan, in every version.
+The rules for Extranet Stundenplan, in every version.
 
 **In short**
 
-- Free, unofficial, not made by WISS.
+- Free, unofficial, not made by your school.
 - The school's extranet always has the final say.
 - Only use it with your own account.
 - No guarantee, but we do our best.
 
 ## Who runs it
 
-The project is run by students. Not made by WISS, Tocco or Microsoft. "WISS" belongs to WISS and only describes what the app is for.
+The project is run by students. Not made by your school or by Microsoft.
 
 Contact: stundenplan@severinwehrle.dev
 
@@ -21,13 +21,13 @@ Contact: stundenplan@severinwehrle.dev
 
 - The school's official information is what counts.
 - Estimated exam dates, averages, the grade calculator and deadlines are aids. Check anything important in the extranet.
-- When WISS changes the extranet, the app may show wrong or no data for a while.
+- When the school changes the extranet, the app may show wrong or no data for a while.
 
 ## Fair use
 
-- Only sign in with your own WISS account.
+- Only sign in with your own school account.
 - Your school's rules apply here too.
-- Don't access other people's data, get around security measures or overload the WISS systems.
+- Don't access other people's data, get around security measures or overload the school's systems.
 
 ## Sync
 

@@ -68,10 +68,10 @@ h1 em { font-style: normal; color: #e2283f; }
 .brand svg { width: 52px; height: 52px; filter: drop-shadow(0 10px 18px rgba(216,31,60,.35)); }
 .foot { position: absolute; font-size: 13px; color: #9a96a2; }
 `;
-const win = (src, { x, y, w, d = false, url = 'WISS Stundenplan', rot = 0, crop } = {}) =>
+const win = (src, { x, y, w, d = false, url = 'Extranet Stundenplan', rot = 0, crop } = {}) =>
   `<div class="win${d ? ' d' : ''}" style="left:${x}px;top:${y}px;width:${w}px;${crop ? `height:${crop}px;` : ''}transform:rotate(${rot}deg)"><div class="bar"><i></i><i></i><i></i><span>${url}</span></div><img src="${shot(src)}"></div>`;
 const pop = (src, { x, y, w, rot = 0, crop }) => `<div class="pop" style="left:${x}px;top:${y}px;width:${w}px;${crop ? `height:${crop}px;` : ''}transform:rotate(${rot}deg)"><img src="${shot(src)}"></div>`;
-const brand = (size = 52) => `<div class="brand">${logo.replace('<svg ', `<svg style="width:${size}px;height:${size}px" `)}<span>WISS Stundenplan</span></div>`;
+const brand = (size = 52) => `<div class="brand">${logo.replace('<svg ', `<svg style="width:${size}px;height:${size}px" `)}<span>Extranet Stundenplan</span></div>`;
 
 const pick = (o, f) => Object.fromEntries(Object.entries(o).filter(([k]) => f(k)));
 function build(L) {
@@ -97,7 +97,7 @@ const slides = (dk) => {
     <div class="abs" style="left:72px;top:84px;width:500px">
       ${brand(48)}
       <h1 style="margin-top:42px;font-size:54px">${t(`Dein Stundenplan, <em>ein Klick</em> entfernt.`, `Your timetable, <em>one click</em> away.`)}</h1>
-      <p class="sub">${t(`Woche, Prüfungen, Noten, Absenzen und freie Räume aus dem WISS-Extranet. Sofort da, ohne Ladezeit.`, `Week, exams, grades, absences and free rooms from the WISS extranet. There instantly, no loading.`)}</p>
+      <p class="sub">${t(`Woche, Prüfungen, Noten, Absenzen und freie Räume aus dem Extranet. Sofort da, ohne Ladezeit.`, `Week, exams, grades, absences and free rooms from the extranet. There instantly, no loading.`)}</p>
       <ul class="checks">${t(`<li>Lädt sofort, aktualisiert im Hintergrund</li><li>Daten bleiben auf deinem Gerät</li><li>Kostenlos, ohne Werbung</li>`, `<li>Opens instantly, updates in the background</li><li>Your data stays on your device</li><li>Free, no ads</li>`)}</ul>
     </div>
     ${win(S('week'), { x: 600, y: 96, w: 880, d: dk })}
@@ -151,7 +151,7 @@ const slides = (dk) => {
     </div>
     <div class="card" style="left:790px;top:470px;width:410px;display:flex;gap:14px;align-items:flex-start;padding:16px">
       <div style="width:40px;height:40px;flex:none">${logo.replace('<svg ', '<svg style="width:40px;height:40px" ')}</div>
-      <div style="flex:1"><div class="faint" style="display:flex;justify-content:space-between;font-size:13px"><b class="ink">WISS Stundenplan</b>${t('jetzt', 'now')}</div>
+      <div style="flex:1"><div class="faint" style="display:flex;justify-content:space-between;font-size:13px"><b class="ink">Extranet Stundenplan</b>${t('jetzt', 'now')}</div>
       <div style="font-weight:700;margin-top:4px;font-size:16px">${esc(absTitle)}</div>
       <div class="mut" style="font-size:14.5px;margin-top:2px">${esc(absBody)}</div></div>
     </div>
@@ -187,7 +187,7 @@ return {
     <div class="blob" style="width:360px;height:360px;right:-150px;bottom:-190px"></div>
     <div class="abs" style="left:30px;top:32px">${logo.replace('<svg ', '<svg style="width:58px;height:58px;filter:drop-shadow(0 10px 18px rgba(216,31,60,.35))" ')}</div>
     <div class="abs" style="left:30px;top:112px;width:260px">
-      <div style="font:800 34px/1 B;letter-spacing:-.035em">WISS<br>Stundenplan</div>
+      <div style="font:800 34px/1 B;letter-spacing:-.035em">Extranet<br>Stundenplan</div>
       <div style="font-size:15px;color:#5d5964;margin-top:10px;line-height:1.35">Woche, Prüfungen, Noten.<br>Ein Klick entfernt.</div>
     </div>
     ${pop('popup', { x: 300, y: 40, w: 168, rot: 6 })}`],
@@ -222,7 +222,7 @@ return {
     <div class="abs" style="left:64px;top:60px;width:560px">
       ${brand(50)}
       <h1 style="font-size:58px;margin-top:34px">Your timetable,<br><em>instantly.</em></h1>
-      <p class="sub" style="font-size:19px;max-width:500px">Timetable, exams, grades, absences and free rooms from the WISS extranet. On every device.</p>
+      <p class="sub" style="font-size:19px;max-width:500px">Timetable, exams, grades, absences and free rooms from the extranet. On every device.</p>
     </div>
     ${win('week', { x: 700, y: 60, w: 700, rot: -3 })}
     ${pop('popup', { x: 650, y: 150, w: 250, rot: 4 })}`, '', 2],
@@ -231,7 +231,7 @@ return {
     <div class="abs" style="left:64px;top:60px;width:560px">
       ${brand(50)}
       <h1 style="font-size:58px;margin-top:34px">Your timetable,<br><em>instantly.</em></h1>
-      <p class="sub" style="font-size:19px;max-width:500px">Timetable, exams, grades, absences and free rooms from the WISS extranet. On every device.</p>
+      <p class="sub" style="font-size:19px;max-width:500px">Timetable, exams, grades, absences and free rooms from the extranet. On every device.</p>
     </div>
     ${win('week-dark', { x: 700, y: 60, w: 700, rot: -3, d: true })}
     ${pop('popup-dark', { x: 650, y: 150, w: 250, rot: 4 })}`, 'dark', 2],
@@ -243,6 +243,7 @@ const pages = { ...build('de'), ...build('en') };
 const browser = await chromium.launch({ executablePath: process.env.BROWSER_EXECUTABLE });
 try {
   for (const [file, [w, h, html, cls, scale = 1]] of Object.entries(pages)) {
+    if (process.env.ONLY && !file.includes(process.env.ONLY)) continue;   // e.g. ONLY=og.png
     const p = await browser.newPage({ viewport: { width: w, height: h }, deviceScaleFactor: scale });
     const tmp = path.join(here, '.page.html');
     fs.writeFileSync(tmp, `<!doctype html><meta charset="utf-8"><style>${CSS}</style><body class="${cls || ''}">${html}</body>`);

@@ -1,19 +1,19 @@
-# Nutzungsbedingungen: WISS Stundenplan
+# Nutzungsbedingungen: Extranet Stundenplan
 
 Stand: 20. November 2026. English version: [TERMS.md](TERMS.md).
 
-Die Regeln für WISS Stundenplan, in allen Versionen.
+Die Regeln für Extranet Stundenplan, in allen Versionen.
 
 **Kurz gesagt**
 
-- Kostenlos, inoffiziell, nicht von der WISS.
+- Kostenlos, inoffiziell, nicht von deiner Schule.
 - Massgebend ist immer das Extranet der Schule.
 - Nur mit deinem eigenen Konto benutzen.
 - Ohne Garantie, so gut wir können.
 
 ## Wer dahinter steht
 
-Das Projekt wird von Lernenden betrieben. Nicht von der WISS, Tocco oder Microsoft. «WISS» gehört der WISS und beschreibt nur, wofür die App ist.
+Das Projekt wird von Lernenden betrieben. Nicht von deiner Schule und nicht von Microsoft.
 
 Kontakt: stundenplan@severinwehrle.dev
 
@@ -21,13 +21,13 @@ Kontakt: stundenplan@severinwehrle.dev
 
 - Massgebend sind die offiziellen Angaben der Schule.
 - Geschätzte Prüfungstermine, Schnitt, Notenrechner und Fristen sind Hilfen. Prüf Wichtiges im Extranet.
-- Ändert die WISS das Extranet, kann die App zeitweise falsche oder keine Daten zeigen.
+- Ändert die Schule das Extranet, kann die App zeitweise falsche oder keine Daten zeigen.
 
 ## Faire Nutzung
 
-- Nur mit deinem eigenen WISS-Konto anmelden.
+- Nur mit deinem eigenen Schulkonto anmelden.
 - Die Regeln deiner Schule gelten auch hier.
-- Keine fremden Daten abrufen, keine Sicherheitsmassnahmen umgehen, die Systeme der WISS nicht überlasten.
+- Keine fremden Daten abrufen, keine Sicherheitsmassnahmen umgehen, die Systeme der Schule nicht überlasten.
 
 ## Sync
 

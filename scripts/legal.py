@@ -12,6 +12,7 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 UPDATED = {'de': '20. November 2026', 'en': '20 November 2026'}
 GH = 'https://github.com/Nicolas-Wehrle/Wiss-Stundenplan'
+NAME = 'Extranet Stundenplan'   # the app's public name
 MAIL = 'stundenplan@severinwehrle.dev'
 CONTACT = {
     'de': f'Kontakt: {MAIL}',
@@ -22,7 +23,7 @@ CONTACT = {
 PRIVACY = {
     'de': {
         'title': 'Datenschutzerklärung',
-        'intro': 'Gilt für alle Versionen von WISS Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.',
+        'intro': f'Gilt für alle Versionen von {NAME}: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.',
         'summary': [
             'Deine Schuldaten bleiben auf deinem Gerät.',
             'Die App sieht und speichert dein Passwort nie.',
@@ -31,20 +32,20 @@ PRIVACY = {
         ],
         'sections': [
             ('Wer dahinter steht', [
-                'Das Projekt wird von Lernenden betrieben. Es ist inoffiziell und hat keine Verbindung zur WISS oder zu Tocco.',
+                'Das Projekt wird von Lernenden betrieben. Es ist inoffiziell und nicht von deiner Schule.',
                 CONTACT['de'],
             ]),
             ('Was gespeichert wird', [
-                'Die App lädt über wiss.tocco.ch dieselben Daten, die du im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen, Räume und deinen Benutzernamen. Dazu deine Notizen und Einstellungen.',
+                'Die App lädt aus dem Extranet dieselben Daten, die du im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen, Räume und deinen Benutzernamen. Dazu deine Notizen und Einstellungen.',
                 'Alles bleibt auf deinem Gerät und wird nur dafür gebraucht, es dir anzuzeigen. Wir bekommen nichts davon, und nichts wird ausgewertet oder verkauft.',
             ]),
             ('Anmeldung', [
-                'Du meldest dich auf den offiziellen Seiten der WISS und von Microsoft an. Die App nutzt danach die Sitzung wie ein Browser und kommt nie an dein Passwort.',
+                'Du meldest dich auf den offiziellen Seiten deiner Schule und von Microsoft an. Die App nutzt danach die Sitzung wie ein Browser und kommt nie an dein Passwort.',
             ]),
             ('Verbindungen', [
                 'Jeder Dienst sieht dabei technische Daten wie deine IP-Adresse.',
                 {'head': ['Dienst', 'Wofür'], 'rows': [
-                    ['wiss.tocco.ch', 'deine Schuldaten'],
+                    ['Extranet deiner Schule', 'deine Schuldaten'],
                     ['Microsoft', 'Anmeldung'],
                     ['modulbaukasten.ch, ictbb.crm17.dynamics.com', 'öffentliche Modulbeschreibungen'],
                     ['GitHub (USA)', 'Updates und diese Website'],
@@ -76,7 +77,7 @@ PRIVACY = {
     },
     'en': {
         'title': 'Privacy policy',
-        'intro': 'Applies to every version of WISS Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, sync and the website.',
+        'intro': f'Applies to every version of {NAME}: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, sync and the website.',
         'summary': [
             'Your school data stays on your device.',
             'The app never sees or stores your password.',
@@ -85,20 +86,20 @@ PRIVACY = {
         ],
         'sections': [
             ('Who runs it', [
-                'The project is run by students. It is unofficial and has no connection to WISS or Tocco.',
+                'The project is run by students. It is unofficial and not made by your school.',
                 CONTACT['en'],
             ]),
             ('What is stored', [
-                'Through wiss.tocco.ch the app loads the same data you see in the extranet: timetable, exams, grades, absences, rooms and your username. Plus your notes and settings.',
+                'From the extranet the app loads the same data you see in the extranet: timetable, exams, grades, absences, rooms and your username. Plus your notes and settings.',
                 'All of it stays on your device and is only used to show it to you. We get none of it, and nothing is analysed or sold.',
             ]),
             ('Signing in', [
-                'You sign in on the official WISS and Microsoft pages. The app then uses the session like a browser and never gets your password.',
+                'You sign in on the official pages of your school and Microsoft. The app then uses the session like a browser and never gets your password.',
             ]),
             ('Connections', [
                 'Each service sees technical data such as your IP address.',
                 {'head': ['Service', 'What for'], 'rows': [
-                    ['wiss.tocco.ch', 'your school data'],
+                    ["your school's extranet", 'your school data'],
                     ['Microsoft', 'signing in'],
                     ['modulbaukasten.ch, ictbb.crm17.dynamics.com', 'public module descriptions'],
                     ['GitHub (USA)', 'updates and the website'],
@@ -133,27 +134,27 @@ PRIVACY = {
 TERMS = {
     'de': {
         'title': 'Nutzungsbedingungen',
-        'intro': 'Die Regeln für WISS Stundenplan, in allen Versionen.',
+        'intro': f'Die Regeln für {NAME}, in allen Versionen.',
         'summary': [
-            'Kostenlos, inoffiziell, nicht von der WISS.',
+            'Kostenlos, inoffiziell, nicht von deiner Schule.',
             'Massgebend ist immer das Extranet der Schule.',
             'Nur mit deinem eigenen Konto benutzen.',
             'Ohne Garantie, so gut wir können.',
         ],
         'sections': [
             ('Wer dahinter steht', [
-                'Das Projekt wird von Lernenden betrieben. Nicht von der WISS, Tocco oder Microsoft. «WISS» gehört der WISS und beschreibt nur, wofür die App ist.',
+                'Das Projekt wird von Lernenden betrieben. Nicht von deiner Schule und nicht von Microsoft.',
                 CONTACT['de'],
             ]),
             ('Angaben ohne Gewähr', [
                 ['Massgebend sind die offiziellen Angaben der Schule.',
                  'Geschätzte Prüfungstermine, Schnitt, Notenrechner und Fristen sind Hilfen. Prüf Wichtiges im Extranet.',
-                 'Ändert die WISS das Extranet, kann die App zeitweise falsche oder keine Daten zeigen.'],
+                 'Ändert die Schule das Extranet, kann die App zeitweise falsche oder keine Daten zeigen.'],
             ]),
             ('Faire Nutzung', [
-                ['Nur mit deinem eigenen WISS-Konto anmelden.',
+                ['Nur mit deinem eigenen Schulkonto anmelden.',
                  'Die Regeln deiner Schule gelten auch hier.',
-                 'Keine fremden Daten abrufen, keine Sicherheitsmassnahmen umgehen, die Systeme der WISS nicht überlasten.'],
+                 'Keine fremden Daten abrufen, keine Sicherheitsmassnahmen umgehen, die Systeme der Schule nicht überlasten.'],
             ]),
             ('Sync', [
                 'Freiwillig und ohne Garantie. Bewahr deinen Wiederherstellungscode auf: Ohne ihn und ohne verbundenes Gerät kann niemand deine Sync-Daten wiederherstellen, auch wir nicht.',
@@ -174,27 +175,27 @@ TERMS = {
     },
     'en': {
         'title': 'Terms of use',
-        'intro': 'The rules for WISS Stundenplan, in every version.',
+        'intro': f'The rules for {NAME}, in every version.',
         'summary': [
-            'Free, unofficial, not made by WISS.',
+            'Free, unofficial, not made by your school.',
             'The school\'s extranet always has the final say.',
             'Only use it with your own account.',
             'No guarantee, but we do our best.',
         ],
         'sections': [
             ('Who runs it', [
-                'The project is run by students. Not made by WISS, Tocco or Microsoft. "WISS" belongs to WISS and only describes what the app is for.',
+                'The project is run by students. Not made by your school or by Microsoft.',
                 CONTACT['en'],
             ]),
             ('No guarantee for the information', [
                 ['The school\'s official information is what counts.',
                  'Estimated exam dates, averages, the grade calculator and deadlines are aids. Check anything important in the extranet.',
-                 'When WISS changes the extranet, the app may show wrong or no data for a while.'],
+                 'When the school changes the extranet, the app may show wrong or no data for a while.'],
             ]),
             ('Fair use', [
-                ['Only sign in with your own WISS account.',
+                ['Only sign in with your own school account.',
                  'Your school\'s rules apply here too.',
-                 'Don\'t access other people\'s data, get around security measures or overload the WISS systems.'],
+                 'Don\'t access other people\'s data, get around security measures or overload the school\'s systems.'],
             ]),
             ('Sync', [
                 'Optional and without guarantee. Keep your recovery code: without it and without a linked device, nobody can recover your sync data, not even us.',
@@ -221,7 +222,7 @@ URL_RE = re.compile(r'(https?://[^\s)]+)')
 
 def md(doc, lang, other_lang_file, other_label):
     upd = 'Stand' if lang == 'de' else 'Last updated'
-    out = [f'# {doc["title"]}: WISS Stundenplan', '', f'{upd}: {UPDATED[lang]}. {other_label}: [{other_lang_file}]({other_lang_file}).', '', doc['intro'], '']
+    out = [f'# {doc["title"]}: {NAME}', '', f'{upd}: {UPDATED[lang]}. {other_label}: [{other_lang_file}]({other_lang_file}).', '', doc['intro'], '']
     out += ['**' + ('Kurz gesagt' if lang == 'de' else 'In short') + '**', ''] + [f'- {s}' for s in doc['summary']] + ['']
     for h, blocks in doc['sections']:
         out += [f'## {h}', '']

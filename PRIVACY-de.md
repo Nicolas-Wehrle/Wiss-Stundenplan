@@ -1,8 +1,8 @@
-# Datenschutzerklärung: WISS Stundenplan
+# Datenschutzerklärung: Extranet Stundenplan
 
 Stand: 20. November 2026. English version: [PRIVACY.md](PRIVACY.md).
 
-Gilt für alle Versionen von WISS Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.
+Gilt für alle Versionen von Extranet Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.
 
 **Kurz gesagt**
 
@@ -13,19 +13,19 @@ Gilt für alle Versionen von WISS Stundenplan: Chrome, Firefox, Android, Windows
 
 ## Wer dahinter steht
 
-Das Projekt wird von Lernenden betrieben. Es ist inoffiziell und hat keine Verbindung zur WISS oder zu Tocco.
+Das Projekt wird von Lernenden betrieben. Es ist inoffiziell und nicht von deiner Schule.
 
 Kontakt: stundenplan@severinwehrle.dev
 
 ## Was gespeichert wird
 
-Die App lädt über wiss.tocco.ch dieselben Daten, die du im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen, Räume und deinen Benutzernamen. Dazu deine Notizen und Einstellungen.
+Die App lädt aus dem Extranet dieselben Daten, die du im Extranet siehst: Stundenplan, Prüfungen, Noten, Absenzen, Räume und deinen Benutzernamen. Dazu deine Notizen und Einstellungen.
 
 Alles bleibt auf deinem Gerät und wird nur dafür gebraucht, es dir anzuzeigen. Wir bekommen nichts davon, und nichts wird ausgewertet oder verkauft.
 
 ## Anmeldung
 
-Du meldest dich auf den offiziellen Seiten der WISS und von Microsoft an. Die App nutzt danach die Sitzung wie ein Browser und kommt nie an dein Passwort.
+Du meldest dich auf den offiziellen Seiten deiner Schule und von Microsoft an. Die App nutzt danach die Sitzung wie ein Browser und kommt nie an dein Passwort.
 
 ## Verbindungen
 
@@ -33,7 +33,7 @@ Jeder Dienst sieht dabei technische Daten wie deine IP-Adresse.
 
 | Dienst | Wofür |
 |---|---|
-| wiss.tocco.ch | deine Schuldaten |
+| Extranet deiner Schule | deine Schuldaten |
 | Microsoft | Anmeldung |
 | modulbaukasten.ch, ictbb.crm17.dynamics.com | öffentliche Modulbeschreibungen |
 | GitHub (USA) | Updates und diese Website |

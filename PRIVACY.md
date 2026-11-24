@@ -1,8 +1,8 @@
-# Privacy policy: WISS Stundenplan
+# Privacy policy: Extranet Stundenplan
 
 Last updated: 20 November 2026. Deutsche Fassung: [PRIVACY-de.md](PRIVACY-de.md).
 
-Applies to every version of WISS Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, sync and the website.
+Applies to every version of Extranet Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, sync and the website.
 
 **In short**
 
@@ -13,19 +13,19 @@ Applies to every version of WISS Stundenplan: Chrome, Firefox, Android, Windows,
 
 ## Who runs it
 
-The project is run by students. It is unofficial and has no connection to WISS or Tocco.
+The project is run by students. It is unofficial and not made by your school.
 
 Contact: stundenplan@severinwehrle.dev
 
 ## What is stored
 
-Through wiss.tocco.ch the app loads the same data you see in the extranet: timetable, exams, grades, absences, rooms and your username. Plus your notes and settings.
+From the extranet the app loads the same data you see in the extranet: timetable, exams, grades, absences, rooms and your username. Plus your notes and settings.
 
 All of it stays on your device and is only used to show it to you. We get none of it, and nothing is analysed or sold.
 
 ## Signing in
 
-You sign in on the official WISS and Microsoft pages. The app then uses the session like a browser and never gets your password.
+You sign in on the official pages of your school and Microsoft. The app then uses the session like a browser and never gets your password.
 
 ## Connections
 
@@ -33,7 +33,7 @@ Each service sees technical data such as your IP address.
 
 | Service | What for |
 |---|---|
-| wiss.tocco.ch | your school data |
+| your school's extranet | your school data |
 | Microsoft | signing in |
 | modulbaukasten.ch, ictbb.crm17.dynamics.com | public module descriptions |
 | GitHub (USA) | updates and the website |
