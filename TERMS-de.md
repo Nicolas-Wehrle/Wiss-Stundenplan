@@ -11,9 +11,9 @@ Die Regeln für WISS Stundenplan, in allen Versionen.
 - Nur mit deinem eigenen Konto benutzen.
 - Ohne Garantie, so gut wir können.
 
-## Wer anbietet
+## Wer dahinter steht
 
-Severin Wehrle (Schweiz), die iPhone-Version zusammen mit Danylo Kovalenko. Nicht von der WISS, Tocco oder Microsoft. «WISS» gehört der WISS und beschreibt nur, wofür die App ist.
+Das Projekt wird von Lernenden betrieben. Nicht von der WISS, Tocco oder Microsoft. «WISS» gehört der WISS und beschreibt nur, wofür die App ist.
 
 Kontakt: stundenplan@severinwehrle.dev
 

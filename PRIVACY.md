@@ -11,9 +11,9 @@ Applies to every version of WISS Stundenplan: Chrome, Firefox, Android, Windows,
 - No ads, no tracking, no account with us.
 - Sync is optional and end-to-end encrypted.
 
-## Who is responsible
+## Who runs it
 
-Severin Wehrle, Switzerland. Danylo Kovalenko works on the iPhone version. An unofficial project by students, with no connection to WISS or Tocco.
+The project is run by students. It is unofficial and has no connection to WISS or Tocco.
 
 Contact: stundenplan@severinwehrle.dev
 

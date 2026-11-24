@@ -11,9 +11,9 @@ The rules for WISS Stundenplan, in every version.
 - Only use it with your own account.
 - No guarantee, but we do our best.
 
-## Who provides it
+## Who runs it
 
-Severin Wehrle (Switzerland), the iPhone version together with Danylo Kovalenko. Not made by WISS, Tocco or Microsoft. "WISS" belongs to WISS and only describes what the app is for.
+The project is run by students. Not made by WISS, Tocco or Microsoft. "WISS" belongs to WISS and only describes what the app is for.
 
 Contact: stundenplan@severinwehrle.dev
 

@@ -30,8 +30,8 @@ PRIVACY = {
             'Sync ist freiwillig und Ende-zu-Ende verschlüsselt.',
         ],
         'sections': [
-            ('Verantwortlich', [
-                'Severin Wehrle, Schweiz. Die iPhone-Version macht Danylo Kovalenko mit. Ein inoffizielles Projekt von Lernenden, ohne Verbindung zur WISS oder zu Tocco.',
+            ('Wer dahinter steht', [
+                'Das Projekt wird von Lernenden betrieben. Es ist inoffiziell und hat keine Verbindung zur WISS oder zu Tocco.',
                 CONTACT['de'],
             ]),
             ('Was gespeichert wird', [
@@ -84,8 +84,8 @@ PRIVACY = {
             'Sync is optional and end-to-end encrypted.',
         ],
         'sections': [
-            ('Who is responsible', [
-                'Severin Wehrle, Switzerland. Danylo Kovalenko works on the iPhone version. An unofficial project by students, with no connection to WISS or Tocco.',
+            ('Who runs it', [
+                'The project is run by students. It is unofficial and has no connection to WISS or Tocco.',
                 CONTACT['en'],
             ]),
             ('What is stored', [
@@ -141,8 +141,8 @@ TERMS = {
             'Ohne Garantie, so gut wir können.',
         ],
         'sections': [
-            ('Wer anbietet', [
-                'Severin Wehrle (Schweiz), die iPhone-Version zusammen mit Danylo Kovalenko. Nicht von der WISS, Tocco oder Microsoft. «WISS» gehört der WISS und beschreibt nur, wofür die App ist.',
+            ('Wer dahinter steht', [
+                'Das Projekt wird von Lernenden betrieben. Nicht von der WISS, Tocco oder Microsoft. «WISS» gehört der WISS und beschreibt nur, wofür die App ist.',
                 CONTACT['de'],
             ]),
             ('Angaben ohne Gewähr', [
@@ -182,8 +182,8 @@ TERMS = {
             'No guarantee, but we do our best.',
         ],
         'sections': [
-            ('Who provides it', [
-                'Severin Wehrle (Switzerland), the iPhone version together with Danylo Kovalenko. Not made by WISS, Tocco or Microsoft. "WISS" belongs to WISS and only describes what the app is for.',
+            ('Who runs it', [
+                'The project is run by students. Not made by WISS, Tocco or Microsoft. "WISS" belongs to WISS and only describes what the app is for.',
                 CONTACT['en'],
             ]),
             ('No guarantee for the information', [

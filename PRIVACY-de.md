@@ -11,9 +11,9 @@ Gilt für alle Versionen von WISS Stundenplan: Chrome, Firefox, Android, Windows
 - Keine Werbung, kein Tracking, kein Konto bei uns.
 - Sync ist freiwillig und Ende-zu-Ende verschlüsselt.
 
-## Verantwortlich
+## Wer dahinter steht
 
-Severin Wehrle, Schweiz. Die iPhone-Version macht Danylo Kovalenko mit. Ein inoffizielles Projekt von Lernenden, ohne Verbindung zur WISS oder zu Tocco.
+Das Projekt wird von Lernenden betrieben. Es ist inoffiziell und hat keine Verbindung zur WISS oder zu Tocco.
 
 Kontakt: stundenplan@severinwehrle.dev
 
