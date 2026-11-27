@@ -100,9 +100,9 @@ const slides = (dk) => {
       <p class="sub">${t(`Woche, Prüfungen, Noten, Absenzen und freie Räume aus dem Extranet. Sofort da, ohne Ladezeit.`, `Week, exams, grades, absences and free rooms from the extranet. There instantly, no loading.`)}</p>
       <ul class="checks">${t(`<li>Lädt sofort, aktualisiert im Hintergrund</li><li>Daten bleiben auf deinem Gerät</li><li>Kostenlos, ohne Werbung</li>`, `<li>Opens instantly, updates in the background</li><li>Your data stays on your device</li><li>Free, no ads</li>`)}</ul>
     </div>
-    ${win(S('week'), { x: 600, y: 96, w: 880, d: dk })}
-    ${pop(S('popup'), { x: 540, y: 300, w: 330 })}
-    <div class="pill" style="left:808px;top:258px"><b>↗</b>${t(`Ein Klick in der Symbolleiste`, `One click in the toolbar`)}</div>
+    ${win(S('week'), { x: 660, y: 120, w: 860, d: dk })}
+    ${pop(S('popup'), { x: 580, y: 250, w: 320 })}
+    <div class="pill" style="left:930px;top:54px"><b>↗</b>${t(`Ein Klick in der Symbolleiste`, `One click in the toolbar`)}</div>
     ${note}`, cls],
 
   [key(2, 'exams')]: [1280, 800, `
@@ -161,11 +161,12 @@ const slides = (dk) => {
   [key(5, de ? 'rooms-dark' : 'rooms')]: [1280, 800, `
     <div class="glow" style="width:1000px;height:1000px;right:-300px;top:-380px"></div>
     <div class="abs" style="left:72px;top:110px;width:430px">
-      <span class="eye">${de ? 'Freie Räume · Dunkelmodus' : 'Free rooms'}</span>
+      <span class="eye">${t('Freie Räume · Dein Look', 'Free rooms · Your look')}</span>
       <h1>${t(`Freien Raum finden, <em>in Sekunden.</em>`, `Find a free room <em>in seconds.</em>`)}</h1>
-      <p class="sub">${t(`Schieb die Zeit und sieh, welche Zimmer frei sind. Hell, dunkel oder automatisch, mit deiner Farbe.`, `Slide the time and see which rooms are free. Light, dark or automatic, in your colour.`)}</p>
-      <div style="display:flex;gap:10px;margin-top:30px">${['#e2283f', '#2f6fed', '#1f8a55', '#8b5cf6', '#f59e0b'].map((c, i) => `<i style="width:34px;height:34px;border-radius:50%;background:${c};box-shadow:${i ? 'none' : '0 0 0 3px var(--bg), 0 0 0 5px #e2283f'}"></i>`).join('')}</div>
+      <p class="sub">${t(`Schieb die Zeit und sieh, welche Zimmer frei sind. Hell oder dunkel, in 9 Stilen oder deinem eigenen Theme.`, `Slide the time and see which rooms are free. Light or dark, in 9 styles or your own theme.`)}</p>
     </div>
+    <div class="abs" style="left:72px;top:474px;font:600 13px G;letter-spacing:.08em;text-transform:uppercase;color:#e2283f">${t('9 Stile und eigene Themes', '9 styles and custom themes')}</div>
+    ${['neon', 'pastel', 'terminal'].map((st, i) => pop('popup-' + st, { x: 72 + i * 128, y: 506, w: 116, crop: 168, rot: [-3, 0, 3][i] })).join('')}
     ${win(S('rooms'), { x: 560, y: 100, w: 860, d: dk })}
     <div class="card" style="left:480px;top:520px;width:330px">
       <div class="k">${t('Frei um ', 'Free at ')}${esc(facts.rooms.time)}</div>
@@ -187,7 +188,7 @@ return {
     <div class="blob" style="width:360px;height:360px;right:-150px;bottom:-190px"></div>
     <div class="abs" style="left:30px;top:32px">${logo.replace('<svg ', '<svg style="width:58px;height:58px;filter:drop-shadow(0 10px 18px rgba(216,31,60,.35))" ')}</div>
     <div class="abs" style="left:30px;top:112px;width:260px">
-      <div style="font:800 34px/1 B;letter-spacing:-.035em">Extranet<br>Stundenplan</div>
+      <div style="font:800 34px/1 B;letter-spacing:-.035em">Erix<br>Stundenplan</div>
       <div style="font-size:15px;color:#5d5964;margin-top:10px;line-height:1.35">Woche, Prüfungen, Noten.<br>Ein Klick entfernt.</div>
     </div>
     ${pop('popup', { x: 300, y: 40, w: 168, rot: 6 })}`],

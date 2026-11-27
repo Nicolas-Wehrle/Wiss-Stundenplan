@@ -3,7 +3,7 @@
 ## Fertige Dateien
 - `release/v1.14.0/WISS-Stundenplan-Chrome-Web-Store.zip` (von `scripts/release.py` erstellt): ausschliesslich die Chrome-Erweiterung, ohne Entwicklungsschlüssel; manifest.json liegt direkt im ZIP.
 - `store-icon-128.png`: bestehendes Projektlogo mit transparentem Rand.
-- `screenshot-1…5-*-1280x800.png`: fünf gestaltete Store-Bilder (Übersicht, Prüfungen, Noten, Absenzen, Räume im Dunkelmodus), aufgebaut aus echten Screenshots der Erweiterung mit fiktiven Demodaten. In dieser Reihenfolge hochladen.
+- `screenshot-1…5-*-1280x800.png`: fünf gestaltete Store-Bilder (Übersicht, Prüfungen, Noten, Absenzen, Räume im Dunkelmodus mit drei Stilen), aufgebaut aus echten Screenshots der Erweiterung mit fiktiven Demodaten. In dieser Reihenfolge hochladen.
 - `promo-small-440x280.png`: kleine Werbekachel.
 - `promo-marquee-1400x560.png`: grosse Werbekachel.
 - `beschreibung-de.txt`: fertige ausführliche Beschreibung.

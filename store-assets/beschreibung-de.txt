@@ -1,20 +1,26 @@
-Erix Stundenplan (inoffiziell): dein Stundenplan direkt im Browser und ohne langes Warten. Die zuletzt geladenen Daten erscheinen sofort und werden im Hintergrund aktualisiert.
+Erix Stundenplan zeigt dir deinen Stundenplan mit einem Klick, statt dass du auf das langsame Extranet wartest. Die zuletzt geladenen Daten sind sofort da, frische Daten kommen im Hintergrund.
 
 Alles Wichtige für deinen Schulalltag:
-• Wochenübersicht mit Unterrichtszeiten und Räumen
-• Prüfungen und Leistungsbeurteilungen im Blick; geschätzte Termine sind gekennzeichnet
-• Notenübersicht mit Durchschnitt und Notenrechner
-• Absenzen, Präsenz und Hinweise auf offene Entschuldigungen
-• Freie Räume und verfügbare Raumpläne
-• Eigene Notizen zu Lektionen
-• Deutsch und Englisch sowie verschiedene Designs mit hellem und dunklem Modus
+• Woche mit Lektionen, Zeiten, Räumen und Lehrpersonen
+• Prüfungen im Blick, mit Countdown; geschätzte Termine sind gekennzeichnet und lassen sich korrigieren
+• Noten mit Durchschnitt, Verlauf und Rechner («Was brauche ich für eine 5?»)
+• Absenzen, Präsenz und offene Entschuldigungen mit Frist
+• Freie Räume zu jeder Zeit, mit Raumplänen
+• Eigene Notizen zu jeder Lektion
+• Grosse Ansicht im eigenen Tab
+• Deutsch und Englisch, 9 Stile mit hellem und dunklem Modus
 
-Mit deinem Schulkonto anmelden und loslegen. Die Erweiterung verwendet deine bestehende Extranet-Sitzung. Dein Passwort wird von der Erweiterung weder eingegeben noch gespeichert.
+Neu in 1.14.0:
+• Eigene Themes: Eine CSS-Datei ändert das ganze Aussehen, mit Vorschau beim Schreiben
+• Keine Pop-ups mehr: Musst du dich neu anmelden, steht das oben in der App. Ein Klick auf ↻ öffnet die Anmeldung.
+• Ohne Internet oder bei schlechter Verbindung zeigt die App das an und lädt neu, sobald du wieder online bist
 
-Du möchtest die Funktionen zuerst ausprobieren? Wähle bei der Einrichtung «Demokonto testen». Dafür brauchst du keinen Schul-Login. Alle angezeigten Demoangaben sind frei erfunden.
+Anmelden: Du meldest dich einmal mit deinem Schulkonto an. Die Erweiterung nutzt deine bestehende Extranet-Sitzung. Sie tippt nie ein Passwort ein und speichert keins.
 
-Deine Schuldaten werden lokal auf deinem Gerät gespeichert. Die optionale Gerätesynchronisation überträgt nur Notizen, Prüfungskorrekturen und ausgewählte Einstellungen Ende-zu-Ende-verschlüsselt. Stundenplan, Noten, Absenzen und Zugangsdaten werden nicht an den Sync-Server übertragen. Keine Werbung und kein Tracking.
+Zuerst ausprobieren? Wähle bei der Einrichtung «Demokonto testen». Dafür brauchst du keinen Schul-Login, alle Daten sind erfunden.
 
-Weitere Versionen für Firefox, Windows, macOS, Linux, Android und das iPhone findest du auf der Website: https://stundenplan.severinwehrle.dev
+Deine Daten: Stundenplan, Noten, Absenzen und Notizen werden nur in deinem Browser gespeichert. Keine Werbung, kein Tracking. Die Geräte-Synchronisation ist freiwillig und aus. Schaltest du sie ein, gehen nur Notizen, Prüfungskorrekturen und einige Einstellungen Ende-zu-Ende-verschlüsselt auf den Server, nie deine Schuldaten oder Zugangsdaten.
 
-Hinweis: Dies ist ein inoffizielles Schülerprojekt. Es steht in keiner Verbindung zu deiner Schule oder zum Hersteller des Extranets und wurde von diesen weder entwickelt noch unterstützt. Für echte Schuldaten benötigst du dein eigenes Schulkonto. Die Demo enthält ausschliesslich fiktive Daten. Massgeblich bleiben die Angaben im offiziellen Extranet.
+Kostenlos und Open Source. Versionen für Firefox, Windows, macOS, Linux, Android und iPhone: https://stundenplan.severinwehrle.dev
+
+Hinweis: Erix Stundenplan ist ein inoffizielles Schülerprojekt. Es ist nicht von deiner Schule oder vom Hersteller des Extranets und wird von diesen nicht unterstützt. Für echte Schuldaten brauchst du dein eigenes Schulkonto. Massgebend sind immer die Angaben im Extranet.

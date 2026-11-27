@@ -57,6 +57,14 @@ try {
     await q.locator('#tabs button[data-tab=week]').click(); await q.waitForTimeout(700);
     await q.screenshot({ path: path.join(out, 'popup' + sfx + '.png') });
   }
+  // a few of the built-in styles, for the "your look" picture
+  for (const [style, mode] of [['neon', 'dark'], ['pastel', 'light'], ['terminal', 'dark']]) {
+    await worker.evaluate(async (s) => { const { prefs } = await chrome.storage.local.get('prefs'); await chrome.storage.local.set({ prefs: { ...(prefs || {}), style: s } }); }, style);
+    await q.emulateMedia({ colorScheme: mode });
+    await q.goto(`chrome-extension://${id}/popup.html`); await q.addStyleTag({ content: hide });
+    await q.locator('#tabs button[data-tab=week]').click(); await q.waitForTimeout(700);
+    await q.screenshot({ path: path.join(out, 'popup-' + style + '.png') });
+  }
   console.log('shots in', out);
 } finally { await ctx.close(); }
 }
