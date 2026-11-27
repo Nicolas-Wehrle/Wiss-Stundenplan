@@ -5,7 +5,7 @@ fn main() {
         "tab_create", "tab_info", "tab_update", "tab_show", "tab_remove", "tab_exec",
         "tab_result", "tab_message",
         "http", "notify", "schedule", "set_lang", "widget", "open_external", "install_update",
-        "app_ready", "mini_data", "mini_close",
+        "app_ready", "mini_data", "mini_close", "sign_out",
     ])))
     .expect("tauri build script failed");
 }

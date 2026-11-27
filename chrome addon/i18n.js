@@ -210,7 +210,7 @@
     // header / tabs / status
     'Stundenplan': 'Timetable', 'Woche': 'Week', 'Prüfungen': 'Exams', 'Noten': 'Grades', 'Absenzen': 'Absences', 'Räume': 'Rooms',
     'Einstellungen': 'Settings', 'Jetzt aktualisieren': 'Refresh now', 'Gross im Tab öffnen': 'Open in a big tab',
-    'Aktualisiere…': 'Updating…', 'Anmeldung nötig': 'Sign-in needed', 'Fehler': 'Error', 'Noch keine Daten': 'No data yet',
+    'Aktualisiere…': 'Updating…', 'Anmeldung nötig': 'Sign-in needed', 'Anmeldung nötig · ↻ zum Anmelden': 'Sign-in needed · ↻ to sign in', 'Kein Internet': 'No internet', 'Schlechte Verbindung': 'Bad connection', 'Fehler': 'Error', 'Noch keine Daten': 'No data yet',
     ' (dauert länger, tippe ↻ zum Neustarten)': ' (taking longer, tap ↻ to restart)',
     'Du musst dich kurz neu anmelden.': 'You need to sign in again.',
     'Anmelden': 'Sign in', 'Später': 'Later', 'Konnte nicht aktualisieren:': 'Could not update:',
@@ -326,6 +326,7 @@
     [/\bin (\d+) (Tag|Tagen)\b/g, (m, n) => `in ${n} ${plural(n, 'day', 'days')}`],
     [/\bAktualisiert gerade eben\b/g, 'Updated just now'], [/\bgerade eben\b/g, 'just now'], [/\bAktualisiert\b/g, 'Updated'], [/\bgestern\b/g, 'yesterday'],
     [/\bheute\b/g, 'today'], [/\bmorgen\b/g, 'tomorrow'], [/\bübermorgen\b/g, 'in 2 days'],
+    [/^Kein Internet\b/g, 'No internet'], [/^Schlechte Verbindung\b/g, 'Bad connection'],
     [/\bStand\b/g, 'as of'],
     [/^JETZT · NOCH (.+)$/g, 'NOW · $1 LEFT'], [/^Jetzt · noch (.+)$/g, 'Now · $1 left'], [/\bJETZT\b/g, 'NOW'], [/\bNÄCHSTE\b/g, 'NEXT'], [/\bDANACH\b/g, 'AFTER'],
     [/\bnoch (\d+) Tage?\b/g, (m, n) => `${n} ${plural(n, 'day', 'days')} left`], [/\bnoch 1 Tag\b/g, '1 day left'],

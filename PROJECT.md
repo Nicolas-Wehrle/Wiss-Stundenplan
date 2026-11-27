@@ -156,11 +156,15 @@ Users sign in with their Microsoft school account through the extranet. The app 
 - If not: opens `/extranet/#wiss-login` out of sight (browser: minimized window; Android: a WebView *behind* the app; iPhone: the page itself navigates).
 - `content.js` sees the `#wiss-login` marker and presses "WISS Office 365" (at most twice per 2 minutes, so it can't loop). A fallback presses it from the background too.
 - If the page doesn't move on: reload with a fresh address (`?wl=<timestamp>#wiss-login`). Only changing the `#` part does not reload, which was a real bug.
-- If Microsoft waits for input for 12 s: Android brings the hidden screen to the front; browsers show the "Anmelden" banner. Android also brings it to the front if the background sign-in takes over 15 s.
+- If Microsoft waits for input for 12 s (or the 30 s run out): the page stays open but hidden (`pendingLogin`), on every platform. **Nothing pops up by itself.** The status line says "Anmeldung nötig · ↻ zum Anmelden"; ↻ sends `refresh` with `interactive: true`, which shows the waiting page (`revealLogin`) or opens a new one (`openLoginPage`). For a minute after ↻ (`loginWanted`), a sign-in that needs you shows itself.
+- Apps: `__appTabClosed(id)` sends `tabClosed`; only pages you could see (`shownTabs`) trigger a new refresh, so closing hidden pages doesn't start another sign-in.
+- iPhone is always in quiet mode (a sign-in there means leaving the page), so it only signs in after ↻.
+- No connection: `netProblem()` turns a failed or timed-out session check into status `offline` (`error: 'slow'` for timeouts), shown as "Kein Internet" / "Schlechte Verbindung", without trying to sign in. The popup reloads quietly on the `online` event.
+- "Alles löschen" (`deviceSyncReset`) calls `__wissApp.signOut()`: Android `Host.signOut()` (all cookies + the saved session copy), desktop `sign_out` (closes the sign-in windows, deletes all cookies).
 - One last session check before asking the user.
 - **Android:** session cookies are saved on pause and restored on start, but only if younger than 25 minutes.
 
-Key constants: `LOGIN_TIMEOUT_MS = 30 s`, `NEEDS_USER_MS = 12 s`, `APP_SHOW_AFTER_MS = 15 s`, `MIN_GAP_MS = 60 s`, `REFRESH_MAX_MS = 90 s`.
+Key constants: `LOGIN_TIMEOUT_MS = 30 s`, `NEEDS_USER_MS = 12 s`, `MIN_GAP_MS = 60 s`, `REFRESH_MAX_MS = 90 s`.
 
 ---
 

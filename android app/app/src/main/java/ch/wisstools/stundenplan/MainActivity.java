@@ -516,6 +516,22 @@ public class MainActivity extends Activity {
             });
         }
 
+        /** "Alles löschen": close every sign-in page and delete all cookies (school and Microsoft) plus the
+         *  saved session copy, so the app is really signed out and doesn't sign in again by itself. */
+        @JavascriptInterface
+        public void signOut() {
+            java.util.concurrent.CountDownLatch done = new java.util.concurrent.CountDownLatch(1);
+            ui.post(() -> {
+                for (Tab t : tabs.values()) destroyTab(t);   // no "tab closed" message: nothing should start again
+                tabs.clear();
+                applyBarIcons();
+                getSharedPreferences("session", MODE_PRIVATE).edit().clear().apply();
+                CookieManager cm = CookieManager.getInstance();
+                cm.removeAllCookies(ok -> { cm.flush(); done.countDown(); });
+            });
+            try { done.await(5, java.util.concurrent.TimeUnit.SECONDS); } catch (InterruptedException ignored) { }
+        }
+
         @JavascriptInterface
         public void openExternal(String url) { MainActivity.this.openExternal(url); }
 

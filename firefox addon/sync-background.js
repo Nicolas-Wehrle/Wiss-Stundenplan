@@ -56,7 +56,12 @@
       if (msg.type === 'deviceSyncRecovery') return { recovery: await engine.recover() };
       if (msg.type === 'deviceSyncPairOffer') return engine.pairOffer();
       if (msg.type === 'deviceSyncPairJoin') return engine.pairJoin({ server: msg.server, code: msg.code });
-      if (msg.type === 'deviceSyncReset') { await engine.disconnect(); await browser.storage.local.clear(); return; }
+      if (msg.type === 'deviceSyncReset') {
+        await engine.disconnect(); await browser.storage.local.clear();
+        // apps: also sign out of the extranet, or the app would sign in again right away
+        if (globalThis.__wissApp && globalThis.__wissApp.signOut) await globalThis.__wissApp.signOut();
+        return;
+      }
       await engine.disconnect({ erase: msg.type === 'deviceSyncDelete' });
     };
     task().then((result) => respond({ ok: true, ...result }), (e) => respond({ error: e.message || 'server-unavailable' }));

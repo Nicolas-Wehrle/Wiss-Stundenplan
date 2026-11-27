@@ -3065,7 +3065,12 @@ var qrcode = function() {
       if (msg.type === 'deviceSyncRecovery') return { recovery: await engine.recover() };
       if (msg.type === 'deviceSyncPairOffer') return engine.pairOffer();
       if (msg.type === 'deviceSyncPairJoin') return engine.pairJoin({ server: msg.server, code: msg.code });
-      if (msg.type === 'deviceSyncReset') { await engine.disconnect(); await chrome.storage.local.clear(); return; }
+      if (msg.type === 'deviceSyncReset') {
+        await engine.disconnect(); await chrome.storage.local.clear();
+        // apps: also sign out of the extranet, or the app would sign in again right away
+        if (globalThis.__wissApp && globalThis.__wissApp.signOut) await globalThis.__wissApp.signOut();
+        return;
+      }
       await engine.disconnect({ erase: msg.type === 'deviceSyncDelete' });
     };
     task().then((result) => respond({ ok: true, ...result }), (e) => respond({ error: e.message || 'server-unavailable' }));
@@ -3317,7 +3322,7 @@ var qrcode = function() {
     // header / tabs / status
     'Stundenplan': 'Timetable', 'Woche': 'Week', 'Prüfungen': 'Exams', 'Noten': 'Grades', 'Absenzen': 'Absences', 'Räume': 'Rooms',
     'Einstellungen': 'Settings', 'Jetzt aktualisieren': 'Refresh now', 'Gross im Tab öffnen': 'Open in a big tab',
-    'Aktualisiere…': 'Updating…', 'Anmeldung nötig': 'Sign-in needed', 'Fehler': 'Error', 'Noch keine Daten': 'No data yet',
+    'Aktualisiere…': 'Updating…', 'Anmeldung nötig': 'Sign-in needed', 'Anmeldung nötig · ↻ zum Anmelden': 'Sign-in needed · ↻ to sign in', 'Kein Internet': 'No internet', 'Schlechte Verbindung': 'Bad connection', 'Fehler': 'Error', 'Noch keine Daten': 'No data yet',
     ' (dauert länger, tippe ↻ zum Neustarten)': ' (taking longer, tap ↻ to restart)',
     'Du musst dich kurz neu anmelden.': 'You need to sign in again.',
     'Anmelden': 'Sign in', 'Später': 'Later', 'Konnte nicht aktualisieren:': 'Could not update:',
@@ -3433,6 +3438,7 @@ var qrcode = function() {
     [/\bin (\d+) (Tag|Tagen)\b/g, (m, n) => `in ${n} ${plural(n, 'day', 'days')}`],
     [/\bAktualisiert gerade eben\b/g, 'Updated just now'], [/\bgerade eben\b/g, 'just now'], [/\bAktualisiert\b/g, 'Updated'], [/\bgestern\b/g, 'yesterday'],
     [/\bheute\b/g, 'today'], [/\bmorgen\b/g, 'tomorrow'], [/\bübermorgen\b/g, 'in 2 days'],
+    [/^Kein Internet\b/g, 'No internet'], [/^Schlechte Verbindung\b/g, 'Bad connection'],
     [/\bStand\b/g, 'as of'],
     [/^JETZT · NOCH (.+)$/g, 'NOW · $1 LEFT'], [/^Jetzt · noch (.+)$/g, 'Now · $1 left'], [/\bJETZT\b/g, 'NOW'], [/\bNÄCHSTE\b/g, 'NEXT'], [/\bDANACH\b/g, 'AFTER'],
     [/\bnoch (\d+) Tage?\b/g, (m, n) => `${n} ${plural(n, 'day', 'days')} left`], [/\bnoch 1 Tag\b/g, '1 day left'],
@@ -4664,8 +4670,24 @@ async function openHidden(url) {
   };
 }
 
-// A sign-in that needs you (Microsoft asks for something) stays open but hidden. "Anmelden" shows it.
+// A sign-in that needs you (Microsoft asks for something) stays open but hidden. Nothing pops up by
+// itself: the top of the app says "Anmeldung nötig", and ↻ (or "Anmelden") shows the waiting page.
 let pendingLogin = null;   // { tabId, reveal, close, at }
+const shownTabs = new Set();   // sign-in pages you can see; closing one of them loads again
+let loginWanted = 0;           // you pressed ↻: a sign-in that needs you may show itself for a minute
+const loginInteractive = () => Date.now() - loginWanted < 60000;
+async function revealLogin() {
+  if (!pendingLogin) return false;
+  const p = pendingLogin;
+  try { await chrome.tabs.get(p.tabId); } catch (e) { pendingLogin = null; return false; }
+  p.shown = true; shownTabs.add(p.tabId); slog('Anmeldefenster wird angezeigt');
+  await p.reveal();
+  return true;
+}
+async function openLoginPage() {
+  if (await revealLogin()) return;
+  try { const t = await chrome.tabs.create({ url: EXTRANET_LOGIN }); if (t && t.id != null) shownTabs.add(t.id); } catch (e) {}
+}
 function parkLogin(h) {
   if (pendingLogin && pendingLogin.tabId !== h.tabId) pendingLogin.close();
   pendingLogin = { ...h, at: Date.now() };
@@ -4674,10 +4696,9 @@ function parkLogin(h) {
 
 // ---------- silent login in a minimized window ----------
 
-// The sign-in runs out of sight (a minimized window; in the Android app a page behind the app).
-// Only if Microsoft really needs you (password, new device …) does the app bring that page to the front.
+// The sign-in runs out of sight (a minimized window; in the apps a page behind the app).
+// If Microsoft really needs you (password, new device …) the page waits hidden until you press ↻.
 const IS_APP = typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id === 'wiss-stundenplan-app';
-const APP_SHOW_AFTER_MS = 15000;   // app: still not done in the background → show it, so it can finish in front
 
 // runs inside the sign-in page (self-contained: no outside variables)
 function pressSsoInPage() {
@@ -4690,9 +4711,8 @@ function pressSsoInPage() {
 
 async function silentLogin() {
   const hidden = await openHidden(EXTRANET_LOGIN);
-  const t0 = Date.now();
-  let shown = false;
-  const show = async (why) => { if (!IS_APP || shown) return; shown = true; slog(why); try { await chrome.tabs.update(hidden.tabId, { active: true }); } catch (e) {} };
+  let shown = false, needsYou = false;
+  const show = async (why) => { if (shown) return; shown = true; shownTabs.add(hidden.tabId); slog(why); try { await hidden.reveal(); } catch (e) {} };
   let keepOpen = false;
   let beat = Date.now();
   const tabId = hidden.tabId;
@@ -4707,7 +4727,6 @@ async function silentLogin() {
         try { const me = await toccoWhoAmI(); if (me) { slog('Doch angemeldet'); return { me, tabId: null, close: async () => {} }; } } catch (e2) {}
         return null;
       }
-      if (IS_APP && !shown && Date.now() - t0 > APP_SHOW_AFTER_MS) await show('Anmeldung im Hintergrund dauert, zeige Fenster');
       const host = (() => { try { return new URL(tab.url).host; } catch (e) { return '?'; } })();
       const seen = host + ' ' + tab.status;
       if (seen !== lastSeen) { slog('Anmeldung: ' + seen); lastSeen = seen; beat = Date.now(); }
@@ -4740,15 +4759,18 @@ async function silentLogin() {
         if (!foreignSince) foreignSince = Date.now();
         else if (Date.now() - foreignSince > NEEDS_USER_MS) {
           slog('Microsoft wartet auf Eingabe');
-          if (IS_APP) { await show('Anmeldefenster wird angezeigt'); keepOpen = true; }
-          else { parkLogin(hidden); keepOpen = true; slog('Anmeldung bleibt versteckt, bis du auf «Anmelden» tippst'); }
+          needsYou = true;
           break;
         }
       }
     }
-    if (Date.now() >= end) slog('Anmeldung: Zeit abgelaufen');
+    if (!needsYou) slog('Anmeldung: Zeit abgelaufen');
     // last check before asking you: maybe the sign-in went through after all
     try { const me = await toccoWhoAmI(); if (me) { slog('Doch angemeldet'); return { me, tabId, close: hidden.close }; } } catch (e) {}
+    // still not signed in: you pressed ↻ → show the page now; otherwise it waits hidden for ↻
+    // (also after a timeout: the page may finish once it's in front)
+    if (loginInteractive()) await show('Anmeldefenster wird angezeigt');
+    else { parkLogin(hidden); keepOpen = true; slog('Anmeldung wartet versteckt, bis du auf ↻ tippst'); }
     if (shown) keepOpen = true;   // you can see it (and may be typing in it) → never pull it away
     if (keepOpen) slog('Anmeldefenster bleibt offen, bitte dort anmelden');
     else await hidden.close();
@@ -4792,9 +4814,10 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
   }
   if (!force && st.lastSync && Date.now() - st.lastSync < MIN_GAP_MS && st.status === 'ok') return;
 
-  // Quiet mode (default in browsers): never open a window or tab by itself. When the session
-  // has expired the popup shows the "Anmelden" button instead.
-  const quiet = !IS_APP && !globalThis.__wissIOS && !((await chrome.storage.local.get('prefs')).prefs || {}).bgLogin;
+  // Quiet mode (default in browsers, always on iPhone, where a sign-in means leaving the page):
+  // never open a window or tab by itself. The top of the app says "Anmeldung nötig" and ↻ signs in.
+  const quiet = !!globalThis.__wissIOS || (!IS_APP && !((await chrome.storage.local.get('prefs')).prefs || {}).bgLogin);
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) { slog('Kein Internet'); await setStatus('offline', { error: null, lastAttempt: Date.now() }); return; }
   await setStatus('syncing', { lastAttempt: Date.now() });
   slog('Start' + (force ? ' (manuell)' : ''));
   const [from, to] = range();
@@ -4802,7 +4825,12 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
   try {
     // 1) Session still valid → straight API call from here.
     let me = null;
-    try { me = await toccoWhoAmI(); } catch (e) { slog('Sitzung prüfen fehlgeschlagen: ' + (e && e.message)); }
+    try { me = await toccoWhoAmI(); } catch (e) {
+      slog('Sitzung prüfen fehlgeschlagen: ' + (e && e.message));
+      // no connection (or far too slow): that's not a sign-in problem, so don't try to sign in
+      const net = netProblem(e);
+      if (net && !viaTab) { await setStatus('offline', { error: net === 'slow' ? 'slow' : null }); return; }
+    }
     slog(me ? 'Sitzung gültig' : 'Keine Sitzung');
     if (me) {
       const data = await toccoFetchAll(me.userPk, from, to);
@@ -4825,11 +4853,17 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
     }
 
     // 2) Session expired → silent SSO in a minimized window (background tab on Android).
-    if (quiet) { slog('Sitzung abgelaufen, wartet auf «Anmelden»'); await setStatus('needsLogin', { error: null }); return; }
     if (!allowLogin) { await setStatus(st.lessons ? 'stale' : 'needsLogin'); return; }
-    // Never signed in on this device → a silent attempt can't work; show the sign-in button right away.
+    // a sign-in already waits for you and you pressed ↻ → show it
+    if (loginInteractive() && await revealLogin()) { await setStatus('needsLogin', { error: null }); return; }
+    // Never signed in on this device, or quiet mode → no hidden attempt. ↻ opens the sign-in page.
     const { user: knownUser } = await chrome.storage.local.get('user');
-    if (!knownUser) { await setStatus('needsLogin', { error: null }); return; }
+    if (quiet || !knownUser) {
+      slog('Sitzung abgelaufen, wartet auf ↻');
+      await setStatus('needsLogin', { error: null });
+      if (loginInteractive()) await openLoginPage();
+      return;
+    }
     slog('Automatische Anmeldung…');
     const login = await silentLogin();
     if (!login) { slog('Anmeldung braucht dich'); await setStatus('needsLogin', { error: null }); return; }
@@ -4854,12 +4888,20 @@ async function doRefresh({ force = false, allowLogin = true, viaTab = null } = {
       await login.close();
     }
   } catch (e) {
-    const msg = e && (e.name === 'TimeoutError' || /timed out|aborted|Zeitüberschreitung/i.test(e.message || ''))
-      ? 'Der WISS-Server antwortet nicht. Versuch es später nochmals.'
-      : String((e && e.message) || e);
     slog('Fehler: ' + ((e && e.message) || e));
-    await setStatus('error', { error: msg });
+    const net = netProblem(e);
+    if (net) { await setStatus('offline', { error: net === 'slow' ? 'slow' : null }); return; }
+    await setStatus('error', { error: String((e && e.message) || e) });
   }
+}
+
+// Was this a connection problem? 'offline' = no internet, 'slow' = it took far too long.
+function netProblem(e) {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) return 'offline';
+  if (!e) return null;
+  if (e.name === 'TimeoutError' || e.name === 'AbortError' || /timed out|timeout|aborted/i.test(e.message || '')) return 'slow';
+  if (e.name === 'TypeError' && /fetch|network|load failed|internet/i.test(e.message || '')) return 'offline';
+  return null;
 }
 
 async function save(data, me) {
@@ -5223,8 +5265,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
   if (msg.type === 'refresh') {
+    if (msg.interactive) { loginWanted = Date.now(); revealLogin(); }   // ↻: a waiting sign-in shows itself
     refresh({ force: !!msg.force, resume: !!msg.resume, allowLogin: true }).then(() => sendResponse({ ok: true }));
     return true;
+  }
+  if (msg.type === 'tabClosed') {
+    // apps: you closed a sign-in page you could see → try again. Pages we closed ourselves don't count.
+    if (pendingLogin && pendingLogin.tabId === msg.id) pendingLogin = null;
+    if (shownTabs.delete(msg.id)) refresh({ force: true, allowLogin: true });
+    return false;
   }
   if (msg.type === 'checkUpdate') {
     checkUpdate(true).then((info) => sendResponse({ info }), (e) => sendResponse({ error: String((e && e.message) || e) }));
@@ -5282,12 +5331,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
   if (msg.type === 'openLogin') {
     // show the sign-in that is already waiting in the background, or open a new one
-    (async () => {
-      if (pendingLogin) {
-        try { await chrome.tabs.get(pendingLogin.tabId); pendingLogin.shown = true; await pendingLogin.reveal(); return; } catch (e) { pendingLogin = null; }
-      }
-      chrome.tabs.create({ url: EXTRANET_LOGIN });
-    })();
+    loginWanted = Date.now();
+    openLoginPage();
   }
 });
 
@@ -5652,7 +5697,12 @@ function renderStatus() {
   $('btnRefresh').classList.toggle('spinning', syncing);
   let cls = '', html = '';
   if (syncing) html = `<span class="spin"></span>Aktualisiere…${S.lastAttempt && Date.now() - S.lastAttempt > 30000 ? ' (dauert länger, tippe ↻ zum Neustarten)' : ''}`;
-  else if (S.status === 'needsLogin') { cls = 'warn'; html = `<span class="dot"></span>Anmeldung nötig`; }
+  else if (S.status === 'needsLogin') { cls = 'warn'; html = `<span class="dot"></span>Anmeldung nötig · ↻ zum Anmelden`; }
+  else if (!navigator.onLine || S.status === 'offline') {
+    // no internet, or so slow that nothing came back: say that instead of "sign-in needed"
+    cls = 'warn';
+    html = `<span class="dot"></span>${navigator.onLine && S.error === 'slow' ? 'Schlechte Verbindung' : 'Kein Internet'}${S.lastSync ? ' · Stand ' + ago(S.lastSync) : ''}`;
+  }
   else if (S.status === 'error') { cls = 'err'; html = `<span class="dot"></span>Fehler${S.lastSync ? ' · Stand ' + ago(S.lastSync) : ''}`; }
   else if (S.lastSync) { cls = S.status === 'stale' ? 'warn' : ''; html = `<span class="dot"></span>Aktualisiert ${ago(S.lastSync)}`; }
   else html = 'Noch keine Daten';
@@ -5661,8 +5711,6 @@ function renderStatus() {
   const b = $('banner');
   if (S.demoMode) {
     setHTML(b, `<div class="banner"><p>${tr('Demokonto · ausschliesslich fiktive Daten')}</p><button class="btn ghost" data-act="demo-exit">${tr('Demo beenden')}</button></div>`);
-  } else if (S.status === 'needsLogin') {
-    setHTML(b, `<div class="banner"><p>Du musst dich kurz neu anmelden.</p><button class="btn" data-act="login">Anmelden</button></div>`);
   } else if (S.status === 'error' && S.error) {
     setHTML(b, `<div class="banner"><p>Konnte nicht aktualisieren: ${esc(S.error)}</p></div>`);
   } else setHTML(b, updateBanner());
@@ -7059,7 +7107,12 @@ document.addEventListener('keydown', (e) => {
   if (S.tab === 'week' && e.key === 'ArrowLeft') { weekOffset--; render(); }
   if (S.tab === 'week' && e.key === 'ArrowRight') { weekOffset++; render(); }
 });
-$('btnRefresh').onclick = () => { if (hasChrome) chrome.runtime.sendMessage({ type: 'refresh', force: true }).catch(() => {}); if (S.tab === 'rooms') loadRoomDay(roomState.date, true); };
+// ↻ is the only thing that may show a sign-in page: one that waits hidden, or a new one if needed
+$('btnRefresh').onclick = () => { if (hasChrome) chrome.runtime.sendMessage({ type: 'refresh', force: true, interactive: true }).catch(() => {}); if (S.tab === 'rooms') loadRoomDay(roomState.date, true); };
+// connection back (also after switching a VPN on or off): load quietly, never show a sign-in page
+let onlineT = 0;
+window.addEventListener('online', () => { clearTimeout(onlineT); onlineT = setTimeout(() => { if (hasChrome) chrome.runtime.sendMessage({ type: 'refresh', force: true }).catch(() => {}); }, 3000); });
+window.addEventListener('offline', () => renderStatus());
 $('btnSettings').onclick = () => { if (!S.setupDone) return; S.showSetup = !S.showSetup; setupState.resetArm = false; setupState.msg = ''; $('sheetWrap').hidden = true; $('view').scrollTop = 0; render(); };
 $('btnFull').onclick = () => { if (hasChrome) chrome.tabs.create({ url: chrome.runtime.getURL('popup.html?full') }); };
 if (FULL || MOBILE) $('btnFull').style.display = 'none';   // on phones the popup already is a full page

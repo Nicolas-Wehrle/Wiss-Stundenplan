@@ -134,7 +134,8 @@
     requestPermission: () => H.requestNotifPermission(),
     installUpdate: (url) => H.installUpdate(String(url)),
     openExternal: (url) => H.openExternal(String(url)),
-    bars: (dark, rgb) => H.setBars && H.setBars(!!dark, String(rgb || ''))
+    bars: (dark, rgb) => H.setBars && H.setBars(!!dark, String(rgb || '')),
+    signOut: async () => { try { if (H.signOut) H.signOut(); } catch (e) {} }
   };
 
   window.chrome = {
@@ -180,7 +181,7 @@
   window.__appUpdateFailed = () => { try { openUrl(S.updateInfo.page); } catch (e) {} };
   window.__appPermission = (state) => { window.dispatchEvent(new CustomEvent('app-permission', { detail: state })); };
   window.__appOpenTab = (tab) => { try { S.tab = tab; S.showSetup = false; render(); } catch (e) {} };
-  window.__appTabClosed = () => { chrome.runtime.sendMessage({ type: 'refresh', force: true }).catch(() => {}); };
+  window.__appTabClosed = (id) => { chrome.runtime.sendMessage({ type: 'tabClosed', id }).catch(() => {}); };
   // Android back button: close panel → close settings → go to "Woche" → leave app
   window.__appBack = () => {
     const wrap = document.getElementById('sheetWrap');

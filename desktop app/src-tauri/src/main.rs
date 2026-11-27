@@ -257,6 +257,30 @@ fn tab_remove(app: AppHandle, id: u32) {
     close_tab(&app, id);
 }
 
+/// "Alles löschen": close every sign-in page and delete all cookies (school and Microsoft),
+/// so the app is really signed out and doesn't sign in again by itself.
+#[tauri::command]
+async fn sign_out(app: AppHandle, h: State<'_, Host>) -> Result<(), String> {
+    // empty the list first, so closing these windows doesn't tell the page "a tab was closed"
+    let ids: Vec<u32> = h.tabs.lock().unwrap().drain().map(|(id, _)| id).collect();
+    for id in ids {
+        if let Some(w) = app.get_webview_window(&format!("tab-{id}")) {
+            let _ = w.destroy();
+        }
+    }
+    let Some(main) = app.get_webview_window("main") else { return Ok(()) };
+    // reading cookies blocks until the web view answers (and deadlocks on its own thread on Windows)
+    tauri::async_runtime::spawn_blocking(move || {
+        if let Ok(list) = main.cookies() {
+            for c in list {
+                let _ = main.delete_cookie(c);
+            }
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 fn tab_exec(app: AppHandle, id: u32, call: u32, code: String) {
     match app.get_webview_window(&format!("tab-{id}")) {
@@ -802,7 +826,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             store_load, store_set, store_replace,
             tab_create, tab_info, tab_update, tab_show, tab_remove, tab_exec, tab_result, tab_message,
-            http, notify, schedule, set_lang, widget, open_external, install_update, app_ready, mini_data, mini_close
+            http, notify, schedule, set_lang, widget, open_external, install_update, app_ready, mini_data, mini_close, sign_out
         ])
         .build(tauri::generate_context!())
         .expect("error while starting WISS Stundenplan")

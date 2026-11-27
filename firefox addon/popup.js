@@ -357,7 +357,12 @@ function renderStatus() {
   $('btnRefresh').classList.toggle('spinning', syncing);
   let cls = '', html = '';
   if (syncing) html = `<span class="spin"></span>Aktualisiere…${S.lastAttempt && Date.now() - S.lastAttempt > 30000 ? ' (dauert länger, tippe ↻ zum Neustarten)' : ''}`;
-  else if (S.status === 'needsLogin') { cls = 'warn'; html = `<span class="dot"></span>Anmeldung nötig`; }
+  else if (S.status === 'needsLogin') { cls = 'warn'; html = `<span class="dot"></span>Anmeldung nötig · ↻ zum Anmelden`; }
+  else if (!navigator.onLine || S.status === 'offline') {
+    // no internet, or so slow that nothing came back: say that instead of "sign-in needed"
+    cls = 'warn';
+    html = `<span class="dot"></span>${navigator.onLine && S.error === 'slow' ? 'Schlechte Verbindung' : 'Kein Internet'}${S.lastSync ? ' · Stand ' + ago(S.lastSync) : ''}`;
+  }
   else if (S.status === 'error') { cls = 'err'; html = `<span class="dot"></span>Fehler${S.lastSync ? ' · Stand ' + ago(S.lastSync) : ''}`; }
   else if (S.lastSync) { cls = S.status === 'stale' ? 'warn' : ''; html = `<span class="dot"></span>Aktualisiert ${ago(S.lastSync)}`; }
   else html = 'Noch keine Daten';
@@ -366,8 +371,6 @@ function renderStatus() {
   const b = $('banner');
   if (S.demoMode) {
     setHTML(b, `<div class="banner"><p>${tr('Demokonto · ausschliesslich fiktive Daten')}</p><button class="btn ghost" data-act="demo-exit">${tr('Demo beenden')}</button></div>`);
-  } else if (S.status === 'needsLogin') {
-    setHTML(b, `<div class="banner"><p>Du musst dich kurz neu anmelden.</p><button class="btn" data-act="login">Anmelden</button></div>`);
   } else if (S.status === 'error' && S.error) {
     setHTML(b, `<div class="banner"><p>Konnte nicht aktualisieren: ${esc(S.error)}</p></div>`);
   } else setHTML(b, updateBanner());
@@ -1764,7 +1767,12 @@ document.addEventListener('keydown', (e) => {
   if (S.tab === 'week' && e.key === 'ArrowLeft') { weekOffset--; render(); }
   if (S.tab === 'week' && e.key === 'ArrowRight') { weekOffset++; render(); }
 });
-$('btnRefresh').onclick = () => { if (hasChrome) browser.runtime.sendMessage({ type: 'refresh', force: true }).catch(() => {}); if (S.tab === 'rooms') loadRoomDay(roomState.date, true); };
+// ↻ is the only thing that may show a sign-in page: one that waits hidden, or a new one if needed
+$('btnRefresh').onclick = () => { if (hasChrome) browser.runtime.sendMessage({ type: 'refresh', force: true, interactive: true }).catch(() => {}); if (S.tab === 'rooms') loadRoomDay(roomState.date, true); };
+// connection back (also after switching a VPN on or off): load quietly, never show a sign-in page
+let onlineT = 0;
+window.addEventListener('online', () => { clearTimeout(onlineT); onlineT = setTimeout(() => { if (hasChrome) browser.runtime.sendMessage({ type: 'refresh', force: true }).catch(() => {}); }, 3000); });
+window.addEventListener('offline', () => renderStatus());
 $('btnSettings').onclick = () => { if (!S.setupDone) return; S.showSetup = !S.showSetup; setupState.resetArm = false; setupState.msg = ''; $('sheetWrap').hidden = true; $('view').scrollTop = 0; render(); };
 $('btnFull').onclick = () => { if (hasChrome) browser.tabs.create({ url: browser.runtime.getURL('popup.html?full') }); };
 if (FULL || MOBILE) $('btnFull').style.display = 'none';   // on phones the popup already is a full page

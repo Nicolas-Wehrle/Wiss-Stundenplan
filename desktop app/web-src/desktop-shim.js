@@ -222,7 +222,8 @@
     permission: () => 'granted',
     requestPermission: () => {},
     installUpdate: () => invoke('install_update').catch(() => window.__appUpdateFailed && window.__appUpdateFailed()),
-    openExternal: (url) => invoke('open_external', { url: String(url) }).catch(() => {})
+    openExternal: (url) => invoke('open_external', { url: String(url) }).catch(() => {}),
+    signOut: async () => { clearTimeout(bridgeIdle); bridge = null; await invoke('sign_out').catch(() => {}); }
   };
 
   // keep WebView2's own window.chrome (the app's messaging may use it) and add what the add-on needs
@@ -265,6 +266,6 @@
     chrome.runtime.sendMessage({ type: 'refresh', force: false, resume: true }).catch(() => {});
   };
   window.__appUpdateFailed = () => { try { window.__wissApp.openExternal(S.updateInfo.page); } catch (e) {} };
-  window.__appTabClosed = () => { chrome.runtime.sendMessage({ type: 'refresh', force: true }).catch(() => {}); };
+  window.__appTabClosed = (id) => { chrome.runtime.sendMessage({ type: 'tabClosed', id }).catch(() => {}); };
   window.addEventListener('pagehide', flush);
 })();
