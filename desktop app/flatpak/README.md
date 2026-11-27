@@ -9,7 +9,7 @@ The Linux desktop app as a Flatpak, for [Flathub](https://flathub.org). On Flath
 
 | File | What |
 |---|---|
-| `dev.severinwehrle.stundenplan.Erix.yml` | Build recipe (GNOME 48 runtime, Rust + Node SDK extensions) |
+| `dev.severinwehrle.stundenplan.Erix.yml` | Build recipe (GNOME 51 runtime, Rust + Node 24 SDK extensions; Tauri needs Rust 1.90 or newer, GNOME 48 only has 1.89) |
 | `dev.severinwehrle.stundenplan.Erix.metainfo.xml` | Store page: texts, screenshots (from `docs/screenshots/`), releases |
 | `dev.severinwehrle.stundenplan.Erix.desktop` | App menu entry |
 | `cargo-sources.json` | All Rust crates with checksums. Made by `scripts/flatpak-cargo-sources.py` |

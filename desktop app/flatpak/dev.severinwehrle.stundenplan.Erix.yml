@@ -2,11 +2,11 @@
 # Test build: .github/workflows/flatpak.yml. Submitting and updating on Flathub: README.md in this folder.
 id: dev.severinwehrle.stundenplan.Erix
 runtime: org.gnome.Platform
-runtime-version: '48'
+runtime-version: '51'
 sdk: org.gnome.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
-  - org.freedesktop.Sdk.Extension.node20
+  - org.freedesktop.Sdk.Extension.node24
 command: wiss-stundenplan
 finish-args:
   - --share=ipc
@@ -23,7 +23,7 @@ modules:
   - name: erix-stundenplan
     buildsystem: simple
     build-options:
-      append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node20/bin
+      append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node24/bin
       env:
         CARGO_HOME: /run/build/erix-stundenplan/cargo
         CARGO_NET_OFFLINE: 'true'
