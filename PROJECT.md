@@ -2,7 +2,7 @@
 
 Everything about this project in one place: what it is, how it's built, how releases work, what's tricky, and what's planned next. Written so a new chat (or a new person) can pick it up without the old conversation.
 
-Current version: **1.13.0** (grades redesign with chart hover, desktop app scales with the window). 1.12.3 added the desktop app for Windows, macOS and Linux. 1.11.0 was never released; its sync work shipped in 1.12.0.
+Current version: **1.14.0** (renamed to Erix Stundenplan, custom themes, sign-in that never pops up by itself, offline detection). 1.13.0: grades redesign with chart hover, desktop app scales with the window. 1.12.3 added the desktop app for Windows, macOS and Linux. 1.11.0 was never released; its sync work shipped in 1.12.0.
 
 Website: **https://stundenplan.severinwehrle.dev** (GitHub Pages from `docs/`, custom domain via a CNAME record). Developer guide: `DEVELOPMENT.md`.
 
@@ -331,7 +331,7 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 
 ## 14. Version history (short)
 
-- **Unreleased** Android draws edge-to-edge: `edgeToEdge`/`applyInsets` in MainActivity pass the bar heights as CSS `--sat`/`--sab`, `.top` gets a transparent top border of that height, and `__wissApp.bars(dark, rgb)` (called from `applyLook`) sets the bar icon colour.
+- **1.14.0** Renamed to Erix Stundenplan; custom themes (`themes.js`); sign-in never pops up by itself (`pendingLogin`, ↻ = `interactive`); offline/slow status (`netProblem`); "Alles löschen" signs the apps out; update check and Android installer accept the old and new repository name. Android draws edge-to-edge: `edgeToEdge`/`applyInsets` in MainActivity pass the bar heights as CSS `--sat`/`--sab`, `.top` gets a transparent top border of that height, and `__wissApp.bars(dark, rgb)` (called from `applyLook`) sets the bar icon colour.
 - **1.13.0** Grades redesign (stats next to the average, hover card on the chart via `.thit` columns and `trendHover`, finished modules as `.glist`, status icons `i.mst.s-*` because `.plan` is the floor plan class). `splitLabel` also reads "M164 Name". Desktop: `fit_zoom` in main.rs sets the webview zoom from the window size. Danylo Kovalenko credited (iPhone).
 - **1.12.3** Desktop app (Tauri 2, `desktop app/`) for Windows, macOS, Linux: same web code via `desktop-shim.js`; hidden sign-in windows; school requests through a hidden wiss.tocco.ch page; tray, reminders, mini window, autostart, signed updater (`latest.json`); Linux dnf/zypper/apt package sources on GitHub Pages (`pages.yml`, `linux-repos.sh`). Standard style: the tab you leave no longer flashes a white line.
 - **1.12.2** Full-screen layout (side column with today + next exams), no solid header bars on picture styles, light animations with a toggle (`motion`, `data-motion=off`), logo setting (`themeLogo`), calmer Standard hero, Chrome Web Store link. Firefox (`IS_FIREFOX` in background.js): `openHidden` uses a background tab instead of a minimized window (Firefox on Linux shows new windows in front), and browser start refreshes without sign-in. Firefox signs in in a tab hidden with `tabs.hide` (permission `tabHide`, added by build-firefox.py). If Microsoft needs input, the hidden page is parked (`pendingLogin`) and never shown by itself; "Anmelden" (`openLogin`) reveals it, and it closes once the data is in. Pref `bgLogin` (default true) turns the background sign-in off in Chrome/Firefox (`quiet` in `doRefresh`). Android app and iPhone ignore it.
@@ -354,7 +354,7 @@ Full details per version: `CHANGELOG.md`.
 
 ## Repository rename to `Erix-Stundenplan` (planned)
 
-The app is called **Erix Stundenplan** (since the version after 1.13.0). The repository will move from `Nicolas-Wehrle/Wiss-Stundenplan` to `Nicolas-Wehrle/Erix-Stundenplan`. GitHub forwards the old name (web, API, downloads, git) as long as no new repository takes the old name. What is ready:
+The app is called **Erix Stundenplan** (since 1.14.0). The repository will move from `Nicolas-Wehrle/Wiss-Stundenplan` to `Nicolas-Wehrle/Erix-Stundenplan`. GitHub forwards the old name (web, API, downloads, git) as long as no new repository takes the old name. What is ready:
 
 - **Update check** (`UPDATE_REPOS` in background.js): asks the new name first, the old one on a 404.
 - **Android installer** (`installUpdate` in MainActivity.java): accepts APK links under both names. Versions up to 1.13.0 only accept the old name, so after the rename they can't install updates from the app anymore (they see the banner, the download is refused). **Publish a release with this code first and wait a few weeks before renaming.**

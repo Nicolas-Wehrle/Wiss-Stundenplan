@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Erix Stundenplan (inoffiziell)",
   "short_name": "Erix Stundenplan",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "Dein Stundenplan aus dem Extranet, ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu. Inoffiziell.",
   "permissions": [
     "storage",

@@ -1,4 +1,7 @@
-## Unreleased
+## 1.14.0
+
+WISS Stundenplan is now **Erix Stundenplan**.
+
 
 - New name: **Erix Stundenplan** (inoffiziell). The app, website, store texts, pictures, privacy policy and terms no longer name the school or the extranet's maker. Install IDs, file names and data folders stay the same, so nothing has to be installed again.
 - Ready for the GitHub repository to be renamed to `Erix-Stundenplan`: the update check, the Android installer and the desktop updater accept both the old and the new name.

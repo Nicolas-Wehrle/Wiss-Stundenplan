@@ -1,0 +1,20 @@
+Erix Stundenplan 1.14.0
+
+WISS Stundenplan is now called Erix Stundenplan. It's still the same unofficial app: you don't need to install anything again, and your data and settings stay.
+
+New
+- Custom themes: one CSS file can restyle the whole app, colours and layout. Settings › Darstellung › Eigenes Theme: import a file or write your own with a live preview, export, switch or delete. Four example themes are in the themes folder, and the website has a guide under Docs › Eigene Themes. The active theme syncs to your other devices (up to 60 KB). Themes never load anything from the internet.
+- iPhone: there is now a real app in the App Store, made by Danylo Kovalenko, with widgets and reminders. The Safari userscript still works.
+- Android widget: with the look "App" it follows your theme's style, accent colour and light/dark mode.
+
+Better
+- Sign-in never pops up by itself anymore. When you need to sign in, the top of the app says "Anmeldung nötig". Tap ↻ and the sign-in shows up. No more pop-ups when a VPN connects or the network changes.
+- No internet or a very slow connection now shows "Kein Internet" or "Schlechte Verbindung" at the top, instead of asking you to sign in. When the connection is back, the app loads again by itself.
+- Android: the app now goes behind the status bar and the navigation bar, in the colours of your style.
+- Android: you can pick files, for example to import a theme.
+
+Fixed
+- Android and desktop app: "Alles löschen" now really signs you out, so the app doesn't sign in again right away and you can try the demo account.
+- Demo account: changing one setting no longer resets the others.
+
+Note for device sync: if you use sync and a custom theme, update all your devices to 1.14.0. Older versions don't accept a synced theme.
