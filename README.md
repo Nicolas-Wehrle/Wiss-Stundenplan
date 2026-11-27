@@ -1,7 +1,7 @@
 <a href="https://stundenplan.severinwehrle.dev">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/readme-banner-dark.png">
-    <img alt="WISS Stundenplan: your timetable, instantly" src="docs/readme-banner.png" width="100%">
+    <img alt="Erix Stundenplan: your timetable, instantly" src="docs/readme-banner.png" width="100%">
   </picture>
 </a>
 
@@ -19,10 +19,10 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-16141d?style=flat-square"></a>
 </p>
 
-**WISS Stundenplan** is a fast, private way to check your WISS timetable, exams, grades, absences and free rooms. It shows your last data the moment you open it and updates in the background, so you never wait for the extranet again.
+**Erix Stundenplan** is a fast, private way to check your timetable, exams, grades, absences and free rooms. It shows your last data the moment you open it and updates in the background, so you never wait for the extranet again.
 
 > [!NOTE]
-> **Unofficial student project**, not made by, endorsed by or affiliated with WISS or Tocco. It signs in with your own WISS account, the same way the extranet website does, and never types or stores your password.
+> **Unofficial student project**, not made by, endorsed by or affiliated with your school or the extranet's maker. It signs in with your own school account, the same way the extranet website does, and never types or stores your password.
 
 ## Get it
 
@@ -62,17 +62,17 @@ wget -qO- https://stundenplan.severinwehrle.dev/linux.sh | sh
 | **Exams** | ZP, LB and projects with a countdown, estimated where the extranet lists nothing |
 | **Grades** | average over the year, history chart and a calculator for what you still need |
 | **Absences** | open excuses with their 7-day deadline, attendance per module |
-| **Rooms** | free rooms at any time, with floor plans for WISS Zürich |
+| **Rooms** | free rooms at any time, with floor plans for the Zürich building |
 | **Reminders** | lessons, absence deadlines and new grades (Android and desktop) |
 | **Your look** | German or English, nine styles, light and dark, your own accent colour, or your own theme as a single CSS file ([examples](themes/)) |
 | **Desktop extras** | tray icon with the next lesson, a small always-on-top window, start with the computer |
 
-*All pictures use invented demo data. Try it yourself: choose "Try demo account" on first start, no WISS login needed.*
+*All pictures use invented demo data. Try it yourself: choose "Try demo account" on first start, no school login needed.*
 
 ## Privacy
 
 - Your school data is loaded with your own login and **stays on your device**. There is no server in between.
-- The app only talks to wiss.tocco.ch (your data), modulbaukasten.ch (module descriptions) and GitHub (updates).
+- The app only talks to your school's extranet (your data), modulbaukasten.ch (module descriptions) and GitHub (updates).
 - No ads, no tracking, no account.
 - **Optional sync** between your devices transfers notes, exam corrections and some settings, end-to-end encrypted. It is off until you turn it on, and your timetable, grades, absences and login never leave your device. Keep the recovery code safe: without it and without a linked device, synced data can't be recovered.
 

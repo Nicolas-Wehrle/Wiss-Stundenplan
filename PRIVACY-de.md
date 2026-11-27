@@ -1,8 +1,8 @@
-# Datenschutzerklärung: Extranet Stundenplan
+# Datenschutzerklärung: Erix Stundenplan
 
 Stand: 20. November 2026. English version: [PRIVACY.md](PRIVACY.md).
 
-Gilt für alle Versionen von Extranet Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.
+Gilt für alle Versionen von Erix Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, die Synchronisation und diese Website.
 
 **Kurz gesagt**
 

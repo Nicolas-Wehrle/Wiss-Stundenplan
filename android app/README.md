@@ -1,8 +1,8 @@
-# WISS Stundenplan (Android)
+# Erix Stundenplan (Android)
 
 The same app as the browser add-on, as a normal Android app. It also has reminders and a home-screen widget.
 
-Unofficial. Not made by or affiliated with WISS.
+Unofficial. Not made by or affiliated with your school.
 
 Step-by-step guide on the website: https://stundenplan.severinwehrle.dev/#download/android
 
@@ -10,7 +10,7 @@ Step-by-step guide on the website: https://stundenplan.severinwehrle.dev/#downlo
 1. Get `WISS-Stundenplan.apk` onto your phone (Drive, WhatsApp to yourself, USB) and open it.
 2. Allow installing apps from that source when Android asks.
 3. If Play Protect warns you, tap "More details" and "Install anyway". It only warns because the app isn't from the Play Store.
-4. Open **Stundenplan**, tap "Sign in" and sign in with your WISS account once.
+4. Open **Erix Stundenplan**, tap "Sign in" and sign in with your school account once.
 
 Updates: the app checks for new versions by itself and shows an "Install" button. Your data and login stay.
 
@@ -28,8 +28,8 @@ Lesson and absence reminders also come when the app is closed. New grades show u
 
 ## How it works
 - The add-on's interface runs inside the app (`app/src/main/assets/web`).
-- The app serves it under `https://wiss.tocco.ch/__wissapp/`, so requests to Tocco use your login. Your login stays inside this app.
-- If your login expired, the app shows the WISS sign-in for a moment. Microsoft usually signs you in again by itself.
+- The app serves it under `https://wiss.tocco.ch/__wissapp/`, so requests to the extranet use your login. Your login stays inside this app.
+- If your login expired, the app signs you in again in the background. If Microsoft needs you, the top of the app says so and ↻ shows the sign-in.
 - Module descriptions from modulbaukasten.ch go through a small proxy inside the app (`/__wissapp/proxy`).
 - Your data is stored in the app's private storage and nowhere else.
 

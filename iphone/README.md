@@ -1,9 +1,9 @@
-# WISS Stundenplan (iPhone)
+# Erix Stundenplan (iPhone)
 
-On iPhone, WISS Stundenplan runs in Safari with the free app **Userscripts**.
-You sign in with your own WISS account, and your data stays on your iPhone.
+On iPhone, Erix Stundenplan runs in Safari with the free app **Userscripts**.
+You sign in with your own school account, and your data stays on your iPhone.
 
-Unofficial, not made by WISS. The iPhone version is looked after by [Danylo Kovalenko](https://danylokv.dev).
+Unofficial, not made by your school. The iPhone version is looked after by [Danylo Kovalenko](https://danylokv.dev).
 
 There's also a step-by-step guide with pictures on the website: https://stundenplan.severinwehrle.dev/#download/iphone
 
@@ -23,7 +23,7 @@ There's also a step-by-step guide with pictures on the website: https://stundenp
 ## What works
 - Week, exams, grades with calculator, absences, rooms with floor plans, notes, teachers
 - All styles, light and dark, German and English
-- When the sign-in expires, it goes through the WISS sign-in for a moment and then comes back
+- When the sign-in expires, the top says "Anmeldung nötig". Tap ↻ to go through the sign-in, then it comes back
 
 No notifications and no widget. Apple only allows those for apps from the App Store.
 

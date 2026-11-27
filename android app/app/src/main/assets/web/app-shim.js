@@ -1,4 +1,4 @@
-// WISS Stundenplan – Android app adapter.
+// Erix Stundenplan – Android app adapter.
 // Provides the `chrome.*` APIs the add-on code uses, backed by the native app
 // (MainActivity.java): storage on the phone, hidden WebViews instead of tabs/windows.
 (() => {

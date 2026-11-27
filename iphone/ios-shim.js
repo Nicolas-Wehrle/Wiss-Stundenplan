@@ -1,4 +1,4 @@
-// WISS Stundenplan – iPhone/Safari adapter (runs inside the "Userscripts" Safari extension).
+// Erix Stundenplan – iPhone/Safari adapter (runs inside the "Userscripts" Safari extension).
 // Provides the chrome.* APIs the add-on code uses:
 //   storage  → localStorage of wiss.tocco.ch (stays on this iPhone)
 //   tabs     → sign-in: the page itself goes to the school login and comes back;

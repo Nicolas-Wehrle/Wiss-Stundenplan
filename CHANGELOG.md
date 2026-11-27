@@ -1,5 +1,7 @@
 ## Unreleased
 
+- New name: **Erix Stundenplan** (inoffiziell). The app, website, store texts, pictures, privacy policy and terms no longer name the school or the extranet's maker. Install IDs, file names and data folders stay the same, so nothing has to be installed again.
+- Ready for the GitHub repository to be renamed to `Erix-Stundenplan`: the update check, the Android installer and the desktop updater accept both the old and the new name.
 - Sign-in never pops up by itself anymore. When it's needed, the top of the app says "Anmeldung nötig", and ↻ shows the sign-in. The "Du musst dich kurz neu anmelden" banner is gone. This also stops the pop-ups when a VPN connects or the network changes.
 - No internet or a very slow connection now shows "Kein Internet" or "Schlechte Verbindung" at the top instead of asking you to sign in. When the connection comes back, the app loads again quietly.
 - Android and desktop app: "Alles löschen" now also signs out of the extranet (all sign-in cookies are deleted), so the app doesn't sign in again right away and "Demokonto testen" shows up.

@@ -1,8 +1,8 @@
-# Terms of use: Extranet Stundenplan
+# Terms of use: Erix Stundenplan
 
 Last updated: 20 November 2026. Deutsche Fassung: [TERMS-de.md](TERMS-de.md).
 
-The rules for Extranet Stundenplan, in every version.
+The rules for Erix Stundenplan, in every version.
 
 **In short**
 

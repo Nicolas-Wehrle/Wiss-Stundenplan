@@ -10,7 +10,10 @@ function Invoke-Checked {
 $manifest = Get-Content -LiteralPath 'chrome addon/manifest.json' -Raw | ConvertFrom-Json
 $version = $manifest.version
 $tag = "v$version"
+# owner/name from the git remote, so this follows a renamed repository
 $repo = 'Nicolas-Wehrle/Wiss-Stundenplan'
+$origin = (git remote get-url origin) 2>$null
+if ($origin -match 'github\.com[:/]([^/]+/[^/]+?)(\.git)?/?$') { $repo = $Matches[1] }
 Invoke-Checked -Program 'python' -Arguments @('scripts/verify-release.py')
 Invoke-Checked -Program 'gh' -Arguments @('api', 'user', '--jq', '.login')
 $dirty = @(git status --porcelain)

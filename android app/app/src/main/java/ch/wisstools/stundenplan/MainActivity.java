@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * WISS Stundenplan – Android shell.
+ * Erix Stundenplan – Android shell.
  *
  * The UI and logic are the same files as the browser add-on (assets/web). They are served
  * under https://wiss.tocco.ch/__wissapp/ so that the page is "same-origin" with Tocco and
@@ -132,7 +132,7 @@ public class MainActivity extends Activity {
         java.io.File old = new java.io.File(getExternalFilesDir(android.os.Environment.DIRECTORY_DOWNLOADS), "update.apk");
         if (old.exists()) old.delete();
         android.app.DownloadManager.Request rq = new android.app.DownloadManager.Request(Uri.parse(url))
-                .setTitle("WISS Stundenplan")
+                .setTitle("Erix Stundenplan")
                 .setMimeType("application/vnd.android.package-archive")
                 .setNotificationVisibility(android.app.DownloadManager.Request.VISIBILITY_VISIBLE)
                 .setDestinationInExternalFilesDir(this, android.os.Environment.DIRECTORY_DOWNLOADS, "update.apk");
@@ -418,7 +418,7 @@ public class MainActivity extends Activity {
         int pad = dp(12);
         bar.setPadding(pad, dp(6), dp(6), dp(6));
         TextView title = new TextView(this);
-        title.setText("Mit WISS-Konto anmelden");
+        title.setText("Mit dem Schulkonto anmelden");
         title.setTextColor(getColor(R.color.ink));
         title.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
         bar.addView(title, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
@@ -562,7 +562,9 @@ public class MainActivity extends Activity {
         /** Downloads the new APK from the GitHub release and opens Android's install screen. */
         @JavascriptInterface
         public void installUpdate(String url) {
-            if (url == null || !url.startsWith("https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/")) return;   // only our own releases
+            // only our own releases, under the old or the new repository name
+            if (url == null || !(url.startsWith("https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/")
+                    || url.startsWith("https://github.com/Nicolas-Wehrle/Erix-Stundenplan/"))) return;
             ui.post(() -> downloadAndInstall(url));
         }
     }

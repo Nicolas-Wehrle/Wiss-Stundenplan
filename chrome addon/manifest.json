@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "WISS Stundenplan",
-  "short_name": "Stundenplan",
+  "name": "Erix Stundenplan (inoffiziell)",
+  "short_name": "Erix Stundenplan",
   "version": "1.13.0",
-  "description": "Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.",
+  "description": "Dein Stundenplan aus dem Extranet, ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu. Inoffiziell.",
   "permissions": [
     "storage",
     "alarms",
@@ -21,7 +21,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "WISS Stundenplan",
+    "default_title": "Erix Stundenplan",
     "default_icon": {
       "16": "icons/16.png",
       "32": "icons/32.png",

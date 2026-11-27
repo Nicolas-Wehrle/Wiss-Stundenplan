@@ -1,8 +1,8 @@
-# Privacy policy: Extranet Stundenplan
+# Privacy policy: Erix Stundenplan
 
 Last updated: 20 November 2026. Deutsche Fassung: [PRIVACY-de.md](PRIVACY-de.md).
 
-Applies to every version of Extranet Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, sync and the website.
+Applies to every version of Erix Stundenplan: Chrome, Firefox, Android, Windows, macOS, Linux, iPhone, sync and the website.
 
 **In short**
 

@@ -1,4 +1,4 @@
-# WISS Stundenplan: project handover
+# Erix Stundenplan: project handover
 
 Everything about this project in one place: what it is, how it's built, how releases work, what's tricky, and what's planned next. Written so a new chat (or a new person) can pick it up without the old conversation.
 
@@ -10,7 +10,7 @@ Website: **https://stundenplan.severinwehrle.dev** (GitHub Pages from `docs/`, c
 
 ## 1. What it is
 
-An unofficial app for WISS students that shows the timetable, exams, grades, absences and rooms **instantly**, instead of waiting for the slow school extranet (Tocco, `wiss.tocco.ch`).
+Erix Stundenplan (formerly "WISS Stundenplan") is an unofficial app for students that shows the timetable, exams, grades, absences and rooms **instantly**, instead of waiting for the slow school extranet (Tocco, `wiss.tocco.ch`).
 
 How it works in one sentence: it shows the last saved data immediately and fetches fresh data in the background, using the student's own login (Microsoft school account via the extranet), and keeps everything on the device.
 
@@ -349,6 +349,26 @@ The Render service `wiss-stundenplan-sync.onrender.com` is live and redeploys fr
 - Before that: the app itself, iPhone and Firefox versions, Android app with notifications and widget, absences, settings, styles, translations, offline module catalog.
 
 Full details per version: `CHANGELOG.md`.
+
+---
+
+## Repository rename to `Erix-Stundenplan` (planned)
+
+The app is called **Erix Stundenplan** (since the version after 1.13.0). The repository will move from `Nicolas-Wehrle/Wiss-Stundenplan` to `Nicolas-Wehrle/Erix-Stundenplan`. GitHub forwards the old name (web, API, downloads, git) as long as no new repository takes the old name. What is ready:
+
+- **Update check** (`UPDATE_REPOS` in background.js): asks the new name first, the old one on a 404.
+- **Android installer** (`installUpdate` in MainActivity.java): accepts APK links under both names. Versions up to 1.13.0 only accept the old name, so after the rename they can't install updates from the app anymore (they see the banner, the download is refused). **Publish a release with this code first and wait a few weeks before renaming.**
+- **Desktop updater** (`tauri.conf.json`): both `latest.json` addresses, the new one first. Tauri tries the next one when one fails. Older versions use the old address, which GitHub forwards.
+- **Firefox** (`update_url`) and **iPhone userscript** (`@updateURL`) can only have one address. They keep the old `raw.githubusercontent.com` one, which GitHub forwards after the rename.
+- **Release scripts** (`release.py`, `publish-release.ps1`) take the name from `git remote get-url origin`.
+
+After the rename:
+1. `git remote set-url origin https://github.com/Nicolas-Wehrle/Erix-Stundenplan.git`
+2. Render: check that the sync service still deploys (Settings › Build & Deploy › Repository).
+3. Tell Danylo: `ios app/scripts/update-web.sh` uses the old URL (forwarded, but better to update).
+4. Later, in a new version: switch plain links (README, website, legal.py `GH`, settings "GitHub" button, Firefox/iPhone update URLs) to the new name. Never create a new repository called `Wiss-Stundenplan`, or the forwarding stops.
+
+What keeps the old name on purpose (changing it breaks installs or updates): Android package `ch.wisstools.stundenplan`, Firefox ID `wiss-stundenplan@wiss-tools`, desktop `productName` "WISS Stundenplan" (Windows install folder and Start menu), app data folders, Linux package `wiss-stundenplan` and the apt `Origin`/`Label`, release file names `WISS-Stundenplan*`, the sync code prefix `WISS1.` and storage keys like `wissTheme`. The iOS App Store app (Danylo) needs its own new submission for the name.
 
 ---
 

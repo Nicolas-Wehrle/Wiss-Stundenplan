@@ -1,8 +1,8 @@
-# WISS Stundenplan (Firefox)
+# Erix Stundenplan (Firefox)
 
 The same add-on as the Chrome version, for Firefox on the computer and on Android.
 
-Unofficial. Not made by or affiliated with WISS.
+Unofficial. Not made by or affiliated with your school.
 
 Step-by-step guide on the website: https://stundenplan.severinwehrle.dev/#download/firefox
 
@@ -23,7 +23,7 @@ Updates come in on their own after that.
 1. Download `WISS-Stundenplan-Firefox.xpi` on your phone.
 2. Firefox > Settings > About Firefox, tap the Firefox logo 5 times. This turns on the debug menu.
 3. Go back to Settings and choose "Install extension from file", then pick the `.xpi`.
-4. Open it from Menu > Add-ons > WISS Stundenplan and sign in once in the tab that opens.
+4. Open it from Menu > Add-ons > Erix Stundenplan and sign in once in the tab that opens.
 
 ## Problems
 - **"This add-on could not be installed because it appears to be corrupt"** or **"could not be verified"**: you picked the `.zip` or an unsigned file. Download the `.xpi` from Releases.
@@ -40,4 +40,4 @@ Updates come in on their own after that.
 3. After the automatic check, download the signed `.xpi`, rename it to `WISS-Stundenplan-Firefox.xpi` and continue with "Publishing a release" in [DEVELOPMENT.md](https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/blob/main/DEVELOPMENT.md).
 
 ## Privacy
-Same as the Chrome version: everything is loaded with your own WISS login and only stored in your browser.
+Same as the Chrome version: everything is loaded with your own school login and only stored in your browser.

@@ -1,11 +1,11 @@
-# WISS Stundenplan for Windows, macOS and Linux
+# Erix Stundenplan for Windows, macOS and Linux
 
 A small native app built with [Tauri 2](https://tauri.app): the logic around it is Rust, and the window shows the same web code as the add-on (`chrome addon/`). The system's own web engine draws it: Edge WebView2 on Windows, WebKit on macOS, WebKitGTK on Linux. No browser is bundled, so the installer is only a few MB.
 
 ## What it does differently from the add-on
 
 - **Own window**, always in the full-page layout. Closing the window keeps the app in the tray (Windows notification area, macOS menu bar, Linux tray). Quit with the tray menu.
-- **Sign-in stays out of sight.** The extranet and Microsoft's page run in hidden windows. A window only appears when Microsoft really needs you (password, new device), titled "Mit WISS-Konto anmelden", and closes itself when you're done. The app never sees or types a password.
+- **Sign-in stays out of sight.** The extranet and Microsoft's page run in hidden windows. When Microsoft really needs you (password, new device), the top of the app says so and ↻ shows the window, titled "Mit dem Schulkonto anmelden". It closes itself when you're done. The app never sees or types a password.
 - **Requests to wiss.tocco.ch** run inside a hidden wiss.tocco.ch page. That way they carry the sign-in cookies exactly like in a browser, and nothing about the school login ends up in the app's own code. The page is closed after a quiet minute.
 - **Reminders and notifications** (lessons, absence deadlines, new grades) come as system notifications while the app runs, also with the window closed.
 - **Tray menu:** next lesson and room, Open, Refresh, Mini window, Start with the computer, Quit. The mini window is a small always-on-top card with the next lesson and room (the desktop version of the Android widget). Drag it anywhere.

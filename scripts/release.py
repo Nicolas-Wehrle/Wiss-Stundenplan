@@ -9,7 +9,18 @@ import json, os, shutil, zipfile, runpy, re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-REPO = 'Nicolas-Wehrle/Wiss-Stundenplan'
+import subprocess
+def _repo():
+    """owner/name from the git remote, so the scripts follow a renamed repository."""
+    try:
+        url = subprocess.run(['git', 'remote', 'get-url', 'origin'], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+        m = re.search(r'github\.com[:/]([^/]+/[^/]+?)(?:\.git)?/?$', url)
+        if m:
+            return m.group(1)
+    except Exception:
+        pass
+    return 'Nicolas-Wehrle/Wiss-Stundenplan'
+REPO = _repo()
 version = json.loads((ROOT / 'chrome addon' / 'manifest.json').read_text(encoding='utf-8'))['version']
 out = ROOT / 'release' / f'v{version}'
 out.mkdir(parents=True, exist_ok=True)

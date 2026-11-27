@@ -1450,7 +1450,7 @@ details.mgroup[open] > summary::before { transform: rotate(90deg); }
 .stiles .stile { flex-basis: 124px; }
 
 /* =====================================================================
-   STANDARD = the WISS Stundenplan brand
+   STANDARD = the Erix Stundenplan brand
    ===================================================================== */
 :is([data-style=standard], :root:not([data-style])) body { -webkit-font-smoothing: antialiased; }
 :is([data-style=standard], :root:not([data-style])) .top { padding: 12px 16px 10px; background: var(--bg); }

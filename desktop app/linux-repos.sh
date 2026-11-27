@@ -31,7 +31,7 @@ if [ ${#rpms[@]} -gt 0 ]; then
   gpg --batch --yes --local-user "$key" --detach-sign --armor "$site/rpm/repodata/repomd.xml"
   cat > "$site/wiss-stundenplan.repo" <<EOF
 [wiss-stundenplan]
-name=WISS Stundenplan
+name=Erix Stundenplan
 baseurl=$url/rpm
 enabled=1
 gpgcheck=1
@@ -62,7 +62,7 @@ fi
 # one command each, shown on the website and in the README
 cat > "$site/linux.sh" <<EOF
 #!/bin/sh
-# WISS Stundenplan: adds the app's package source and installs it. Updates then come with the system updates.
+# Erix Stundenplan: adds the app's package source and installs it. Updates then come with the system updates.
 set -e
 get() { if command -v curl >/dev/null 2>&1; then sudo curl -fsSL -o "\$2" "\$1"; else sudo wget -qO "\$2" "\$1"; fi; }
 if command -v dnf >/dev/null 2>&1; then
@@ -80,6 +80,6 @@ else
   echo "No dnf, zypper or apt found. Take the AppImage from https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest" >&2
   exit 1
 fi
-echo "Installed. Find WISS Stundenplan in your app menu."
+echo "Installed. Find Erix Stundenplan in your app menu."
 EOF
 echo "Linux repositories ready in $site"

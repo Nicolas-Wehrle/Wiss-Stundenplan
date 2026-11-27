@@ -12,7 +12,7 @@ import re
 ROOT = Path(__file__).resolve().parent.parent
 UPDATED = {'de': '20. November 2026', 'en': '20 November 2026'}
 GH = 'https://github.com/Nicolas-Wehrle/Wiss-Stundenplan'
-NAME = 'Extranet Stundenplan'   # the app's public name
+NAME = 'Erix Stundenplan'   # the app's public name
 MAIL = 'stundenplan@severinwehrle.dev'
 CONTACT = {
     'de': f'Kontakt: {MAIL}',

@@ -20,8 +20,8 @@
     "targets": "all",
     "createUpdaterArtifacts": true,
     "category": "Education",
-    "shortDescription": "Stundenplan, Raum, Prüfungen, Noten und Absenzen der WISS",
-    "longDescription": "Inoffizieller Stundenplan für Lernende der WISS. Liest mit deinem eigenen Login, was du im Extranet siehst, und speichert es nur auf deinem Gerät.",
+    "shortDescription": "Stundenplan, Raum, Prüfungen, Noten und Absenzen aus dem Extranet (inoffiziell)",
+    "longDescription": "Erix Stundenplan: inoffizieller Stundenplan für Lernende. Liest mit deinem eigenen Login, was du im Extranet siehst, und speichert es nur auf deinem Gerät.",
     "copyright": "© 2026 Severin Wehrle · MIT License",
     "publisher": "Severin Wehrle",
     "homepage": "https://github.com/Nicolas-Wehrle/Wiss-Stundenplan",
@@ -59,6 +59,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhGOUE3OEQ3QjQ0OUFDQ0MKUldUTXJFbTAxM2lhajFLOUFDZXd2SEpoNTNhTUFRLy8xaFMwUDNlbGxoVmhEb0ptTDlRNktLTEUK",
       "endpoints": [
+        "https://github.com/Nicolas-Wehrle/Erix-Stundenplan/releases/latest/download/latest.json",
         "https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/releases/latest/download/latest.json"
       ],
       "windows": {

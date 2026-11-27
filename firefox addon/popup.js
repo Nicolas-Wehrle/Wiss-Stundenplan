@@ -1,4 +1,4 @@
-// WISS Stundenplan – popup + full-page view
+// Erix Stundenplan – popup + full-page view
 'use strict';
 const TZ = 'Europe/Zurich';
 const FULL = new URLSearchParams(location.search).has('full');
@@ -1527,13 +1527,13 @@ function renderPrivacy() {
   return `<div class="setup privacy">
     <div class="shero">${first && typeof seg === 'function' ? `<div class="wiz-lang">${seg('lang', [['de', 'Deutsch'], ['en', 'English']])}</div>` : ''}<h2>${tr('Deine Daten')}</h2><p>${tr('Kurz und ehrlich, was mit deinen Daten passiert.')}</p></div>
     <div class="card pcard"><ul class="sync-facts">
-      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></i>', 'Bleibt auf deinem Gerät', 'Stundenplan, Noten, Absenzen, Räume und Notizen aus deinem WISS-Login werden nur hier gespeichert.')}
-      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></i>', 'Nur diese Seiten', 'Die App holt Daten von wiss.tocco.ch und modulbaukasten.ch und fragt GitHub nach Updates. Keine Werbung, kein Tracking.')}
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></svg></i>', 'Bleibt auf deinem Gerät', 'Stundenplan, Noten, Absenzen, Räume und Notizen aus deinem Schul-Login werden nur hier gespeichert.')}
+      ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></i>', 'Nur diese Seiten', 'Die App holt Daten aus dem Extranet deiner Schule und von modulbaukasten.ch und fragt GitHub nach Updates. Keine Werbung, kein Tracking.')}
       ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></i>', 'Sync nur, wenn du willst', 'Die Geräte-Synchronisation ist aus. Schaltest du sie ein, gehen nur Notizen, Prüfungskorrekturen und ein paar Einstellungen verschlüsselt an den Sync-Server. Noten, Absenzen und dein Stundenplan nie.')}
       ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="15" r="4"/><path d="m11 12 9-9M17 6l3 3"/></svg></i>', 'Dein Passwort bleibt bei dir', 'Du meldest dich selbst bei Microsoft an. Die App tippt nie ein Passwort ein und speichert keins.')}
       ${item('<i aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></i>', 'Jederzeit löschen', 'In den Einstellungen unter Daten löschst du alles auf diesem Gerät, unter Sync auch die Daten auf dem Server.')}
     </ul></div>
-    <p class="muted pnote">${tr('Inoffizielle App, nicht von der WISS. Der Code ist offen auf GitHub.')}</p>
+    <p class="muted pnote">${tr('Inoffizielle App, nicht von deiner Schule. Der Code ist offen auf GitHub.')}</p>
     <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn wide" data-act="privacy-ok">${tr(first ? 'Verstanden' : 'Zurück')}</button></div></div>`;
 }
 
@@ -1556,15 +1556,15 @@ function renderSetup() {
   }
   let acc;
   const tCount = new Set(Object.keys(S.teachers || {}).filter((k) => k.startsWith('l:'))).size;
-  if (setupState.permOk === false) acc = `<p class="muted">Braucht Zugriff auf <b>wiss.tocco.ch</b> und <b>modulbaukasten.ch</b>.</p>
+  if (setupState.permOk === false) acc = `<p class="muted">Braucht Zugriff auf das <b>Extranet</b> und <b>modulbaukasten.ch</b>.</p>
     <div class="row"><button class="btn" data-act="grant">Zugriff erlauben</button></div>`;
   else if (user) acc = `<p><b class="priv" data-act="reveal" data-raw tabindex="0" role="button" title="${tr('Antippen zum Anzeigen')}">${esc(user)}</b><br><span class="muted">${S.lessons.length} Lektionen · ${(S.grades || []).length} Noten · ${tCount ? tCount + ' Lehrpersonen' : 'Lehrpersonen laden…'}</span></p>
     ${!first && !S.demoMode ? '<div class="row"><button class="btn ghost" data-act="teachers">Lehrpersonen aktualisieren</button></div>' : ''}`;
-  else acc = `${syncing ? '<p><span class="spin" style="display:inline-block;vertical-align:-1px"></span> Prüfe Anmeldung…</p>' : ''}<p class="muted">Einmal mit deinem WISS-Konto (<b>@wiss-edu.ch</b>) anmelden.</p>
+  else acc = `${syncing ? '<p><span class="spin" style="display:inline-block;vertical-align:-1px"></span> Prüfe Anmeldung…</p>' : ''}<p class="muted">Einmal mit deinem Schulkonto anmelden.</p>
     <div class="row"><button class="btn" data-act="login">Anmelden</button><button class="btn ghost" data-act="setup-check">Schon angemeldet</button></div>
     ${setupState.loginOpened ? '<p class="muted" style="font-size:12px">Melde dich im neuen Fenster an, danach geht es hier weiter.</p>' : ''}`;
 
-  if (!user) acc += `<p class="muted">${tr('Ohne WISS-Login mit fiktiven Daten ausprobieren.')}</p><button class="btn ghost" data-act="demo-start">${tr('Demokonto testen')}</button>`;
+  if (!user) acc += `<p class="muted">${tr('Ohne Schul-Login mit fiktiven Daten ausprobieren.')}</p><button class="btn ghost" data-act="demo-start">${tr('Demokonto testen')}</button>`;
   let ab;
   if (setupState.catErr) ab = `<p class="muted">Modulkatalog nicht erreichbar (${esc(setupState.catErr)}). <a data-act="cat-retry">Erneut versuchen</a></p>`;
   else if (!setupState.catalog) ab = `<p class="muted">Lade Lehrberufe…</p>`;
@@ -1586,7 +1586,7 @@ function renderSetup() {
   if (!first && typeof renderSettings === 'function') return renderSettings({ acc, ab, zp, user });
   let h = `<div class="setup">
     <div class="shero">${first && typeof seg === 'function' ? `<div class="wiz-lang">${seg('lang', [['de', 'Deutsch'], ['en', 'English']])}</div>` : ''}${first ? '<h2>Willkommen</h2><p>Stundenplan, Prüfungen, Noten und Räume ohne Warten. Deine Daten bleiben auf deinem Gerät.</p>' : '<h2>Einstellungen</h2>'}</div>
-    ${step(1, 'WISS-Konto', !!user, acc)}
+    ${step(1, 'Schulkonto', !!user, acc)}
     ${step(2, 'Lehrberuf', !!(S.abschluss && Object.keys(MODS).length), ab)}
     ${step(3, 'ZP-Schätzung', !first, zp)}
     <div class="row" style="margin-top:12px;justify-content:flex-end">
@@ -1594,9 +1594,9 @@ function renderSetup() {
     </div>`;
   if (!first && S.syncLog && S.syncLog.lines && S.syncLog.lines.length) h += `<details class="card sstep diag"><summary><b>Diagnose</b> <small class="muted">letzte Aktualisierung, ${esc(ago(S.syncLog.at))}</small></summary><pre>${S.syncLog.lines.map(esc).join('\n')}</pre></details>`;
   if (!first) h += `<div class="card sstep danger"><div class="sh2"><b>Lokale Daten</b></div>
-      <p class="muted">Löscht Stundenplan, Noten, Notizen und Einstellungen in diesem Browser. Dein WISS-Konto bleibt.</p>
+      <p class="muted">Löscht Stundenplan, Noten, Notizen und Einstellungen in diesem Browser. Dein Schulkonto bleibt.</p>
       <button class="btn ${setupState.resetArm ? '' : 'ghost'}" data-act="${setupState.resetArm ? 'reset-confirm' : 'reset'}">${setupState.resetArm ? 'Wirklich löschen?' : 'Alles löschen'}</button></div>`;
-  return h + `<p class="muted" style="font-size:11px;text-align:center;margin-top:12px">Inoffiziell · wiss.tocco.ch · modulbaukasten.ch</p></div>`;
+  return h + `<p class="muted" style="font-size:11px;text-align:center;margin-top:12px">Inoffiziell · Extranet · modulbaukasten.ch</p></div>`;
 }
 
 // =====================================================================

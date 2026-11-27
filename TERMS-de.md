@@ -1,8 +1,8 @@
-# Nutzungsbedingungen: Extranet Stundenplan
+# Nutzungsbedingungen: Erix Stundenplan
 
 Stand: 20. November 2026. English version: [TERMS.md](TERMS.md).
 
-Die Regeln für Extranet Stundenplan, in allen Versionen.
+Die Regeln für Erix Stundenplan, in allen Versionen.
 
 **Kurz gesagt**
 

@@ -1,4 +1,4 @@
-# Developing WISS Stundenplan
+# Developing Erix Stundenplan
 
 Everything for building, testing and releasing the project. Current version: **1.13.0**.
 For users, see the [README](README.md) or the [website](https://stundenplan.severinwehrle.dev). Background for anyone taking over the project: [PROJECT.md](PROJECT.md).

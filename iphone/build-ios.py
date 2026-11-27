@@ -33,10 +33,10 @@ html = read('popup.html')
 body = html[html.index('<body>') + len('<body>'):html.index('<script')].strip()
 
 header = f"""// ==UserScript==
-// @name         WISS Stundenplan
+// @name         Erix Stundenplan
 // @namespace    wiss-stundenplan
 // @version      {version}
-// @description  Dein WISS-Stundenplan sofort – Prüfungen, Noten, Absenzen, Räume. Öffne wiss.tocco.ch/extranet/?stundenplan
+// @description  Inoffiziell. Dein Stundenplan sofort: Prüfungen, Noten, Absenzen, Räume. Öffne /extranet/?stundenplan
 // @match        https://wiss.tocco.ch/*
 // @homepageURL  https://github.com/Nicolas-Wehrle/Wiss-Stundenplan
 // @updateURL    https://raw.githubusercontent.com/Nicolas-Wehrle/Wiss-Stundenplan/main/iphone/WISS-Stundenplan.user.js

@@ -68,10 +68,10 @@ h1 em { font-style: normal; color: #e2283f; }
 .brand svg { width: 52px; height: 52px; filter: drop-shadow(0 10px 18px rgba(216,31,60,.35)); }
 .foot { position: absolute; font-size: 13px; color: #9a96a2; }
 `;
-const win = (src, { x, y, w, d = false, url = 'Extranet Stundenplan', rot = 0, crop } = {}) =>
+const win = (src, { x, y, w, d = false, url = 'Erix Stundenplan', rot = 0, crop } = {}) =>
   `<div class="win${d ? ' d' : ''}" style="left:${x}px;top:${y}px;width:${w}px;${crop ? `height:${crop}px;` : ''}transform:rotate(${rot}deg)"><div class="bar"><i></i><i></i><i></i><span>${url}</span></div><img src="${shot(src)}"></div>`;
 const pop = (src, { x, y, w, rot = 0, crop }) => `<div class="pop" style="left:${x}px;top:${y}px;width:${w}px;${crop ? `height:${crop}px;` : ''}transform:rotate(${rot}deg)"><img src="${shot(src)}"></div>`;
-const brand = (size = 52) => `<div class="brand">${logo.replace('<svg ', `<svg style="width:${size}px;height:${size}px" `)}<span>Extranet Stundenplan</span></div>`;
+const brand = (size = 52) => `<div class="brand">${logo.replace('<svg ', `<svg style="width:${size}px;height:${size}px" `)}<span>Erix Stundenplan</span></div>`;
 
 const pick = (o, f) => Object.fromEntries(Object.entries(o).filter(([k]) => f(k)));
 function build(L) {
@@ -151,7 +151,7 @@ const slides = (dk) => {
     </div>
     <div class="card" style="left:790px;top:470px;width:410px;display:flex;gap:14px;align-items:flex-start;padding:16px">
       <div style="width:40px;height:40px;flex:none">${logo.replace('<svg ', '<svg style="width:40px;height:40px" ')}</div>
-      <div style="flex:1"><div class="faint" style="display:flex;justify-content:space-between;font-size:13px"><b class="ink">Extranet Stundenplan</b>${t('jetzt', 'now')}</div>
+      <div style="flex:1"><div class="faint" style="display:flex;justify-content:space-between;font-size:13px"><b class="ink">Erix Stundenplan</b>${t('jetzt', 'now')}</div>
       <div style="font-weight:700;margin-top:4px;font-size:16px">${esc(absTitle)}</div>
       <div class="mut" style="font-size:14.5px;margin-top:2px">${esc(absBody)}</div></div>
     </div>

@@ -13,8 +13,8 @@ Alle Screenshots und Werbekacheln sind RGB-PNG ohne Alphakanal. Das Logo bleibt 
 Die Store-ZIP lässt den Entwicklungsschlüssel bewusst weg. Die Store-ID wird von Google für den bestehenden Artikel verwaltet. Der Quellcode behält seinen bisherigen key für lokale Installationen. Neue Store-ZIP jederzeit mit `python scripts/build-chrome-store.py` erstellen und die Datei `release/v1.13.0/WISS-Stundenplan-Chrome-Web-Store.zip` hochladen.
 
 ## Eintrag
-Name: bestehenden Store-Namen beibehalten («Stundenplan für WISS (inoffiziell)»).
-Kurzbeschreibung (bereits im Manifest): Dein WISS-Stundenplan ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu.
+Name: «Erix Stundenplan (inoffiziell)» (kommt aus manifest.json).
+Kurzbeschreibung (bereits im Manifest): Dein Stundenplan aus dem Extranet, ohne Warten. Zeigt sofort die letzten Daten und lädt im Hintergrund neu. Inoffiziell.
 Sprache: Deutsch. Kategorie: Bildung. Kosten: kostenlos. Website: https://stundenplan.severinwehrle.dev
 Support: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues
 Datenschutz-URL: https://stundenplan.severinwehrle.dev/#datenschutz (Nutzungsbedingungen: …/#nutzungsbedingungen; englisch: PRIVACY.md und TERMS.md auf GitHub)
@@ -25,19 +25,19 @@ Vor dem Einreichen prüfen, dass die URL öffentlich ohne Anmeldung erreichbar i
 2. In setup, choose “Demokonto testen” (Try demo account). No username, password, Microsoft account, school account, or access code is required.
 3. The local fictional account is labelled demo@example.invalid. This is a display identifier, not an email inbox or a server login.
 4. Review Woche, Prüfungen, Noten, Absenzen and Räume. Use refresh, lesson details and notes. Data is generated around the current week; grades are randomized. Room occupancy is also fictional. Estimated exam dates retain the ordinary app labels.
-5. Settings and appearance options can be tested. Device sync is intentionally disabled for the demo. The real school login still uses the unchanged WISS/Microsoft flow and requires an authorized WISS account.
+5. Settings and appearance options can be tested. Device sync is intentionally disabled for the demo. The real school login still uses the unchanged extranet/Microsoft flow and requires an authorized school account.
 6. Click “Demo beenden” to remove the fictional data and return to setup. If settings are open, click “Fertig” first.
 7. Use a fresh browser profile for review. The demo refuses to replace an existing signed-in account or local school data.
 
 ## Einzelzweck
-Studierenden der WISS ihren eigenen Stundenplan und die zugehörigen Prüfungen, Noten, Absenzen und Raumangaben übersichtlich im Browser anzeigen.
+Lernenden ihren eigenen Stundenplan und die zugehörigen Prüfungen, Noten, Absenzen und Raumangaben übersichtlich im Browser anzeigen.
 
 ## Begründungen der Berechtigungen
 storage: Speichert zuletzt geladene Schulangaben und Benutzereinstellungen lokal, damit sie sofort und auch ohne erneuten Abruf angezeigt werden; speichert selbst erstellte Notizen und optionale Sync-Konfiguration.
 alarms: Plant Hintergrundaktualisierungen, optionale Unterrichts-/Absenzhinweise und Wiederholungen einer aktivierten Gerätesynchronisation.
-scripting: Liest benötigte Stundenplan-/Lehrpersonenangaben innerhalb der WISS-Extranet-Seiten und verwendet die vorhandene Sitzung als Fallback für den Datenabruf.
+scripting: Liest benötigte Stundenplan-/Lehrpersonenangaben innerhalb der Extranet-Seiten und verwendet die vorhandene Sitzung als Fallback für den Datenabruf.
 notifications: Zeigt vom Nutzer gewählte Hinweise auf Unterricht, neue Noten und offene Absenzen.
-https://wiss.tocco.ch/*: Ruft die eigenen Schulangaben in der angemeldeten Extranet-Sitzung ab und unterstützt die WISS-Anmeldung sowie die Zuordnung von Lehrpersonen.
+https://wiss.tocco.ch/*: Ruft die eigenen Schulangaben in der angemeldeten Extranet-Sitzung ab und unterstützt die Anmeldung sowie die Zuordnung von Lehrpersonen.
 https://www.modulbaukasten.ch/*: Lädt öffentliche Modul- und Lehrberufsinformationen sowie den für deren öffentliche Schnittstelle nötigen Token.
 https://ictbb.crm17.dynamics.com/*: Datenendpunkt des öffentlichen Modulbaukasten-Katalogs; liefert Modul- und Lehrberufsinformationen.
 Optional https://*.onrender.com/*: Nur nach Aktivierung und Freigabe für die freiwillige, Ende-zu-Ende-verschlüsselte Gerätesynchronisation mit dem vom Nutzer gewählten Render-Server. Im Demokonto deaktiviert.

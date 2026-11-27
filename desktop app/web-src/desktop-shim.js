@@ -1,4 +1,4 @@
-// WISS Stundenplan – desktop app adapter (Tauri: Windows, macOS, Linux).
+// Erix Stundenplan – desktop app adapter (Tauri: Windows, macOS, Linux).
 // Provides the `chrome.*` APIs the add-on code uses, backed by src-tauri/src/main.rs.
 // Same job as android app/web-src/app-shim.js:
 //  - storage → a file in the app's data folder (read once, every change handed over right away)

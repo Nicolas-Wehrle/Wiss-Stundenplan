@@ -69,7 +69,7 @@ const sec = (id, title, body) => `<section class="set-sec" id="set-${id}" data-s
 
 // id, name, short description (all names are German source strings, translated with tr())
 const STYLES = [
-  ['standard', 'Standard', 'WISS-Rot'], ['apple', 'Apple', 'Wie iOS'], ['samsung', 'Samsung', 'Wie One UI'],
+  ['standard', 'Standard', 'Erix-Rot'], ['apple', 'Apple', 'Wie iOS'], ['samsung', 'Samsung', 'Wie One UI'],
   ['nothing', 'Nothing', 'Schwarz-weiss'], ['github', 'GitHub', 'GitHub-Farben'], ['pastel', 'Pastell', 'Sanfte Farben'],
   ['neon', 'Neon', 'Leuchtend'], ['paper', 'Papier', 'Warm, mit Serifen'], ['terminal', 'Terminal', 'Grün auf Schwarz']
 ];
@@ -145,14 +145,14 @@ function renderSettings({ acc, ab, zp, user }) {
   const ver = hasChrome && chrome.runtime.getManifest ? chrome.runtime.getManifest().version : '';
   const ui = S.updateInfo;
   const updText = setupState.updMsg || (ui && ui.latest ? (updateAvailable() ? tr(SYSTEM_UPDATES ? 'Version {V} kommt mit den Systemupdates.' : 'Version {V} ist da.', { V: esc(ui.latest) }) : tr('Du hast die neuste Version.')) : '');
-  const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>WISS Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von der WISS')}</small></div></div>
+  const about = `<div class="about"><span class="logo">${logoSVG(logoStyle(P('style')))}</span><div><b>Erix Stundenplan ${esc(ver)}</b><small>${tr('Inoffiziell, nicht von deiner Schule')}</small></div></div>
     ${row(tr('Updates'), updText, updateAvailable() && !SYSTEM_UPDATES ? `<button class="btn" data-act="update-go">${tr('Update laden')}</button>` : `<button class="btn ghost" data-act="update-check">${tr('Prüfen')}</button>`)}
     ${row(tr('Datenschutz'), '', `<button class="btn ghost" data-act="privacy-show">${tr('Lesen')}</button>`)}
     ${row('Severin Wehrle', tr('Entwickler'), `<button class="btn ghost" data-act="open-severin">${tr('Profil')}</button>`)}
     ${row('Danylo Kovalenko', tr('Mitentwickler · iPhone-Version'), `<button class="btn ghost" data-act="open-danylo">${tr('Profil')}</button>`)}
     ${row(tr('Website'), tr('Downloads und Anleitungen'), `<button class="btn ghost" data-act="open-site">${tr('Öffnen')}</button>`)}
     ${row('GitHub', '', `<button class="btn ghost" data-act="open-repo">${tr('Öffnen')}</button>`)}
-    <p class="shint">${tr('Daten von wiss.tocco.ch und modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;
+    <p class="shint">${tr('Daten aus dem Extranet und von modulbaukasten.ch. Schriften unter SIL OFL.')}</p>`;
 
   return `<div class="settings">
     <div class="set-top"><h2>${tr('Einstellungen')}</h2><button class="btn" data-act="setup-close">${tr('Fertig')}</button></div>

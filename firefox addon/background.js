@@ -1,4 +1,4 @@
-// WISS Stundenplan – background sync
+// Erix Stundenplan – background sync
 // Talks directly to Tocco's REST API using your existing login cookies.
 // If the session has expired it re-logs in silently via Microsoft SSO in a
 // minimized window, fetches, and closes the window again.
@@ -654,14 +654,20 @@ async function mbkLoad(id, extraNums = []) {
 
 // ---------- updates (GitHub releases) ----------
 // Checks the newest release at most every 12 h and stores what's there; the popup shows a banner.
-const UPDATE_REPO = 'Nicolas-Wehrle/Wiss-Stundenplan';
+// The repository is going to be renamed: ask the new name first, the old one if that doesn't exist (yet).
+// GitHub also forwards the old name after the rename, so either way finds the releases.
+const UPDATE_REPOS = ['Nicolas-Wehrle/Erix-Stundenplan', 'Nicolas-Wehrle/Wiss-Stundenplan'];
 async function checkUpdate(force) {
   const { updateInfo } = await browser.storage.local.get('updateInfo');
   if (!force && updateInfo && Date.now() - updateInfo.checked < 12 * 3600e3) return updateInfo;
-  const r = await fetch(`https://api.github.com/repos/${UPDATE_REPO}/releases/latest`, {
-    headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store',
-    signal: (typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined)
-  });
+  let r = null;
+  for (const repo of UPDATE_REPOS) {
+    r = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, {
+      headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store',
+      signal: (typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(15000) : undefined)
+    });
+    if (r.status !== 404) break;
+  }
   if (r.status === 404) { const info = { checked: Date.now(), latest: null }; await browser.storage.local.set({ updateInfo: info }); return info; }   // no release yet
   if (!r.ok) throw new Error('GitHub ' + r.status);
   const j = await r.json();

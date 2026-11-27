@@ -81,6 +81,30 @@ const known = { privacyOk: true, setupDone: true, user: { username: 'synthetic' 
     await until(async () => /Bad connection/.test(await statusText(p)), 10000, 'Bad connection');
     assert.deepEqual(errors, []);
     console.log('PASS: extension: no pop-up or banner, "Anmeldung nötig" at the top, ↻ opens the sign-in, offline and slow connection, English.');
+
+    // updates: the new repository name first, the old one while the new one doesn't exist yet
+    const updates = await worker.evaluate(async () => {
+      const out = {};
+      for (const renamed of [false, true]) {
+        const asked = [];
+        globalThis.fetch = async (url) => {
+          url = String(url); asked.push(url.replace('https://api.github.com/repos/', ''));
+          const exists = renamed ? url.includes('/Erix-Stundenplan/') : url.includes('/Wiss-Stundenplan/');
+          if (!exists) return new Response('{}', { status: 404 });
+          const repo = renamed ? 'Erix-Stundenplan' : 'Wiss-Stundenplan';
+          return new Response(JSON.stringify({ tag_name: 'v9.9.9', html_url: 'https://github.com/Nicolas-Wehrle/' + repo + '/releases/tag/v9.9.9',
+            assets: [{ name: 'WISS-Stundenplan.apk', browser_download_url: 'https://github.com/Nicolas-Wehrle/' + repo + '/releases/download/v9.9.9/WISS-Stundenplan.apk' }] }), { status: 200 });
+        };
+        const info = await checkUpdate(true);
+        out[renamed ? 'after' : 'before'] = { asked, latest: info.latest, apk: info.apk };
+      }
+      return out;
+    });
+    assert.deepEqual(updates.before.asked, ['Nicolas-Wehrle/Erix-Stundenplan/releases/latest', 'Nicolas-Wehrle/Wiss-Stundenplan/releases/latest']);
+    assert.equal(updates.before.latest, '9.9.9');
+    assert.deepEqual(updates.after.asked, ['Nicolas-Wehrle/Erix-Stundenplan/releases/latest']);
+    assert.match(updates.after.apk, /Erix-Stundenplan\/releases\/download/);
+    console.log('PASS: update check finds releases under the old name now and the new name after the rename.');
   } finally { await context.close(); fs.rmSync(profile, { recursive: true, force: true }); }
 }
 

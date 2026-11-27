@@ -1,4 +1,4 @@
-//! WISS Stundenplan – desktop shell (Windows, macOS, Linux).
+//! Erix Stundenplan – desktop shell (Windows, macOS, Linux).
 //!
 //! Same idea as the Android app: the UI and logic are the add-on's own files (web/, built by
 //! build-desktop-web.py). web/desktop-shim.js gives them the `chrome.*` APIs they expect and
@@ -149,7 +149,7 @@ async fn tab_create(app: AppHandle, h: State<'_, Host>, url: String, active: boo
     }
     let id = h.next_tab.fetch_add(1, Ordering::SeqCst);
     h.tabs.lock().unwrap().insert(id, Tab { url: url.clone(), status: "loading", visible: active, internal: internal.unwrap_or(false) });
-    let title = if en(&h) { "Sign in with your WISS account" } else { "Mit WISS-Konto anmelden" };
+    let title = if en(&h) { "Sign in with your school account" } else { "Mit dem Schulkonto anmelden" };
     let handle = app.clone();
     let built = WebviewWindowBuilder::new(&app, format!("tab-{id}"), WebviewUrl::External(target))
         .title(title)
@@ -519,8 +519,8 @@ fn update_tray(app: &AppHandle) {
     }
     if let Some(tray) = app.tray_by_id("main") {
         let _ = tray.set_tooltip(Some(match next {
-            Some(n) => format!("WISS Stundenplan\n{n}"),
-            None => "WISS Stundenplan".to_string(),
+            Some(n) => format!("Erix Stundenplan\n{n}"),
+            None => "Erix Stundenplan".to_string(),
         }));
     }
 }
@@ -539,7 +539,7 @@ fn set_mini(app: &AppHandle, on: bool) {
         }
         (true, None) => {
             let mut b = WebviewWindowBuilder::new(app, "mini", WebviewUrl::App("mini.html".into()))
-                .title("WISS Stundenplan")
+                .title("Erix Stundenplan")
                 .inner_size(MINI_W, MINI_H)
                 // fixed size via min = max: with resizable(false), GTK grows the window to the web view's
                 // natural height (200 px) after it appears
@@ -584,7 +584,7 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     let sep2 = PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(app, &[&items.next, &sep1, &items.open, &items.refresh, &items.mini, &items.auto, &sep2, &items.quit])?;
     let mut tb = TrayIconBuilder::with_id("main")
-        .tooltip("WISS Stundenplan")
+        .tooltip("Erix Stundenplan")
         .menu(&menu)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, ev| match ev.id().as_ref() {
@@ -731,7 +731,7 @@ fn main() {
 
             let handle = app.handle().clone();
             WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
-                .title("WISS Stundenplan")
+                .title("Erix Stundenplan")
                 .inner_size(w, h)
                 .min_inner_size(380.0, 560.0)
                 .center()
@@ -829,7 +829,7 @@ fn main() {
             http, notify, schedule, set_lang, widget, open_external, install_update, app_ready, mini_data, mini_close, sign_out
         ])
         .build(tauri::generate_context!())
-        .expect("error while starting WISS Stundenplan")
+        .expect("error while starting Erix Stundenplan")
         .run(|app, ev| match ev {
             RunEvent::Exit => app.state::<Host>().store.save(),
             #[cfg(target_os = "macos")]
