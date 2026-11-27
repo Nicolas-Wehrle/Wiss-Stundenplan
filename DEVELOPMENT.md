@@ -31,7 +31,7 @@ The desktop app needs nothing by hand: GitHub builds it for Windows, macOS and L
 
 ## Testing
 - Sync: `node --test tests/sync/*.test.mjs` (Node 22 or later).
-- Browser tests (Playwright, Chromium): `tests/browser/demo.mjs`, `extension.mjs`, `mobile-demo.mjs`, `sync-ui.mjs`, `desktop-demo.mjs` and `themes.mjs`. Rebuild the Android, iPhone and desktop web parts first (`node "desktop app/build-desktop-web.mjs"` for the desktop one). Set `PLAYWRIGHT_MODULE` if Playwright is not on the normal module path.
+- Browser tests (Playwright, Chromium): `tests/browser/demo.mjs`, `extension.mjs`, `mobile-demo.mjs`, `sync-ui.mjs`, `desktop-demo.mjs`, `themes.mjs` and `signin.mjs` (sign-in never pops up by itself, offline and slow connection, "Alles löschen" signs the apps out; about a minute). Rebuild the Android, iPhone and desktop web parts first (`node "desktop app/build-desktop-web.mjs"` for the desktop one). Set `PLAYWRIGHT_MODULE` if Playwright is not on the normal module path, and `BROWSER_EXECUTABLE` to use an installed Chrome (`playwright-core` is then enough).
 - Private regression tests with real data live in the ignored `tests-private/` folder and never go into the repo.
 
 ## Store pictures, README pictures and link preview

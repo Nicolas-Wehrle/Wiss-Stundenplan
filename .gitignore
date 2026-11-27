@@ -2,6 +2,9 @@
 *.jks
 *.keystore
 keystore.properties
+# Desktop updater and Linux package signing keys
+*.key
+*.private.asc
 
 # Build output (put these on the GitHub Releases page instead)
 *.apk
