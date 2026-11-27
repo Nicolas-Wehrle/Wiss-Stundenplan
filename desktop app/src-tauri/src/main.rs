@@ -617,6 +617,13 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     if let Some(icon) = app.default_window_icon() {
         tb = tb.icon(icon.clone());
     }
+    // Linux: the tray picture is handed over as a file. In a Flatpak only $XDG_RUNTIME_DIR/app/<id>/ is
+    // visible outside the sandbox; anywhere else the desktop finds no picture and the icon stays empty.
+    if in_flatpak() {
+        if let (Some(run), Ok(id)) = (std::env::var_os("XDG_RUNTIME_DIR"), std::env::var("FLATPAK_ID")) {
+            tb = tb.temp_dir_path(std::path::Path::new(&run).join("app").join(id).join("tray-icon"));
+        }
+    }
     tb.build(app)?;
     *h.tray.lock().unwrap() = Some(items);
     h.has_tray.store(true, Ordering::SeqCst);

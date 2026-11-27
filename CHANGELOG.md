@@ -2,6 +2,7 @@
 
 - Desktop app: ready for Flathub (Linux app stores) and winget (Windows). Flatpak recipe, store texts and screenshots in `desktop app/flatpak/`, winget manifests in `desktop app/winget/`, a test build of the Flatpak on GitHub, and automatic winget updates after each release.
 - Flatpak: "Mit dem Computer starten" works through the desktop's Background portal and, like everywhere else, starts quietly in the tray.
+- Flatpak: the tray icon shows its picture (it was empty, because the picture file was only visible inside the sandbox).
 - Linux (.deb, .rpm, AppImage): the app menu now says "Erix Stundenplan". The package name stays the same, so updates keep working.
 
 ## 1.14.0
