@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.severinwehrle.stundenplan.Erix</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+
+  <name>Erix Stundenplan</name>
+  <summary>Dein Stundenplan aus dem Extranet, ohne Warten</summary>
+  <summary xml:lang="en">Your timetable from the school extranet, without the wait</summary>
+
+  <developer id="dev.severinwehrle">
+    <name>Severin Wehrle</name>
+  </developer>
+
+  <description>
+    <p>Erix Stundenplan zeigt dir deinen Stundenplan sofort, statt dass du auf das langsame Extranet wartest. Die zuletzt geladenen Daten sind gleich da, frische Daten kommen im Hintergrund.</p>
+    <ul>
+      <li>Woche mit Lektionen, Zeiten, Räumen und Lehrpersonen</li>
+      <li>Prüfungen mit Countdown; geschätzte Termine sind gekennzeichnet</li>
+      <li>Noten mit Durchschnitt, Verlauf und Notenrechner</li>
+      <li>Absenzen, Präsenz und offene Entschuldigungen</li>
+      <li>Freie Räume zu jeder Zeit, mit Raumplänen</li>
+      <li>Nächste Lektion im Tray, Erinnerungen und ein kleines Fenster, das immer oben bleibt</li>
+    </ul>
+    <p>Du meldest dich mit deinem eigenen Schulkonto an. Die App tippt nie ein Passwort ein. Deine Schuldaten bleiben auf deinem Gerät. Keine Werbung, kein Tracking.</p>
+    <p>Inoffizielles Schülerprojekt, nicht von deiner Schule.</p>
+    <p xml:lang="en">Erix Stundenplan shows your timetable right away, so you don't have to wait for the slow school extranet. Your last data is there at once, and fresh data loads in the background.</p>
+    <ul xml:lang="en">
+      <li>Week with lessons, times, rooms and teachers</li>
+      <li>Exams with a countdown; estimated dates are marked</li>
+      <li>Grades with average, trend chart and grade calculator</li>
+      <li>Absences, attendance and excuses still to hand in</li>
+      <li>Free rooms at any time, with floor plans</li>
+      <li>Next lesson in the tray, reminders and a small window that stays on top</li>
+    </ul>
+    <p xml:lang="en">You sign in with your own school account. The app never types a password. Your school data stays on your device. No ads, no tracking.</p>
+    <p xml:lang="en">Unofficial student project, not made by your school.</p>
+  </description>
+
+  <launchable type="desktop-id">dev.severinwehrle.stundenplan.Erix.desktop</launchable>
+
+  <url type="homepage">https://stundenplan.severinwehrle.dev</url>
+  <url type="bugtracker">https://github.com/Nicolas-Wehrle/Wiss-Stundenplan/issues</url>
+  <url type="vcs-browser">https://github.com/Nicolas-Wehrle/Wiss-Stundenplan</url>
+  <url type="contact">https://stundenplan.severinwehrle.dev/#datenschutz</url>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Die Woche auf einen Blick</caption>
+      <caption xml:lang="en">Your week at a glance</caption>
+      <image>https://stundenplan.severinwehrle.dev/screenshots/week.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Prüfungen mit Countdown</caption>
+      <caption xml:lang="en">Exams with a countdown</caption>
+      <image>https://stundenplan.severinwehrle.dev/screenshots/exams.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Noten, Schnitt und Verlauf</caption>
+      <caption xml:lang="en">Grades, average and trend</caption>
+      <image>https://stundenplan.severinwehrle.dev/screenshots/grades.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Freie Räume finden</caption>
+      <caption xml:lang="en">Find a free room</caption>
+      <image>https://stundenplan.severinwehrle.dev/screenshots/rooms.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Im dunklen Modus</caption>
+      <caption xml:lang="en">In dark mode</caption>
+      <image>https://stundenplan.severinwehrle.dev/screenshots/week-dark.png</image>
+    </screenshot>
+  </screenshots>
+
+  <branding>
+    <color type="primary" scheme_preference="light">#ffb3bd</color>
+    <color type="primary" scheme_preference="dark">#8c1427</color>
+  </branding>
+
+  <content_rating type="oars-1.1" />
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+
+  <releases>
+    <release version="1.14.0" date="2026-11-27">
+      <description>
+        <p>New name: Erix Stundenplan. Custom themes, sign-in that never pops up by itself, and a clear message when there is no internet.</p>
+      </description>
+    </release>
+  </releases>
+</component>

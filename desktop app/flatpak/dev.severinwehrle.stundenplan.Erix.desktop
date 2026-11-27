@@ -1,0 +1,13 @@
+[Desktop Entry]
+Type=Application
+Name=Erix Stundenplan
+GenericName=Stundenplan
+GenericName[en]=Timetable
+Comment=Stundenplan, Prüfungen, Noten, Absenzen und freie Räume aus dem Extranet (inoffiziell)
+Comment[en]=Timetable, exams, grades, absences and free rooms from the school extranet (unofficial)
+Exec=wiss-stundenplan
+Icon=dev.severinwehrle.stundenplan.Erix
+Terminal=false
+StartupWMClass=wiss-stundenplan
+Categories=Education;Office;Calendar;
+Keywords=Schule;Stundenplan;Noten;Prüfungen;Absenzen;Extranet;School;Timetable;Grades;

@@ -1,0 +1,40 @@
+# Sends each new release to winget (Windows Package Manager) as a pull request to microsoft/winget-pkgs.
+# Runs after the desktop build has added the Windows installer to the release.
+# Needs: the package already in winget (first version by hand, see "desktop app/winget/README.md"),
+# a fork of microsoft/winget-pkgs under your account, and the secret WINGET_TOKEN (classic token, scope public_repo).
+name: winget
+
+on:
+  workflow_run:
+    workflows: ['Desktop app']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release to send (for example v1.14.0). Empty: the latest release.'
+        required: false
+
+jobs:
+  winget:
+    # only after a real release build (not a manual test build of the desktop app)
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'release') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Which release
+        id: tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HAS_TOKEN: ${{ secrets.WINGET_TOKEN != '' }}
+        run: |
+          if [ "$HAS_TOKEN" != "true" ]; then echo "WINGET_TOKEN is not set, nothing to do."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          tag=$(gh release view ${{ inputs.tag }} --repo "${{ github.repository }}" --json tagName --jq .tagName)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - uses: vedantmgoyal9/winget-releaser@v2
+        if: ${{ steps.tag.outputs.skip != 'true' }}
+        with:
+          identifier: SeverinWehrle.ErixStundenplan
+          installers-regex: '_x64-setup\.exe$'
+          release-tag: ${{ steps.tag.outputs.tag }}
+          token: ${{ secrets.WINGET_TOKEN }}
+          fork-user: Nicolas-Wehrle

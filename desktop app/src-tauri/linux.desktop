@@ -1,0 +1,16 @@
+[Desktop Entry]
+Categories={{categories}}
+{{#if comment}}
+Comment={{comment}}
+{{/if}}
+Exec={{exec}}
+StartupWMClass={{exec}}
+Icon={{icon}}
+Name=Erix Stundenplan
+GenericName=Stundenplan
+Keywords=Schule;Stundenplan;Noten;Prüfungen;Absenzen;Extranet;School;Timetable;
+Terminal=false
+Type=Application
+{{#if mime_type}}
+MimeType={{mime_type}}
+{{/if}}

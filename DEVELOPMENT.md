@@ -53,6 +53,8 @@ The text lives in `scripts/legal.py`, in German and English. `python3 scripts/le
 7. GitHub then builds the desktop apps and adds them to the release (Actions › Desktop app, about 15 minutes), and refreshes the website and the Linux package sources (Actions › Website and Linux updates).
 8. Chrome Web Store: upload `release/v<version>/WISS-Stundenplan-Chrome-Web-Store.zip` as a new version (details in `store-assets/VEROEFFENTLICHUNG-DE.md`).
 
+9. Flathub and winget: see `desktop app/flatpak/README.md` and `desktop app/winget/README.md`. winget updates itself; Flathub needs a small pull request per release.
+
 The file names in the release must stay as they are; the update links point to them.
 
 **Secrets:** the desktop build needs `TAURI_SIGNING_PRIVATE_KEY`, the Linux package sources `LINUX_REPO_GPG_KEY` (repository Settings › Secrets and variables › Actions). Never commit or share `wiss-stundenplan.jks`, `keystore.properties`, `wiss-desktop-updater.key` or `wiss-linux-repo.private.asc`.

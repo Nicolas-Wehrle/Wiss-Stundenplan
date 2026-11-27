@@ -1,0 +1,41 @@
+# Flatpak / Flathub build of the desktop app. Built from source, offline (Rust crates in cargo-sources.json).
+# Test build: .github/workflows/flatpak.yml. Submitting and updating on Flathub: README.md in this folder.
+id: dev.severinwehrle.stundenplan.Erix
+runtime: org.gnome.Platform
+runtime-version: '48'
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.rust-stable
+  - org.freedesktop.Sdk.Extension.node20
+command: wiss-stundenplan
+finish-args:
+  - --share=ipc
+  - --share=network                                  # the school extranet, Microsoft sign-in, optional sync
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  - --talk-name=org.kde.StatusNotifierWatcher        # tray icon with the next lesson
+  - --talk-name=org.freedesktop.Notifications        # lesson reminders and new grades
+  - --own-name=ch.wisstools.stundenplan.SingleInstance   # a second start opens the running app
+modules:
+  - shared-modules/libayatana-appindicator/libayatana-appindicator-gtk3.json
+
+  - name: erix-stundenplan
+    buildsystem: simple
+    build-options:
+      append-path: /usr/lib/sdk/rust-stable/bin:/usr/lib/sdk/node20/bin
+      env:
+        CARGO_HOME: /run/build/erix-stundenplan/cargo
+        CARGO_NET_OFFLINE: 'true'
+    build-commands:
+      - node "desktop app/build-desktop-web.mjs"
+      - cargo --offline build --release --features tauri/custom-protocol --manifest-path "desktop app/src-tauri/Cargo.toml"
+      - install -Dm755 "desktop app/src-tauri/target/release/wiss-stundenplan" /app/bin/wiss-stundenplan
+      - install -Dm644 "desktop app/flatpak/${FLATPAK_ID}.desktop" /app/share/applications/${FLATPAK_ID}.desktop
+      - install -Dm644 "desktop app/flatpak/${FLATPAK_ID}.metainfo.xml" /app/share/metainfo/${FLATPAK_ID}.metainfo.xml
+      - install -Dm644 docs/logo.svg /app/share/icons/hicolor/scalable/apps/${FLATPAK_ID}.svg
+    sources:
+      - type: git
+        url: https://github.com/Nicolas-Wehrle/Wiss-Stundenplan.git
+        commit: SET-AFTER-PUSH   # the commit (or tag + commit) to build; see README.md
+      - cargo-sources.json

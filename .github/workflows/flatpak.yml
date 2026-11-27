@@ -1,0 +1,41 @@
+# Test build of the Flatpak (the same manifest that goes to Flathub), from this checkout instead of a fixed commit.
+# The finished .flatpak is attached to the run, so it can be installed on a Linux computer for testing:
+#   flatpak install --user erix-stundenplan.flatpak
+name: Flatpak test build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['desktop app/flatpak/**', 'desktop app/src-tauri/**', '.github/workflows/flatpak.yml']
+
+jobs:
+  flatpak:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-48
+      options: --privileged
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shared Flathub modules (tray library)
+        run: git clone --depth 1 https://github.com/flathub/shared-modules.git "desktop app/flatpak/shared-modules"
+
+      - name: Build from this checkout instead of the pinned commit
+        run: |
+          python3 - <<'EOF'
+          import re
+          src = open('desktop app/flatpak/dev.severinwehrle.stundenplan.Erix.yml', encoding='utf-8').read()
+          new = ('      - type: dir\n        path: ../..\n        skip:\n'
+                 '          - .git\n          - .flatpak-builder\n          - flatpak_app\n'
+                 '          - desktop app/src-tauri/target\n          - desktop app/flatpak/shared-modules\n')
+          out, n = re.subn(r'      - type: git\n        url: [^\n]+\n        commit: [^\n]+\n', new, src)
+          assert n == 1, 'git source not found in the manifest'
+          open('desktop app/flatpak/test.yml', 'w', encoding='utf-8').write(out)
+          EOF
+
+      - uses: flatpak/flatpak-github-actions/flatpak-builder@v6
+        with:
+          manifest-path: desktop app/flatpak/test.yml
+          bundle: erix-stundenplan.flatpak
+          cache-key: flatpak-builder-${{ hashFiles('desktop app/src-tauri/Cargo.lock') }}

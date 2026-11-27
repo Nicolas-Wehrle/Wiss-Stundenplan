@@ -571,7 +571,7 @@ fn set_mini(app: &AppHandle, on: bool) {
 fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     let h = app.state::<Host>();
     let l = labels(en(&h));
-    let auto_on = app.autolaunch().is_enabled().unwrap_or(false);
+    let auto_on = autostart_enabled(app);
     let items = TrayItems {
         next: MenuItem::with_id(app, "next", l[0], false, None::<&str>)?,
         open: MenuItem::with_id(app, "open", l[1], true, None::<&str>)?,
@@ -595,11 +595,9 @@ fn build_tray(app: &AppHandle) -> tauri::Result<()> {
                 set_mini(app, on);
             }
             "auto" => {
-                let al = app.autolaunch();
-                let on = !al.is_enabled().unwrap_or(false);
-                let _ = if on { al.enable() } else { al.disable() };
+                let now = set_autostart(app, !autostart_enabled(app));
                 if let Some(items) = app.state::<Host>().tray.lock().unwrap().as_ref() {
-                    let _ = items.auto.set_checked(al.is_enabled().unwrap_or(on));
+                    let _ = items.auto.set_checked(now);
                 }
             }
             "quit" => quit(app),
@@ -679,6 +677,58 @@ fn saved_size(path: &std::path::Path) -> (f64, f64) {
 
 /// Linux .deb/.rpm: installed from the app's package source, the system's own updates bring new
 /// versions (the in-app updater only works for the AppImage there).
+/// Running as a Flatpak (Flathub): updates come from Flathub, and "start with the computer" goes
+/// through the desktop's Background portal instead of writing an autostart file.
+fn in_flatpak() -> bool {
+    cfg!(target_os = "linux") && std::path::Path::new("/.flatpak-info").exists()
+}
+
+// ------------------------------------------------------------------ start with the computer
+// Always starts with --hidden: only the tray icon, the window opens with a click on it.
+
+/// Flatpak: the portal can't be asked whether autostart is on, so the choice is kept in a small file.
+fn autostart_flag(app: &AppHandle) -> Option<std::path::PathBuf> {
+    app.path().app_data_dir().ok().map(|d| d.join("autostart-on"))
+}
+
+fn autostart_enabled(app: &AppHandle) -> bool {
+    if in_flatpak() {
+        autostart_flag(app).map(|f| f.exists()).unwrap_or(false)
+    } else {
+        app.autolaunch().is_enabled().unwrap_or(false)
+    }
+}
+
+/// Turns autostart on or off and returns the new state.
+fn set_autostart(app: &AppHandle, on: bool) -> bool {
+    if in_flatpak() {
+        // org.freedesktop.portal.Background: the desktop writes the autostart entry (and may ask once)
+        let reason = if en(&app.state::<Host>()) { "Start in the tray when you sign in to the computer" } else { "Beim Anmelden am Computer im Tray starten" };
+        let opts = format!("{{'reason': <'{reason}'>, 'autostart': <{on}>, 'commandline': <['wiss-stundenplan', '--hidden']>, 'dbus-activatable': <false>}}");
+        let ok = std::process::Command::new("gdbus")
+            .args(["call", "--session", "--dest", "org.freedesktop.portal.Desktop", "--object-path", "/org/freedesktop/portal/desktop",
+                   "--method", "org.freedesktop.portal.Background.RequestBackground", "''", &opts])
+            .status()
+            .map(|s| s.success())
+            .unwrap_or(false);
+        if ok {
+            if let Some(f) = autostart_flag(app) {
+                if on {
+                    let _ = f.parent().map(std::fs::create_dir_all);
+                    let _ = std::fs::write(&f, b"1");
+                } else {
+                    let _ = std::fs::remove_file(&f);
+                }
+            }
+        }
+        autostart_enabled(app)
+    } else {
+        let al = app.autolaunch();
+        let _ = if on { al.enable() } else { al.disable() };
+        al.is_enabled().unwrap_or(on)
+    }
+}
+
 fn system_updates() -> bool {
     cfg!(target_os = "linux") && std::env::var_os("APPIMAGE").is_none()
 }
